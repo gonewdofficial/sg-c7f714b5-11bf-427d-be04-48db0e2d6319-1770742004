@@ -334,7 +334,7 @@ export default function SearchPage() {
                 </div>
 
                 {/* Active Filters */}
-                {(filters.propertyType?.length! > 0 || filters.naturistType?.length! > 0 || filters.amenities?.length! > 0) && (
+                {((filters.propertyType?.length ?? 0) > 0 || (filters.naturistType?.length ?? 0) > 0 || (filters.amenities?.length ?? 0) > 0) && (
                   <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t">
                     {filters.propertyType?.map(type => (
                       <Button
