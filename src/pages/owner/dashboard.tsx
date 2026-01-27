@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Building2, Calendar, DollarSign, Users, Plus, LogOut, Settings } from "lucide-react";
+import { Building2, Users, Plus, LogOut, Settings, Eye } from "lucide-react";
 import { SEO } from "@/components/SEO";
 
 interface Owner {
@@ -46,32 +45,31 @@ export default function OwnerDashboard() {
   if (!owner) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
       </div>
     );
   }
 
   return (
     <>
-      <SEO title="Property Owner Dashboard - NaturEscape" />
+      <SEO title="Property Owner Dashboard - GO/NEWD" />
       <div className="min-h-screen bg-gray-50">
         <Header />
 
         <main className="container mx-auto px-4 py-8">
           <div className="max-w-7xl mx-auto">
-            {/* Header */}
             <div className="bg-white rounded-2xl shadow-sm p-8 mb-8">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-6">
                   <Avatar className="h-20 w-20">
-                    <AvatarFallback className="text-2xl bg-gradient-to-br from-emerald-400 to-teal-600 text-white">
+                    <AvatarFallback className="text-2xl bg-gradient-to-br from-blue-500 to-purple-600 text-white">
                       {owner.name[0].toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <h1 className="text-3xl font-bold mb-1">{owner.name}</h1>
                     <p className="text-gray-600">{owner.email}</p>
-                    <Badge variant="secondary" className="mt-2 bg-emerald-100 text-emerald-700">
+                    <Badge variant="secondary" className="mt-2 bg-blue-100 text-blue-700">
                       Property Owner
                     </Badge>
                   </div>
@@ -89,8 +87,7 @@ export default function OwnerDashboard() {
               </div>
             </div>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
@@ -98,22 +95,8 @@ export default function OwnerDashboard() {
                       <p className="text-sm text-gray-600 mb-1">Total Properties</p>
                       <p className="text-3xl font-bold">{owner.properties.length}</p>
                     </div>
-                    <div className="h-12 w-12 bg-emerald-100 rounded-full flex items-center justify-center">
-                      <Building2 className="h-6 w-6 text-emerald-600" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-600 mb-1">Total Bookings</p>
-                      <p className="text-3xl font-bold">0</p>
-                    </div>
                     <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center">
-                      <Calendar className="h-6 w-6 text-blue-600" />
+                      <Building2 className="h-6 w-6 text-blue-600" />
                     </div>
                   </div>
                 </CardContent>
@@ -123,11 +106,11 @@ export default function OwnerDashboard() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-600 mb-1">Revenue (Month)</p>
-                      <p className="text-3xl font-bold">€0</p>
+                      <p className="text-sm text-gray-600 mb-1">Total Views</p>
+                      <p className="text-3xl font-bold">0</p>
                     </div>
                     <div className="h-12 w-12 bg-purple-100 rounded-full flex items-center justify-center">
-                      <DollarSign className="h-6 w-6 text-purple-600" />
+                      <Eye className="h-6 w-6 text-purple-600" />
                     </div>
                   </div>
                 </CardContent>
@@ -137,22 +120,21 @@ export default function OwnerDashboard() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-600 mb-1">Total Guests</p>
+                      <p className="text-sm text-gray-600 mb-1">Inquiries</p>
                       <p className="text-3xl font-bold">0</p>
                     </div>
-                    <div className="h-12 w-12 bg-amber-100 rounded-full flex items-center justify-center">
-                      <Users className="h-6 w-6 text-amber-600" />
+                    <div className="h-12 w-12 bg-pink-100 rounded-full flex items-center justify-center">
+                      <Users className="h-6 w-6 text-pink-600" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Properties Section */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Your Properties</CardTitle>
-                <Button className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 gap-2">
+                <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 gap-2">
                   <Plus className="h-4 w-4" />
                   Add New Property
                 </Button>
@@ -162,7 +144,7 @@ export default function OwnerDashboard() {
                   <Building2 className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-xl font-bold mb-2">No Properties Listed Yet</h3>
                   <p className="text-gray-600 mb-6">Start by adding your first naturist property</p>
-                  <Button className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700">
+                  <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
                     List Your Property
                   </Button>
                 </div>

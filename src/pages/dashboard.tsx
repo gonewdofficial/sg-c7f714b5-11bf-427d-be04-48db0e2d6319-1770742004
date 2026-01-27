@@ -8,8 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Heart, Star, MapPin, LogOut, User as UserIcon } from "lucide-react";
-import { Booking, Property } from "@/types";
+import { Heart, Star, MapPin, LogOut, User as UserIcon } from "lucide-react";
+import { Property } from "@/types";
 import { properties } from "@/lib/mockData";
 import { format } from "date-fns";
 import { SEO } from "@/components/SEO";
@@ -26,7 +26,6 @@ interface User {
 export default function Dashboard() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
-  const [bookings, setBookings] = useState<Booking[]>([]);
   const [favorites, setFavorites] = useState<Property[]>([]);
 
   useEffect(() => {
@@ -39,12 +38,6 @@ export default function Dashboard() {
     const userData = JSON.parse(currentUser);
     setUser(userData);
 
-    // Load user bookings
-    const allBookings = JSON.parse(localStorage.getItem("bookings") || "[]");
-    const userBookings = allBookings.filter((b: Booking) => b.userId === userData.id);
-    setBookings(userBookings);
-
-    // Load favorites
     const favoriteProperties = properties.filter(p => userData.favorites.includes(p.id));
     setFavorites(favoriteProperties);
   }, [router]);
@@ -57,26 +50,25 @@ export default function Dashboard() {
   if (!user) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
       </div>
     );
   }
 
   return (
     <>
-      <SEO title="My Dashboard - NaturEscape" />
+      <SEO title="My Dashboard - GO/NEWD" />
       <div className="min-h-screen bg-gray-50">
         <Header />
 
         <main className="container mx-auto px-4 py-8">
           <div className="max-w-6xl mx-auto">
-            {/* Profile Header */}
             <div className="bg-white rounded-2xl shadow-sm p-8 mb-8">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-6">
                   <Avatar className="h-20 w-20">
                     <AvatarImage src="" />
-                    <AvatarFallback className="text-2xl bg-gradient-to-br from-emerald-400 to-teal-600 text-white">
+                    <AvatarFallback className="text-2xl bg-gradient-to-br from-blue-500 to-purple-600 text-white">
                       {user.name[0].toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
@@ -95,13 +87,8 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Dashboard Tabs */}
-            <Tabs defaultValue="bookings" className="space-y-6">
+            <Tabs defaultValue="favorites" className="space-y-6">
               <TabsList className="bg-white p-1 h-auto">
-                <TabsTrigger value="bookings" className="gap-2 px-6 py-3">
-                  <Calendar className="h-4 w-4" />
-                  My Bookings
-                </TabsTrigger>
                 <TabsTrigger value="favorites" className="gap-2 px-6 py-3">
                   <Heart className="h-4 w-4" />
                   Favorites
@@ -116,64 +103,6 @@ export default function Dashboard() {
                 </TabsTrigger>
               </TabsList>
 
-              {/* Bookings Tab */}
-              <TabsContent value="bookings" className="space-y-4">
-                {bookings.length > 0 ? (
-                  bookings.map((booking) => (
-                    <Card key={booking.id} className="overflow-hidden">
-                      <CardContent className="p-6">
-                        <div className="flex gap-6">
-                          <div 
-                            className="w-48 h-32 rounded-xl bg-gray-200 bg-cover bg-center shrink-0"
-                            style={{ backgroundImage: `url(${booking.propertyImage})` }}
-                          />
-                          <div className="flex-1">
-                            <div className="flex items-start justify-between mb-3">
-                              <div>
-                                <h3 className="text-xl font-bold mb-1">{booking.propertyName}</h3>
-                                <Badge variant={booking.status === "confirmed" ? "default" : "secondary"}>
-                                  {booking.status}
-                                </Badge>
-                              </div>
-                              <div className="text-right">
-                                <div className="text-2xl font-bold">€{booking.totalPrice.toFixed(2)}</div>
-                                <div className="text-sm text-gray-500">Total</div>
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4 mb-4">
-                              <div>
-                                <div className="text-sm text-gray-500">Check-in</div>
-                                <div className="font-medium">{format(new Date(booking.checkIn), "MMM dd, yyyy")}</div>
-                              </div>
-                              <div>
-                                <div className="text-sm text-gray-500">Check-out</div>
-                                <div className="font-medium">{format(new Date(booking.checkOut), "MMM dd, yyyy")}</div>
-                              </div>
-                            </div>
-                            <div className="flex gap-2">
-                              <Link href={`/property/${booking.propertyId}`}>
-                                <Button variant="outline" size="sm">View Property</Button>
-                              </Link>
-                              <Button variant="ghost" size="sm">Cancel Booking</Button>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))
-                ) : (
-                  <Card className="p-12 text-center">
-                    <Calendar className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-xl font-bold mb-2">No Bookings Yet</h3>
-                    <p className="text-gray-600 mb-4">Start planning your naturist getaway</p>
-                    <Link href="/search">
-                      <Button>Browse Properties</Button>
-                    </Link>
-                  </Card>
-                )}
-              </TabsContent>
-
-              {/* Favorites Tab */}
               <TabsContent value="favorites" className="space-y-4">
                 {favorites.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -218,16 +147,14 @@ export default function Dashboard() {
                 )}
               </TabsContent>
 
-              {/* Reviews Tab */}
               <TabsContent value="reviews">
                 <Card className="p-12 text-center">
                   <Star className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-xl font-bold mb-2">No Reviews Yet</h3>
-                  <p className="text-gray-600">Share your experiences after your stay</p>
+                  <p className="text-gray-600">Share your experiences with the community</p>
                 </Card>
               </TabsContent>
 
-              {/* Profile Tab */}
               <TabsContent value="profile">
                 <Card>
                   <CardHeader>
@@ -261,7 +188,7 @@ export default function Dashboard() {
                         readOnly
                       />
                     </div>
-                    <Button className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700">
+                    <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
                       Update Profile
                     </Button>
                   </CardContent>

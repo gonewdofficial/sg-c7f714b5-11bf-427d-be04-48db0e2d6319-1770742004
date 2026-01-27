@@ -26,7 +26,6 @@ export default function LoginPage() {
       return;
     }
 
-    // Mock authentication - store in localStorage
     const user = {
       id: `user-${Date.now()}`,
       email: guestEmail,
@@ -49,7 +48,6 @@ export default function LoginPage() {
       return;
     }
 
-    // Mock authentication for property owners
     const owner = {
       id: `owner-${Date.now()}`,
       email: ownerEmail,
@@ -65,15 +63,15 @@ export default function LoginPage() {
 
   return (
     <>
-      <SEO title="Login - NaturEscape" />
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex items-center justify-center p-4">
+      <SEO title="Login - GO/NEWD" />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <Link href="/" className="inline-flex items-center space-x-2 mb-6">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-600">
-                <span className="text-2xl font-bold text-white">N</span>
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
+                <span className="text-2xl font-bold text-white">G</span>
               </div>
-              <span className="text-2xl font-bold tracking-tight">NaturEscape</span>
+              <span className="text-2xl font-bold tracking-tight">GO/NEWD</span>
             </Link>
             <h1 className="text-3xl font-bold mb-2">Welcome Back</h1>
             <p className="text-gray-600">Sign in to continue your journey</p>
@@ -90,7 +88,7 @@ export default function LoginPage() {
                 <CardHeader>
                   <CardTitle>Guest Account</CardTitle>
                   <CardDescription>
-                    Book your perfect naturist getaway
+                    Explore naturist destinations worldwide
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -124,14 +122,14 @@ export default function LoginPage() {
                           className="h-12"
                         />
                       </div>
-                      <Button type="submit" className="w-full h-12 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700">
+                      <Button type="submit" className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
                         Sign In
                       </Button>
                     </div>
                   </form>
                 </CardContent>
                 <CardFooter className="flex flex-col gap-4">
-                  <Link href="/signup" className="text-sm text-emerald-600 hover:underline">
+                  <Link href="/signup" className="text-sm text-blue-600 hover:underline">
                     Don't have an account? Sign up
                   </Link>
                   <Link href="/forgot-password" className="text-sm text-gray-600 hover:underline">
@@ -180,14 +178,14 @@ export default function LoginPage() {
                           className="h-12"
                         />
                       </div>
-                      <Button type="submit" className="w-full h-12 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700">
+                      <Button type="submit" className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
                         Sign In as Owner
                       </Button>
                     </div>
                   </form>
                 </CardContent>
                 <CardFooter className="flex flex-col gap-4">
-                  <Link href="/owner/signup" className="text-sm text-emerald-600 hover:underline">
+                  <Link href="/owner/signup" className="text-sm text-blue-600 hover:underline">
                     List your property
                   </Link>
                 </CardFooter>
