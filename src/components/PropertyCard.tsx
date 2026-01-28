@@ -27,13 +27,12 @@ export function PropertyCard({ property }: PropertyCardProps) {
             className="absolute top-3 right-3 rounded-full bg-white/90 hover:bg-white z-10"
             onClick={(e) => {
               e.preventDefault();
-              // Handle favorite toggle
             }}
           >
-            <Heart className="h-4 w-4" />
+            <Heart className="h-4 w-4" style={{ color: '#FF6347' }} />
           </Button>
           {property.featured && (
-            <Badge className="absolute top-3 left-3 bg-gradient-to-r from-blue-500 to-purple-600 border-0">
+            <Badge className="absolute top-3 left-3 border-0 text-white" style={{ backgroundColor: '#FF6347' }}>
               Featured
             </Badge>
           )}
@@ -43,26 +42,26 @@ export function PropertyCard({ property }: PropertyCardProps) {
       <CardContent className="p-4 md:p-5">
         <div className="flex items-start justify-between mb-2 gap-2">
           <Link href={`/property/${property.id}`} className="flex-1 min-w-0">
-            <h3 className="font-bold text-base md:text-lg line-clamp-1 hover:text-blue-600 transition-colors">
+            <h3 className="font-bold text-base md:text-lg line-clamp-1 hover:text-[#FF6347] transition-colors" style={{ color: '#1A1A1A' }}>
               {property.name}
             </h3>
           </Link>
-          <div className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-lg shrink-0">
-            <Star className="h-3 w-3 md:h-4 md:w-4 fill-blue-600 text-blue-600" />
-            <span className="text-xs md:text-sm font-semibold">{property.rating}</span>
+          <div className="flex items-center gap-1 px-2 py-1 rounded-lg shrink-0" style={{ backgroundColor: '#FFF5F3' }}>
+            <Star className="h-3 w-3 md:h-4 md:w-4 fill-current" style={{ color: '#FF6347' }} />
+            <span className="text-xs md:text-sm font-semibold" style={{ color: '#FF6347' }}>{property.rating}</span>
           </div>
         </div>
 
         <div className="flex items-center text-xs md:text-sm text-gray-600 mb-3">
-          <MapPin className="h-3 w-3 md:h-4 md:w-4 mr-1 shrink-0" />
+          <MapPin className="h-3 w-3 md:h-4 md:w-4 mr-1 shrink-0" style={{ color: '#FF6347' }} />
           <span className="truncate">{property.location.city}, {property.location.country}</span>
         </div>
 
         <div className="flex flex-wrap gap-2 mb-4">
-          <Badge variant="secondary" className="text-xs">
+          <Badge className="text-xs text-white" style={{ backgroundColor: '#FF6347' }}>
             {property.propertyType}
           </Badge>
-          <Badge variant="outline" className="text-xs">
+          <Badge variant="outline" className="text-xs" style={{ borderColor: '#FF6347', color: '#FF6347' }}>
             {property.naturistType}
           </Badge>
         </div>
@@ -73,11 +72,11 @@ export function PropertyCard({ property }: PropertyCardProps) {
 
         <div className="flex items-center justify-between pt-4 border-t gap-4">
           <div className="min-w-0">
-            <span className="text-xl md:text-2xl font-bold">€{property.price.perNight}</span>
+            <span className="text-xl md:text-2xl font-bold" style={{ color: '#1A1A1A' }}>€{property.price.perNight}</span>
             <span className="text-xs md:text-sm text-gray-600"> / night</span>
           </div>
           <Link href={`/property/${property.id}`}>
-            <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-xs md:text-sm px-3 md:px-4 h-9 md:h-10">
+            <Button className="text-xs md:text-sm px-3 md:px-4 h-9 md:h-10 text-white hover:opacity-90" style={{ backgroundColor: '#FF6347' }}>
               View Details
             </Button>
           </Link>

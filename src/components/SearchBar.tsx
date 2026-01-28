@@ -22,6 +22,7 @@ export function SearchBar() {
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             className="pl-10 h-12 md:h-14 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 w-full"
+            style={{ color: '#1A1A1A' }}
           />
         </div>
 
@@ -30,6 +31,7 @@ export function SearchBar() {
             <Button
               variant="outline"
               className="h-12 md:h-14 justify-start text-left font-normal border-0 hover:bg-gray-50 w-full"
+              style={{ color: '#1A1A1A' }}
             >
               <CalendarIcon className="mr-2 h-5 w-5 text-gray-400 shrink-0" />
               <span className="truncate">{checkIn ? format(checkIn, "MMM dd") : "Check-in"}</span>
@@ -45,6 +47,7 @@ export function SearchBar() {
             <Button
               variant="outline"
               className="h-12 md:h-14 justify-start text-left font-normal border-0 hover:bg-gray-50 w-full"
+              style={{ color: '#1A1A1A' }}
             >
               <CalendarIcon className="mr-2 h-5 w-5 text-gray-400 shrink-0" />
               <span className="truncate">{checkOut ? format(checkOut, "MMM dd") : "Check-out"}</span>
@@ -64,9 +67,10 @@ export function SearchBar() {
               value={guests}
               onChange={(e) => setGuests(parseInt(e.target.value))}
               className="pl-10 h-12 md:h-14 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 w-full"
+              style={{ color: '#1A1A1A' }}
             />
           </div>
-          <Button size="lg" className="h-12 md:h-14 px-6 md:px-8 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shrink-0">
+          <Button size="lg" className="h-12 md:h-14 px-6 md:px-8 text-white hover:opacity-90 shrink-0" style={{ backgroundColor: '#FF6347' }}>
             <Search className="h-5 w-5" />
           </Button>
         </div>
