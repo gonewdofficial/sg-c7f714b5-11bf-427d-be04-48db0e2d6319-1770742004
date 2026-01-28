@@ -8,26 +8,25 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { signIn, getCurrentUser } from "@/services/authService";
+import { signUp, getCurrentUser } from "@/services/authService";
 import { Loader2 } from "lucide-react";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     // Check if already logged in
     const checkAuth = async () => {
       const user = await getCurrentUser();
       if (user) {
-        if (user.role === "admin") {
-          router.push("/owner/dashboard");
-        } else {
-          router.push("/dashboard");
-        }
+        router.push("/dashboard");
       }
     };
     checkAuth();
@@ -36,10 +35,23 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setSuccess(false);
+
+    // Validation
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters long");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const { user, error: authError } = await signIn(email, password);
+      const { user, error: authError } = await signUp(email, password, fullName);
 
       if (authError) {
         setError(authError);
@@ -48,12 +60,10 @@ export default function LoginPage() {
       }
 
       if (user) {
-        // Redirect based on role
-        if (user.role === "admin" || user.role === "owner") {
-          router.push("/owner/dashboard");
-        } else {
+        setSuccess(true);
+        setTimeout(() => {
           router.push("/dashboard");
-        }
+        }, 2000);
       }
     } catch (err) {
       setError("An unexpected error occurred");
@@ -64,8 +74,8 @@ export default function LoginPage() {
   return (
     <>
       <SEO
-        title="Login - GO/NEWD"
-        description="Sign in to your GO/NEWD account to manage bookings and explore naturist resorts"
+        title="Sign Up - GO/NEWD"
+        description="Create your GO/NEWD account to book naturist resorts and manage your stays"
       />
       <div className="min-h-screen bg-white">
         <Header />
@@ -75,10 +85,10 @@ export default function LoginPage() {
             <Card className="border-2">
               <CardHeader className="space-y-1">
                 <CardTitle className="text-2xl sm:text-3xl font-bold text-brand">
-                  Welcome Back
+                  Create Account
                 </CardTitle>
                 <CardDescription className="text-base">
-                  Sign in to your GO/NEWD account
+                  Join GO/NEWD to explore naturist destinations
                 </CardDescription>
               </CardHeader>
               
@@ -89,6 +99,28 @@ export default function LoginPage() {
                       <AlertDescription>{error}</AlertDescription>
                     </Alert>
                   )}
+
+                  {success && (
+                    <Alert className="bg-green-50 text-green-900 border-green-200">
+                      <AlertDescription>
+                        Account created successfully! Redirecting...
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName">Full Name</Label>
+                    <Input
+                      id="fullName"
+                      type="text"
+                      placeholder="John Doe"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      required
+                      disabled={loading}
+                      className="h-11"
+                    />
+                  </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
@@ -105,21 +137,31 @@ export default function LoginPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="password">Password</Label>
-                      <Link
-                        href="/forgot-password"
-                        className="text-sm text-brand hover:underline"
-                      >
-                        Forgot password?
-                      </Link>
-                    </div>
+                    <Label htmlFor="password">Password</Label>
                     <Input
                       id="password"
                       type="password"
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
+                      required
+                      disabled={loading}
+                      className="h-11"
+                      minLength={8}
+                    />
+                    <p className="text-xs text-gray-600">
+                      Must be at least 8 characters long
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">Confirm Password</Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      placeholder="••••••••"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
                       required
                       disabled={loading}
                       className="h-11"
@@ -131,22 +173,22 @@ export default function LoginPage() {
                   <Button
                     type="submit"
                     className="w-full h-11 bg-brand hover:bg-brand/90 text-white font-semibold"
-                    disabled={loading}
+                    disabled={loading || success}
                   >
                     {loading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Signing in...
+                        Creating account...
                       </>
                     ) : (
-                      "Sign In"
+                      "Create Account"
                     )}
                   </Button>
 
                   <div className="text-center text-sm">
-                    <span className="text-gray-600">Don&apos;t have an account? </span>
-                    <Link href="/register" className="text-brand hover:underline font-semibold">
-                      Sign Up
+                    <span className="text-gray-600">Already have an account? </span>
+                    <Link href="/login" className="text-brand hover:underline font-semibold">
+                      Sign In
                     </Link>
                   </div>
                 </CardFooter>
@@ -154,7 +196,7 @@ export default function LoginPage() {
             </Card>
 
             <div className="mt-6 text-center text-sm text-gray-600">
-              <p>By signing in, you agree to our</p>
+              <p>By creating an account, you agree to our</p>
               <div className="space-x-2 mt-1">
                 <Link href="/terms" className="text-brand hover:underline">
                   Terms of Service
