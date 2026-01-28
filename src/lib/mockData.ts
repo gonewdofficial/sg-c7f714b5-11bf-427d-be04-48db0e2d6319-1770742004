@@ -15,6 +15,7 @@ export const properties: Property[] = [
       city: "Costa del Sol",
       country: "Spain",
       region: "Andalusia",
+      address: "Avenida del Sol 123",
       coordinates: { lat: 36.7213, lng: -4.4214 }
     },
     images: [
@@ -23,7 +24,7 @@ export const properties: Property[] = [
       "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800",
       "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=800"
     ],
-    price: { perNight: 285, currency: "EUR" },
+    price: { perNight: 285, perWeek: 1850, currency: "EUR" },
     rating: 4.8,
     reviewCount: 342,
     propertyType: "resort",
@@ -42,6 +43,7 @@ export const properties: Property[] = [
       city: "Provence",
       country: "France",
       region: "Var",
+      address: "Route de la Vallée 45",
       coordinates: { lat: 43.4832, lng: 6.8431 }
     },
     images: [
@@ -49,7 +51,7 @@ export const properties: Property[] = [
       "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800",
       "https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=800"
     ],
-    price: { perNight: 145, currency: "EUR" },
+    price: { perNight: 145, perWeek: 920, currency: "EUR" },
     rating: 4.6,
     reviewCount: 189,
     propertyType: "hotel",
@@ -68,6 +70,7 @@ export const properties: Property[] = [
       city: "Miami",
       country: "United States",
       region: "Florida",
+      address: "Ocean Drive 789",
       coordinates: { lat: 25.7617, lng: -80.1918 }
     },
     images: [
@@ -75,7 +78,7 @@ export const properties: Property[] = [
       "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800",
       "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800"
     ],
-    price: { perNight: 220, currency: "USD" },
+    price: { perNight: 220, perWeek: 1400, currency: "USD" },
     rating: 4.5,
     reviewCount: 267,
     propertyType: "resort",
@@ -94,13 +97,14 @@ export const properties: Property[] = [
       city: "Innsbruck",
       country: "Austria",
       region: "Tyrol",
+      address: "Bergstrasse 56",
       coordinates: { lat: 47.2692, lng: 11.4041 }
     },
     images: [
       "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800",
       "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=800"
     ],
-    price: { perNight: 165, currency: "EUR" },
+    price: { perNight: 165, perWeek: 1050, currency: "EUR" },
     rating: 4.7,
     reviewCount: 156,
     propertyType: "hotel",
@@ -118,13 +122,14 @@ export const properties: Property[] = [
       city: "Algarve",
       country: "Portugal",
       region: "Faro",
+      address: "Praia do Sol",
       coordinates: { lat: 37.0179, lng: -7.9304 }
     },
     images: [
       "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=800",
       "https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?w=800"
     ],
-    price: { perNight: 65, currency: "EUR" },
+    price: { perNight: 65, perWeek: 400, currency: "EUR" },
     rating: 4.3,
     reviewCount: 98,
     propertyType: "campsite",
@@ -142,13 +147,14 @@ export const properties: Property[] = [
       city: "Santorini",
       country: "Greece",
       region: "Cyclades",
+      address: "Caldera View 12",
       coordinates: { lat: 36.3932, lng: 25.4615 }
     },
     images: [
       "https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?w=800",
       "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800"
     ],
-    price: { perNight: 450, currency: "EUR" },
+    price: { perNight: 450, perWeek: 2900, currency: "EUR" },
     rating: 4.9,
     reviewCount: 78,
     propertyType: "villa",

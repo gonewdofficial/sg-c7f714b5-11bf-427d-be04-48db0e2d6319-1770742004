@@ -6,6 +6,7 @@ export interface Property {
     city: string;
     country: string;
     region: string;
+    address?: string;
     coordinates?: {
       lat: number;
       lng: number;
@@ -14,6 +15,7 @@ export interface Property {
   images: string[];
   price: {
     perNight: number;
+    perWeek?: number;
     currency: string;
   };
   rating: number;

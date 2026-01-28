@@ -104,7 +104,7 @@ export default function PropertyDetail() {
                 <Card>
                   <CardContent className="p-6">
                     <div className="flex items-center gap-4 mb-4">
-                      <Badge variant="secondary">{property.type}</Badge>
+                      <Badge variant="secondary">{property.propertyType}</Badge>
                       <Badge variant="outline">{property.naturistType}</Badge>
                       {property.featured && (
                         <Badge className="bg-gradient-to-r from-blue-500 to-purple-600">
@@ -185,7 +185,7 @@ export default function PropertyDetail() {
                       <MapPin className="h-12 w-12 text-gray-400" />
                     </div>
                     <p className="mt-4 text-gray-600">
-                      {property.location.address}, {property.location.city}, {property.location.country}
+                      {property.location.address ? `${property.location.address}, ` : ""}{property.location.city}, {property.location.country}
                     </p>
                   </CardContent>
                 </Card>
@@ -200,9 +200,11 @@ export default function PropertyDetail() {
                           €{property.price.perNight}
                           <span className="text-lg font-normal text-gray-600"> / night</span>
                         </div>
-                        <p className="text-sm text-gray-600">
-                          €{property.price.perWeek} per week
-                        </p>
+                        {property.price.perWeek && (
+                          <p className="text-sm text-gray-600">
+                            €{property.price.perWeek} per week
+                          </p>
+                        )}
                       </div>
 
                       <div className="space-y-3 mb-6">
@@ -225,11 +227,11 @@ export default function PropertyDetail() {
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
                             <span className="text-gray-600">Type:</span>
-                            <span className="font-medium">{property.type}</span>
+                            <span className="font-medium">{property.propertyType}</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600">Capacity:</span>
-                            <span className="font-medium">{property.capacity} guests</span>
+                            <span className="font-medium">{property.capacity.guests} guests, {property.capacity.rooms} rooms</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600">Style:</span>
