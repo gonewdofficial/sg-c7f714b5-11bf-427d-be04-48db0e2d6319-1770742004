@@ -206,7 +206,7 @@ export default function PropertyDetail() {
                       </div>
 
                       <div className="space-y-3 mb-6">
-                        <Button className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white">
+                        <Button className="w-full h-12 bg-gray-900 hover:bg-gray-800 text-white">
                           <Phone className="h-4 w-4 mr-2" />
                           Call Property
                         </Button>

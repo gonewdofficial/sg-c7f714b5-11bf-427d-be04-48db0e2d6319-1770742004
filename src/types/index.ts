@@ -21,7 +21,7 @@ export interface Property {
   propertyType: "hotel" | "resort" | "campsite" | "villa" | "bungalow";
   naturistType: "clothing-optional" | "fully-naturist" | "naturist-friendly";
   amenities: string[];
-  features: string[];
+  features: string[]; // Admin managed tags
   capacity: {
     guests: number;
     rooms: number;
@@ -43,18 +43,11 @@ export interface Review {
   verified: boolean;
 }
 
-export interface Booking {
+// Admin managed configuration types
+export interface AdminTag {
   id: string;
-  propertyId: string;
-  propertyName: string;
-  propertyImage: string;
-  userId: string;
-  checkIn: string;
-  checkOut: string;
-  guests: number;
-  totalPrice: number;
-  status: "confirmed" | "pending" | "cancelled" | "completed";
-  createdAt: string;
+  label: string;
+  category: "amenity" | "feature" | "naturistType";
 }
 
 export interface User {

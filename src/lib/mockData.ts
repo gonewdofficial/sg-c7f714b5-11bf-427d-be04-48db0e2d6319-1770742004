@@ -1,5 +1,11 @@
 import { Property, Review } from "@/types";
 
+// Admin managed tags would be fetched from backend
+export const adminTags = [
+  "Pool", "Spa", "Restaurant", "Bar", "Beach Access", "Gym", "Yoga Studio", "Tennis Court",
+  "Adults Only", "All-Inclusive Available", "Couples Friendly", "LGBTQ+ Friendly"
+];
+
 export const properties: Property[] = [
   {
     id: "1",

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { User, Heart, Menu } from "lucide-react";
 
@@ -7,8 +8,13 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center space-x-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
-            <span className="text-xl font-bold text-white">G</span>
+          <div className="relative h-10 w-10 overflow-hidden rounded-full">
+            <Image 
+              src="/Untitled_design_20260127_163222_0000.png" 
+              alt="GO/NEWD Logo" 
+              fill
+              className="object-cover"
+            />
           </div>
           <span className="text-xl font-bold tracking-tight">GO/NEWD</span>
         </Link>
