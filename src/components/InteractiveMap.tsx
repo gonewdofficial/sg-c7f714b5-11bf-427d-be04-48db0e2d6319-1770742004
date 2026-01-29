@@ -37,9 +37,6 @@ export function InteractiveMap({ properties, onCountryClick, selectedCountry }: 
               const countryName = geo.properties.name;
               const isSelected = selectedCountry === countryName;
               const isHovered = hoveredCountry === countryName;
-              const hasProperties = properties.some(
-                p => p.location.country.toLowerCase() === countryName.toLowerCase()
-              );
 
               return (
                 <Geography
@@ -48,30 +45,26 @@ export function InteractiveMap({ properties, onCountryClick, selectedCountry }: 
                   onMouseEnter={() => setHoveredCountry(countryName)}
                   onMouseLeave={() => setHoveredCountry(null)}
                   onClick={() => {
-                    if (hasProperties && onCountryClick) {
+                    if (onCountryClick) {
                       onCountryClick(countryName);
                     }
                   }}
                   style={{
                     default: {
-                      fill: isSelected 
-                        ? "#60A5FA" 
-                        : hasProperties 
-                        ? "#E5E7EB" 
-                        : "#F9FAFB",
+                      fill: isSelected ? "#93C5FD" : "#E5E7EB",
                       stroke: "#FFFFFF",
                       strokeWidth: 0.5,
                       outline: "none",
                     },
                     hover: {
-                      fill: hasProperties ? "#BFDBFE" : "#F9FAFB",
+                      fill: isHovered ? "#BFDBFE" : "#E5E7EB",
                       stroke: "#FFFFFF",
                       strokeWidth: 0.5,
                       outline: "none",
-                      cursor: hasProperties ? "pointer" : "default",
+                      cursor: "pointer",
                     },
                     pressed: {
-                      fill: "#60A5FA",
+                      fill: "#93C5FD",
                       stroke: "#FFFFFF",
                       strokeWidth: 0.5,
                       outline: "none",
@@ -83,20 +76,20 @@ export function InteractiveMap({ properties, onCountryClick, selectedCountry }: 
           }
         </Geographies>
 
-        {/* Property Markers */}
+        {/* Property Markers - Orange Dots */}
         {markers.map((marker) => (
           <Marker key={marker.id} coordinates={marker.coordinates}>
             <g>
               <circle
                 r={4}
-                fill="#FF6347"
+                fill="#FF8C42"
                 stroke="#FFFFFF"
                 strokeWidth={2}
                 className="animate-pulse"
               />
               <circle
                 r={8}
-                fill="#FF6347"
+                fill="#FF8C42"
                 fillOpacity={0.3}
                 className="animate-ping"
                 style={{ animationDuration: '2s' }}
@@ -110,12 +103,8 @@ export function InteractiveMap({ properties, onCountryClick, selectedCountry }: 
       <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur rounded-lg p-3 shadow-md">
         <div className="flex items-center gap-2 text-xs">
           <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded-full bg-brand animate-pulse" />
-            <span style={{ color: '#1A1A1A' }}>Properties</span>
-          </div>
-          <div className="flex items-center gap-1.5 ml-3">
-            <div className="w-3 h-3 rounded-sm bg-gray-200" />
-            <span style={{ color: '#1A1A1A' }}>Available</span>
+            <div className="w-3 h-3 rounded-full bg-[#FF8C42] animate-pulse" />
+            <span style={{ color: '#1A1A1A' }}>Naturist Locations</span>
           </div>
         </div>
       </div>

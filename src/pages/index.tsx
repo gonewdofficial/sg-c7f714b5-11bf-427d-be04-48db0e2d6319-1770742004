@@ -258,10 +258,16 @@ export default function Home() {
                 <div className="text-center py-16">
                   <MapPin className="h-16 w-16 mx-auto mb-4 text-gray-300" />
                   <h3 className="text-xl font-bold mb-2" style={{ color: '#1A1A1A' }}>
-                    No properties found
+                    {selectedCountry 
+                      ? "No naturist locations. Please try another country."
+                      : "No properties found"
+                    }
                   </h3>
                   <p className="text-gray-600 mb-6">
-                    Try adjusting your filters or search terms
+                    {selectedCountry 
+                      ? `There are currently no naturist locations listed in ${selectedCountry}.`
+                      : "Try adjusting your filters or search terms"
+                    }
                   </p>
                   <Button onClick={clearFilters} className="bg-brand hover:bg-brand/90 text-white">
                     Clear Filters
