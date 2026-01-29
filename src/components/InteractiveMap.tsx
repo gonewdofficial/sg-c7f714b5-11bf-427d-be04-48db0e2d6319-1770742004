@@ -4,6 +4,27 @@ import { Property } from "@/types";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
+// Map GeoJSON country names to our property data country names
+const countryNameMap: Record<string, string> = {
+  "United States of America": "United States",
+  "United States": "United States",
+  "USA": "United States",
+  "Spain": "Spain",
+  "France": "France",
+  "Greece": "Greece",
+  "Croatia": "Croatia",
+  "Australia": "Australia",
+  "Brazil": "Brazil",
+  "Thailand": "Thailand",
+  "Austria": "Austria",
+  "Portugal": "Portugal",
+  "Switzerland": "Switzerland",
+};
+
+const normalizeCountryName = (countryName: string): string => {
+  return countryNameMap[countryName] || countryName;
+};
+
 interface InteractiveMapProps {
   properties: Property[];
   onCountryClick?: (countryName: string) => void;
@@ -35,7 +56,8 @@ export function InteractiveMap({ properties, onCountryClick, selectedCountry }: 
           {({ geographies }) =>
             geographies.map((geo) => {
               const countryName = geo.properties.name;
-              const isSelected = selectedCountry === countryName;
+              const normalizedCountryName = normalizeCountryName(countryName);
+              const isSelected = selectedCountry === normalizedCountryName;
               const isHovered = hoveredCountry === countryName;
 
               return (

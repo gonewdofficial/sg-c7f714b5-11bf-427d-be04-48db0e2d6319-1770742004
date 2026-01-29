@@ -11,6 +11,28 @@ import { properties } from "@/lib/mockData";
 import { Search, SlidersHorizontal, MapPin, Star, X } from "lucide-react";
 import { SEO } from "@/components/SEO";
 
+// Map GeoJSON country names to our property data country names
+const countryNameMap: Record<string, string> = {
+  "United States of America": "United States",
+  "United States": "United States",
+  "USA": "United States",
+  "Spain": "Spain",
+  "France": "France",
+  "Greece": "Greece",
+  "Croatia": "Croatia",
+  "Australia": "Australia",
+  "Brazil": "Brazil",
+  "Thailand": "Thailand",
+  "Austria": "Austria",
+  "Portugal": "Portugal",
+  "Switzerland": "Switzerland",
+};
+
+// Normalize country name for consistent matching
+const normalizeCountryName = (countryName: string): string => {
+  return countryNameMap[countryName] || countryName;
+};
+
 export default function Home() {
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -30,8 +52,9 @@ export default function Home() {
 
     // Filter by country
     if (selectedCountry) {
+      const normalizedSelected = normalizeCountryName(selectedCountry);
       filtered = filtered.filter(
-        p => p.location.country.toLowerCase() === selectedCountry.toLowerCase()
+        p => normalizeCountryName(p.location.country) === normalizedSelected
       );
     }
 
@@ -72,10 +95,11 @@ export default function Home() {
   }, [selectedCountry, searchQuery, priceRange, sortBy]);
 
   const handleCountryClick = (countryName: string) => {
-    if (selectedCountry === countryName) {
+    const normalizedCountry = normalizeCountryName(countryName);
+    if (selectedCountry === normalizedCountry) {
       setSelectedCountry(null);
     } else {
-      setSelectedCountry(countryName);
+      setSelectedCountry(normalizedCountry);
     }
   };
 
