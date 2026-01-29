@@ -1,13 +1,90 @@
+import { useState, useMemo } from "react";
 import { Header } from "@/components/Header";
-import { SearchBar } from "@/components/SearchBar";
+import { InteractiveMap } from "@/components/InteractiveMap";
 import { PropertyCard } from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { Badge } from "@/components/ui/badge";
 import { properties } from "@/lib/mockData";
-import { Sparkles, Shield, Globe, Award } from "lucide-react";
+import { Search, SlidersHorizontal, MapPin, Star, X } from "lucide-react";
 import { SEO } from "@/components/SEO";
 
 export default function Home() {
-  const featuredProperties = properties.filter(p => p.featured);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [priceRange, setPriceRange] = useState<number[]>([0, 500]);
+  const [sortBy, setSortBy] = useState<string>("rating");
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Get unique countries from properties
+  const countries = useMemo(() => {
+    const countrySet = new Set(properties.map(p => p.location.country));
+    return Array.from(countrySet).sort();
+  }, []);
+
+  // Filter properties based on selections
+  const filteredProperties = useMemo(() => {
+    let filtered = properties;
+
+    // Filter by country
+    if (selectedCountry) {
+      filtered = filtered.filter(
+        p => p.location.country.toLowerCase() === selectedCountry.toLowerCase()
+      );
+    }
+
+    // Filter by search query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        p =>
+          p.name.toLowerCase().includes(query) ||
+          p.location.city.toLowerCase().includes(query) ||
+          p.location.country.toLowerCase().includes(query) ||
+          p.description.toLowerCase().includes(query)
+      );
+    }
+
+    // Filter by price range
+    filtered = filtered.filter(
+      p => p.price.perNight >= priceRange[0] && p.price.perNight <= priceRange[1]
+    );
+
+    // Sort
+    switch (sortBy) {
+      case "price-low":
+        filtered.sort((a, b) => a.price.perNight - b.price.perNight);
+        break;
+      case "price-high":
+        filtered.sort((a, b) => b.price.perNight - a.price.perNight);
+        break;
+      case "rating":
+        filtered.sort((a, b) => b.rating - a.rating);
+        break;
+      case "name":
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+    }
+
+    return filtered;
+  }, [selectedCountry, searchQuery, priceRange, sortBy]);
+
+  const handleCountryClick = (countryName: string) => {
+    if (selectedCountry === countryName) {
+      setSelectedCountry(null);
+    } else {
+      setSelectedCountry(countryName);
+    }
+  };
+
+  const clearFilters = () => {
+    setSelectedCountry(null);
+    setSearchQuery("");
+    setPriceRange([0, 500]);
+    setSortBy("rating");
+  };
 
   return (
     <>
@@ -18,124 +95,184 @@ export default function Home() {
       <div className="min-h-screen bg-white">
         <Header />
 
-        {/* Hero Section - Mobile First */}
-        <section className="relative pt-12 md:pt-20 pb-20 md:pb-32 px-4 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 opacity-40" />
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMwMDAwMDAiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDM0djItaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAgNHYyaDJ2LTJoLTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-20" />
-          
-          <div className="container mx-auto relative z-10">
-            <div className="max-w-4xl mx-auto text-center mb-8 md:mb-12">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-6 leading-tight" style={{ color: '#FF6347' }}>
-                Discover Freedom<br />in Natural Settings
+        {/* Hero Section */}
+        <section className="relative pt-8 md:pt-12 pb-8 md:pb-12 px-4">
+          <div className="container mx-auto">
+            <div className="text-center mb-6 md:mb-8">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-4" style={{ color: '#FF6347' }}>
+                Discover Your Next<br className="sm:hidden" /> Naturist Destination
               </h1>
-              <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 md:mb-8 font-light px-4" style={{ color: '#1A1A1A' }}>
-                Explore authentic naturist hotels, resorts, and retreats worldwide
+              <p className="text-base sm:text-lg md:text-xl max-w-2xl mx-auto" style={{ color: '#1A1A1A' }}>
+                Explore authentic clothing-optional resorts and hotels across the globe
               </p>
             </div>
-
-            <SearchBar />
-
-            <div className="flex flex-wrap justify-center gap-3 md:gap-4 mt-8 md:mt-12 px-4">
-              <div className="flex items-center gap-2 bg-white/80 backdrop-blur px-3 md:px-4 py-2 rounded-full shadow-md">
-                <Sparkles className="h-4 w-4 md:h-5 md:w-5 shrink-0" style={{ color: '#FF6347' }} />
-                <span className="text-xs md:text-sm font-medium whitespace-nowrap" style={{ color: '#1A1A1A' }}>500+ Properties</span>
-              </div>
-              <div className="flex items-center gap-2 bg-white/80 backdrop-blur px-3 md:px-4 py-2 rounded-full shadow-md">
-                <Shield className="h-4 w-4 md:h-5 md:w-5 shrink-0" style={{ color: '#FF6347' }} />
-                <span className="text-xs md:text-sm font-medium whitespace-nowrap" style={{ color: '#1A1A1A' }}>Verified Reviews</span>
-              </div>
-              <div className="flex items-center gap-2 bg-white/80 backdrop-blur px-3 md:px-4 py-2 rounded-full shadow-md">
-                <Globe className="h-4 w-4 md:h-5 md:w-5 shrink-0" style={{ color: '#FF6347' }} />
-                <span className="text-xs md:text-sm font-medium whitespace-nowrap" style={{ color: '#1A1A1A' }}>50+ Countries</span>
-              </div>
-            </div>
           </div>
         </section>
 
-        {/* Featured Properties - Mobile First */}
-        <section className="py-12 md:py-16 px-4">
+        {/* Interactive Map Section */}
+        <section className="px-4 pb-8">
           <div className="container mx-auto">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 md:mb-10 gap-4">
-              <div>
-                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-2" style={{ color: '#FF6347' }}>Featured Destinations</h2>
-                <p className="text-sm md:text-base" style={{ color: '#1A1A1A' }}>Handpicked premium naturist locations</p>
-              </div>
-              <Button variant="outline" className="w-full md:w-auto border-[#FF6347] hover:bg-[#FF6347] hover:text-white" style={{ color: '#FF6347' }}>
-                View All
-              </Button>
+            <div className="relative h-[400px] md:h-[500px] lg:h-[600px] w-full">
+              <InteractiveMap 
+                properties={properties} 
+                onCountryClick={handleCountryClick}
+                selectedCountry={selectedCountry}
+              />
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
-              {featuredProperties.map((property) => (
-                <PropertyCard key={property.id} property={property} />
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Why Choose Us - Mobile First */}
-        <section className="py-16 md:py-20 px-4 bg-gradient-to-b from-white to-gray-50">
-          <div className="container mx-auto">
-            <div className="text-center mb-12 md:mb-16">
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4" style={{ color: '#FF6347' }}>Why GO/NEWD?</h2>
-              <p className="text-sm md:text-base lg:text-lg" style={{ color: '#1A1A1A' }}>The trusted platform for naturist accommodations</p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-              <div className="text-center p-4 md:p-6">
-                <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: '#FFF5F3' }}>
-                  <Shield className="h-7 w-7 md:h-8 md:w-8" style={{ color: '#FF6347' }} />
-                </div>
-                <h3 className="text-lg md:text-xl font-bold mb-2" style={{ color: '#1A1A1A' }}>Verified Properties</h3>
-                <p className="text-sm md:text-base text-gray-600">All listings verified for authenticity and quality</p>
-              </div>
-
-              <div className="text-center p-4 md:p-6">
-                <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: '#FFF5F3' }}>
-                  <Award className="h-7 w-7 md:h-8 md:w-8" style={{ color: '#FF6347' }} />
-                </div>
-                <h3 className="text-lg md:text-xl font-bold mb-2" style={{ color: '#1A1A1A' }}>Real Reviews</h3>
-                <p className="text-sm md:text-base text-gray-600">Honest feedback from verified guests</p>
-              </div>
-
-              <div className="text-center p-4 md:p-6">
-                <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: '#FFF5F3' }}>
-                  <Globe className="h-7 w-7 md:h-8 md:w-8" style={{ color: '#FF6347' }} />
-                </div>
-                <h3 className="text-lg md:text-xl font-bold mb-2" style={{ color: '#1A1A1A' }}>Global Network</h3>
-                <p className="text-sm md:text-base text-gray-600">Properties in over 50 countries worldwide</p>
-              </div>
-
-              <div className="text-center p-4 md:p-6">
-                <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: '#FFF5F3' }}>
-                  <Sparkles className="h-7 w-7 md:h-8 md:w-8" style={{ color: '#FF6347' }} />
-                </div>
-                <h3 className="text-lg md:text-xl font-bold mb-2" style={{ color: '#1A1A1A' }}>Curated Selection</h3>
-                <p className="text-sm md:text-base text-gray-600">Handpicked destinations for the best experience</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA Section - Mobile First */}
-        <section className="py-16 md:py-20 px-4">
-          <div className="container mx-auto">
-            <div className="rounded-2xl md:rounded-3xl p-8 md:p-12 text-center text-white" style={{ background: 'linear-gradient(135deg, #FF6347 0%, #FF4500 100%)' }}>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">Ready for Your Next Adventure?</h2>
-              <p className="text-base md:text-lg lg:text-xl mb-6 md:mb-8 opacity-90">Explore thousands of naturist destinations worldwide</p>
-              <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
-                <Button size="lg" variant="secondary" className="text-base md:text-lg px-6 md:px-8 py-5 md:py-6 w-full sm:w-auto bg-white hover:bg-gray-100" style={{ color: '#FF6347' }}>
-                  Browse All Destinations
-                </Button>
-                <Button size="lg" variant="outline" className="text-base md:text-lg px-6 md:px-8 py-5 md:py-6 bg-transparent text-white border-white hover:bg-white/10 w-full sm:w-auto">
-                  List Your Property
+            
+            {selectedCountry && (
+              <div className="mt-4 flex items-center justify-center gap-2">
+                <Badge className="bg-brand text-white px-4 py-2 text-sm">
+                  <MapPin className="h-4 w-4 mr-2" />
+                  {selectedCountry}
+                </Badge>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedCountry(null)}
+                  className="hover:bg-gray-100"
+                >
+                  <X className="h-4 w-4" />
                 </Button>
               </div>
+            )}
+          </div>
+        </section>
+
+        {/* Search and Filter Section */}
+        <section className="px-4 py-8 bg-gray-50">
+          <div className="container mx-auto">
+            <div className="max-w-6xl mx-auto">
+              {/* Search Bar */}
+              <div className="flex flex-col sm:flex-row gap-3 mb-6">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input
+                    type="text"
+                    placeholder="Search by name, city, or description..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 h-12 text-base"
+                  />
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="h-12 px-6 border-brand text-brand hover:bg-brand hover:text-white"
+                >
+                  <SlidersHorizontal className="h-5 w-5 mr-2" />
+                  Filters
+                </Button>
+              </div>
+
+              {/* Filters Panel */}
+              {showFilters && (
+                <div className="bg-white rounded-lg p-6 mb-6 shadow-md space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Country Filter */}
+                    <div>
+                      <label className="block text-sm font-semibold mb-2" style={{ color: '#1A1A1A' }}>
+                        Country
+                      </label>
+                      <Select value={selectedCountry || ""} onValueChange={(value) => setSelectedCountry(value || null)}>
+                        <SelectTrigger className="h-11">
+                          <SelectValue placeholder="All Countries" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">All Countries</SelectItem>
+                          {countries.map((country) => (
+                            <SelectItem key={country} value={country}>
+                              {country}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Sort By */}
+                    <div>
+                      <label className="block text-sm font-semibold mb-2" style={{ color: '#1A1A1A' }}>
+                        Sort By
+                      </label>
+                      <Select value={sortBy} onValueChange={setSortBy}>
+                        <SelectTrigger className="h-11">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="rating">Highest Rated</SelectItem>
+                          <SelectItem value="price-low">Price: Low to High</SelectItem>
+                          <SelectItem value="price-high">Price: High to Low</SelectItem>
+                          <SelectItem value="name">Name: A to Z</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Price Range */}
+                    <div>
+                      <label className="block text-sm font-semibold mb-2" style={{ color: '#1A1A1A' }}>
+                        Price Range: €{priceRange[0]} - €{priceRange[1]}
+                      </label>
+                      <Slider
+                        min={0}
+                        max={500}
+                        step={10}
+                        value={priceRange}
+                        onValueChange={setPriceRange}
+                        className="mt-4"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end">
+                    <Button
+                      variant="ghost"
+                      onClick={clearFilters}
+                      className="text-brand hover:bg-red-50"
+                    >
+                      Clear All Filters
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Results Header */}
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold" style={{ color: '#FF6347' }}>
+                    {selectedCountry ? `Properties in ${selectedCountry}` : 'All Properties'}
+                  </h2>
+                  <p className="text-sm mt-1" style={{ color: '#1A1A1A' }}>
+                    {filteredProperties.length} {filteredProperties.length === 1 ? 'property' : 'properties'} found
+                  </p>
+                </div>
+              </div>
+
+              {/* Property Grid */}
+              {filteredProperties.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredProperties.map((property) => (
+                    <PropertyCard key={property.id} property={property} />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-16">
+                  <MapPin className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+                  <h3 className="text-xl font-bold mb-2" style={{ color: '#1A1A1A' }}>
+                    No properties found
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    Try adjusting your filters or search terms
+                  </p>
+                  <Button onClick={clearFilters} className="bg-brand hover:bg-brand/90 text-white">
+                    Clear Filters
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </section>
 
-        {/* Footer - Mobile First */}
+        {/* Footer */}
         <footer className="py-10 md:py-12 px-4" style={{ backgroundColor: '#1A1A1A', color: '#FFFFFF' }}>
           <div className="container mx-auto">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-8">

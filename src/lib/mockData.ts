@@ -164,6 +164,157 @@ export const properties: Property[] = [
     capacity: { guests: 4, rooms: 2 },
     availability: true,
     featured: true
+  },
+  {
+    id: "7",
+    name: "Sunshine Coast Naturist Resort",
+    description: "Beachfront naturist paradise with year-round sunshine. Perfect for water sports enthusiasts and beach lovers.",
+    location: {
+      city: "Gold Coast",
+      country: "Australia",
+      region: "Queensland",
+      address: "Pacific Highway 456",
+      coordinates: { lat: -28.0167, lng: 153.4000 }
+    },
+    images: [
+      "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800",
+      "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=800"
+    ],
+    price: { perNight: 195, perWeek: 1250, currency: "AUD" },
+    rating: 4.7,
+    reviewCount: 234,
+    propertyType: "resort",
+    naturistType: "fully-naturist",
+    amenities: ["Beach Access", "Pool", "Surfing", "Restaurant", "Bar", "Spa"],
+    features: ["Beachfront", "Water Sports", "Fitness Center"],
+    capacity: { guests: 250, rooms: 120 },
+    availability: true,
+    featured: true
+  },
+  {
+    id: "8",
+    name: "Amazon Rainforest Eco-Lodge",
+    description: "Unique naturist eco-lodge deep in the Amazon rainforest. Connect with nature in its purest form.",
+    location: {
+      city: "Manaus",
+      country: "Brazil",
+      region: "Amazonas",
+      address: "Rio Negro",
+      coordinates: { lat: -3.1190, lng: -60.0217 }
+    },
+    images: [
+      "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800",
+      "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=800"
+    ],
+    price: { perNight: 180, perWeek: 1150, currency: "BRL" },
+    rating: 4.8,
+    reviewCount: 145,
+    propertyType: "eco-lodge",
+    naturistType: "fully-naturist",
+    amenities: ["Guided Tours", "Restaurant", "Wildlife Watching", "Hammock Garden"],
+    features: ["Eco-Friendly", "Adventure", "Remote", "Unique Experience"],
+    capacity: { guests: 40, rooms: 18 },
+    availability: true
+  },
+  {
+    id: "9",
+    name: "Adriatic Pearl Naturist Beach Club",
+    description: "Stunning naturist resort on the crystal-clear Adriatic Sea. Mediterranean charm meets modern luxury.",
+    location: {
+      city: "Split",
+      country: "Croatia",
+      region: "Dalmatia",
+      address: "Obala 88",
+      coordinates: { lat: 43.5081, lng: 16.4402 }
+    },
+    images: [
+      "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=800",
+      "https://images.unsplash.com/photo-1567179679742-ba3d993d4876?w=800"
+    ],
+    price: { perNight: 165, perWeek: 1050, currency: "EUR" },
+    rating: 4.6,
+    reviewCount: 298,
+    propertyType: "beach-club",
+    naturistType: "clothing-optional",
+    amenities: ["Private Beach", "Pool", "Restaurant", "Bar", "Diving Center", "Marina"],
+    features: ["Beachfront", "Water Sports", "Sailing"],
+    capacity: { guests: 180, rooms: 75 },
+    availability: true
+  },
+  {
+    id: "10",
+    name: "Thai Paradise Naturist Villa",
+    description: "Tropical naturist villas surrounded by lush gardens. Experience authentic Thai hospitality in complete freedom.",
+    location: {
+      city: "Phuket",
+      country: "Thailand",
+      region: "Phuket Province",
+      address: "Patong Beach Road 234",
+      coordinates: { lat: 7.8804, lng: 98.3923 }
+    },
+    images: [
+      "https://images.unsplash.com/photo-1573790387438-4da905039392?w=800",
+      "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800"
+    ],
+    price: { perNight: 120, perWeek: 750, currency: "THB" },
+    rating: 4.5,
+    reviewCount: 187,
+    propertyType: "villa",
+    naturistType: "clothing-optional",
+    amenities: ["Pool", "Thai Restaurant", "Massage", "Garden", "Beach Shuttle"],
+    features: ["Tropical Garden", "Cultural Experience", "Affordable Luxury"],
+    capacity: { guests: 8, rooms: 4 },
+    availability: true
+  },
+  {
+    id: "11",
+    name: "Desert Oasis Naturist Retreat",
+    description: "Unique desert naturist experience with stunning views and stargazing opportunities. Modern comfort in a wild setting.",
+    location: {
+      city: "Palm Springs",
+      country: "United States",
+      region: "California",
+      address: "Desert View Drive 567",
+      coordinates: { lat: 33.8303, lng: -116.5453 }
+    },
+    images: [
+      "https://images.unsplash.com/photo-1544124499-58912cbddaad?w=800",
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800"
+    ],
+    price: { perNight: 210, perWeek: 1350, currency: "USD" },
+    rating: 4.7,
+    reviewCount: 203,
+    propertyType: "resort",
+    naturistType: "fully-naturist",
+    amenities: ["Pool", "Hot Tub", "Restaurant", "Spa", "Yoga Studio", "Observatory"],
+    features: ["Desert Views", "Stargazing", "Wellness Focus"],
+    capacity: { guests: 100, rooms: 45 },
+    availability: true
+  },
+  {
+    id: "12",
+    name: "Alpine Lakes Naturist Chalet",
+    description: "Cozy naturist chalets overlooking pristine alpine lakes. Perfect for hiking, swimming, and mountain adventures.",
+    location: {
+      city: "Interlaken",
+      country: "Switzerland",
+      region: "Bernese Oberland",
+      address: "Seestrasse 99",
+      coordinates: { lat: 46.6863, lng: 7.8632 }
+    },
+    images: [
+      "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=800",
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800"
+    ],
+    price: { perNight: 195, perWeek: 1250, currency: "CHF" },
+    rating: 4.8,
+    reviewCount: 167,
+    propertyType: "chalet",
+    naturistType: "fully-naturist",
+    amenities: ["Sauna", "Lake Access", "Hiking Trails", "Restaurant", "Mountain Bike Rental"],
+    features: ["Mountain Views", "Lake Activities", "Eco-Friendly"],
+    capacity: { guests: 50, rooms: 22 },
+    availability: true
   }
 ];
 

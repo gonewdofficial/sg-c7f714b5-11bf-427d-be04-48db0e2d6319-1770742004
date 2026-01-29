@@ -70,11 +70,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
           {property.description}
         </p>
 
-        <div className="flex items-center justify-between pt-4 border-t gap-4">
-          <div className="min-w-0">
-            <span className="text-xl md:text-2xl font-bold" style={{ color: '#1A1A1A' }}>€{property.price.perNight}</span>
-            <span className="text-xs md:text-sm text-gray-600"> / night</span>
-          </div>
+        <div className="flex items-center justify-end pt-4 border-t">
           <Link href={`/property/${property.id}`}>
             <Button className="text-xs md:text-sm px-3 md:px-4 h-9 md:h-10 text-white hover:opacity-90" style={{ backgroundColor: '#FF6347' }}>
               View Details
