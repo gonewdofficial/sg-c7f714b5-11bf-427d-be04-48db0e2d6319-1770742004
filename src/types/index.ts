@@ -20,7 +20,7 @@ export interface Property {
   };
   rating: number;
   reviewCount: number;
-  propertyType: "hotel" | "resort" | "campsite" | "villa" | "bungalow";
+  propertyType: "hotel" | "resort" | "campsite" | "villa" | "bungalow" | "eco-lodge" | "beach-club" | "chalet";
   naturistType: "clothing-optional" | "fully-naturist" | "naturist-friendly";
   amenities: string[];
   features: string[]; // Admin managed tags
