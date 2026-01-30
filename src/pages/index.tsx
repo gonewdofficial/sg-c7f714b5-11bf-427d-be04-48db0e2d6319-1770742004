@@ -151,7 +151,7 @@ export default function HomePage() {
                   location: {
                     country: venue.country,
                     city: venue.location,
-                    coordinates: [0, 0] // Will need to add coordinates to database
+                    coordinates: [0, 0] // Placeholder coordinates
                   },
                   accommodationType: venue.accommodation_type,
                   rating: venue.average_rating || 0,
@@ -160,7 +160,25 @@ export default function HomePage() {
                   description: venue.description || "",
                   pricePerNight: 0,
                   amenities: venue.facilities || [],
-                  slug: venue.slug
+                  slug: venue.slug,
+                  // Add missing required fields with defaults
+                  price: {
+                    perNight: 0,
+                    currency: "USD"
+                  },
+                  capacity: {
+                    guests: 0,
+                    rooms: 0
+                  },
+                  availability: true,
+                  propertyType: venue.accommodation_type as any, // Cast to any to avoid strict union type mismatch for now
+                  naturistType: "clothing-optional", // Default value
+                  features: venue.facilities || [],
+                  contact: {
+                    email: "",
+                    phone: "",
+                    website: venue.website_url || ""
+                  }
                 }))}
                 selectedCountry={selectedCountry !== "all" ? selectedCountry : null}
               />
