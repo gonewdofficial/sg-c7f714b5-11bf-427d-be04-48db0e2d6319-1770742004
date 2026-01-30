@@ -253,7 +253,7 @@ export default function Home() {
                         lng: venue.lng || 0
                       }
                     },
-                    type: venue.accommodation_type as "resort" | "hotel" | "villa" | "campsite",
+                    propertyType: venue.accommodation_type as "resort" | "hotel" | "villa" | "campsite",
                     naturistType: "clothing-optional" as const,
                     price: {
                       perNight: 0,
