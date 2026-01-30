@@ -24,10 +24,11 @@ export default function AdminDashboard() {
   const [editingVenue, setEditingVenue] = useState<Venue | null>(null);
   const [formData, setFormData] = useState({
     name: "",
+    location: "",
     country: "",
     accommodation_type: "",
     website_url: "",
-    booking_url: "",
+    booking_link: "",
     description: "",
     facilities: "",
   });
@@ -65,10 +66,11 @@ export default function AdminDashboard() {
       setEditingVenue(venue);
       setFormData({
         name: venue.name,
+        location: venue.location,
         country: venue.country,
         accommodation_type: venue.accommodation_type,
         website_url: venue.website_url || "",
-        booking_url: venue.booking_url || "",
+        booking_link: venue.booking_link || "",
         description: venue.description || "",
         facilities: Array.isArray(venue.facilities) ? venue.facilities.join(", ") : "",
       });
@@ -76,10 +78,11 @@ export default function AdminDashboard() {
       setEditingVenue(null);
       setFormData({
         name: "",
+        location: "",
         country: "",
         accommodation_type: "",
         website_url: "",
-        booking_url: "",
+        booking_link: "",
         description: "",
         facilities: "",
       });
@@ -102,10 +105,11 @@ export default function AdminDashboard() {
 
     const venueData = {
       name: formData.name,
+      location: formData.location,
       country: formData.country,
       accommodation_type: formData.accommodation_type,
       website_url: formData.website_url || null,
-      booking_url: formData.booking_url || null,
+      booking_link: formData.booking_link || null,
       description: formData.description || null,
       facilities: facilitiesArray,
     };
@@ -211,6 +215,18 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="space-y-2">
+                      <Label htmlFor="location">Location *</Label>
+                      <Input
+                        id="location"
+                        value={formData.location}
+                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                        required
+                        disabled={submitting}
+                        placeholder="e.g., City, Region"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
                       <Label htmlFor="country">Country *</Label>
                       <Input
                         id="country"
@@ -247,12 +263,12 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="booking_url">Booking URL</Label>
+                      <Label htmlFor="booking_link">Booking Link</Label>
                       <Input
-                        id="booking_url"
+                        id="booking_link"
                         type="url"
-                        value={formData.booking_url}
-                        onChange={(e) => setFormData({ ...formData, booking_url: e.target.value })}
+                        value={formData.booking_link}
+                        onChange={(e) => setFormData({ ...formData, booking_link: e.target.value })}
                         disabled={submitting}
                         placeholder="https://booking.example.com"
                       />
