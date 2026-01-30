@@ -125,11 +125,18 @@ export function InteractiveMap({ properties, onCountryClick, selectedCountry }: 
 
       {/* Legend */}
       <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur rounded-lg p-3 shadow-md">
-        <div className="flex items-center gap-2 text-xs">
-          <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded-full bg-[#FF8C42] animate-pulse" />
-            <span style={{ color: '#1A1A1A' }}>Naturist Locations</span>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2 text-xs">
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-full bg-[#FF8C42] animate-pulse" />
+              <span style={{ color: '#1A1A1A' }}>Locations</span>
+            </div>
           </div>
+          {selectedCountry && (
+            <div className="text-xs font-medium text-blue-600 mt-1">
+              Showing: {selectedCountry}
+            </div>
+          )}
         </div>
       </div>
 

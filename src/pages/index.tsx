@@ -89,7 +89,7 @@ export default function Home() {
         <section className="container mx-auto px-4 mb-12">
           <div className="bg-white rounded-xl shadow-lg p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Explore Locations on Map</h2>
-            <div className="w-full h-[500px] rounded-lg overflow-hidden border border-gray-200">
+            <div className="w-full h-[300px] md:h-[500px] rounded-lg overflow-hidden border border-gray-200">
               <InteractiveMap
                 properties={filteredVenues.map(venue => ({
                   id: venue.id,
@@ -225,11 +225,6 @@ export default function Home() {
                     capacity: { guests: 0, rooms: 0 },
                     availability: true,
                     features: venue.facilities || [],
-                    contact: {
-                      email: "",
-                      phone: "",
-                      website: venue.website_url || "",
-                    }
                   }}
                   onClick={() => handlePropertyClick(venue.slug)}
                 />

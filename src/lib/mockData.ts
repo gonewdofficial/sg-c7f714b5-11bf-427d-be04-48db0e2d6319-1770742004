@@ -10,6 +10,7 @@ export const properties: Property[] = [
   {
     id: "1",
     name: "Azure Naturist Resort & Spa",
+    slug: "azure-naturist-resort-spa",
     description: "Luxury naturist resort nestled in the Mediterranean coast. Experience ultimate freedom and relaxation with our world-class spa, private beaches, and gourmet dining.",
     location: {
       city: "Costa del Sol",
@@ -38,6 +39,7 @@ export const properties: Property[] = [
   {
     id: "2",
     name: "Hidden Valley Naturist Hotel",
+    slug: "hidden-valley-naturist-hotel",
     description: "Peaceful boutique hotel surrounded by nature. Perfect for those seeking tranquility and authentic naturist lifestyle experience.",
     location: {
       city: "Provence",
@@ -65,6 +67,7 @@ export const properties: Property[] = [
   {
     id: "3",
     name: "Sunset Bay Clothing-Optional Resort",
+    slug: "sunset-bay-clothing-optional-resort",
     description: "Flexible resort offering both textile and clothing-optional areas. Stunning sunset views and premium facilities for all preferences.",
     location: {
       city: "Miami",
@@ -92,6 +95,7 @@ export const properties: Property[] = [
   {
     id: "4",
     name: "Mountain View Naturist Retreat",
+    slug: "mountain-view-naturist-retreat",
     description: "Alpine naturist retreat with breathtaking mountain views. Ideal for hiking enthusiasts and nature lovers.",
     location: {
       city: "Innsbruck",
@@ -117,6 +121,7 @@ export const properties: Property[] = [
   {
     id: "5",
     name: "Tropical Paradise Naturist Camp",
+    slug: "tropical-paradise-naturist-camp",
     description: "Affordable naturist camping experience in a tropical setting. Bungalows and camping spots available with shared facilities.",
     location: {
       city: "Algarve",
@@ -142,6 +147,7 @@ export const properties: Property[] = [
   {
     id: "6",
     name: "Serenity Naturist Villa Collection",
+    slug: "serenity-naturist-villa-collection",
     description: "Exclusive private villas for intimate naturist getaways. Each villa with private pool and complete privacy.",
     location: {
       city: "Santorini",
@@ -168,6 +174,7 @@ export const properties: Property[] = [
   {
     id: "7",
     name: "Sunshine Coast Naturist Resort",
+    slug: "sunshine-coast-naturist-resort",
     description: "Beachfront naturist paradise with year-round sunshine. Perfect for water sports enthusiasts and beach lovers.",
     location: {
       city: "Gold Coast",
@@ -194,6 +201,7 @@ export const properties: Property[] = [
   {
     id: "8",
     name: "Amazon Rainforest Eco-Lodge",
+    slug: "amazon-rainforest-eco-lodge",
     description: "Unique naturist eco-lodge deep in the Amazon rainforest. Connect with nature in its purest form.",
     location: {
       city: "Manaus",
@@ -219,6 +227,7 @@ export const properties: Property[] = [
   {
     id: "9",
     name: "Adriatic Pearl Naturist Beach Club",
+    slug: "adriatic-pearl-naturist-beach-club",
     description: "Stunning naturist resort on the crystal-clear Adriatic Sea. Mediterranean charm meets modern luxury.",
     location: {
       city: "Split",
@@ -244,6 +253,7 @@ export const properties: Property[] = [
   {
     id: "10",
     name: "Thai Paradise Naturist Villa",
+    slug: "thai-paradise-naturist-villa",
     description: "Tropical naturist villas surrounded by lush gardens. Experience authentic Thai hospitality in complete freedom.",
     location: {
       city: "Phuket",
@@ -269,6 +279,7 @@ export const properties: Property[] = [
   {
     id: "11",
     name: "Desert Oasis Naturist Retreat",
+    slug: "desert-oasis-naturist-retreat",
     description: "Unique desert naturist experience with stunning views and stargazing opportunities. Modern comfort in a wild setting.",
     location: {
       city: "Palm Springs",
@@ -294,6 +305,7 @@ export const properties: Property[] = [
   {
     id: "12",
     name: "Alpine Lakes Naturist Chalet",
+    slug: "alpine-lakes-naturist-chalet",
     description: "Cozy naturist chalets overlooking pristine alpine lakes. Perfect for hiking, swimming, and mountain adventures.",
     location: {
       city: "Interlaken",

@@ -10,14 +10,16 @@ export function Header() {
       <div className="container mx-auto px-4">
         <div className="flex h-20 items-center justify-between">
           <Link href="/" className="flex items-center">
-            <Image
-              src="/Untitled_design_20260127_163212_0000.png"
-              alt="Go/Newd Logo"
-              width={180}
-              height={60}
-              className="object-contain"
-              priority
-            />
+            <div className="relative h-12 w-auto aspect-[3/1]">
+              <Image
+                src="/Untitled_design_20260127_163212_0000.png"
+                alt="Go/Newd Logo"
+                width={180}
+                height={60}
+                className="object-contain"
+                priority
+              />
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
