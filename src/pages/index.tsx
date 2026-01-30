@@ -85,7 +85,7 @@ export default function Home() {
           </p>
         </section>
 
-        {/* Map Section - RIGHT AFTER HEADLINE */}
+        {/* Interactive Map Section - Directly below Hero */}
         <section className="container mx-auto px-4 mb-12">
           <div className="bg-white rounded-xl shadow-lg p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Explore Locations on Map</h2>
@@ -104,7 +104,7 @@ export default function Home() {
                   slug: venue.slug,
                   capacity: 0,
                   availability: true,
-                  propertyType: venue.accommodation_type || "Resort",
+                  propertyType: (venue.accommodation_type as any) || "resort",
                   naturistType: "Clothing Optional",
                   features: venue.facilities || [],
                   contact: {
@@ -207,13 +207,30 @@ export default function Home() {
                   property={{
                     id: venue.id,
                     name: venue.name,
-                    location: { country: venue.country, address: venue.location, region: "" },
+                    location: { 
+                      city: "",
+                      country: venue.country, 
+                      address: venue.location, 
+                      region: "" 
+                    },
                     images: [],
-                    price: { amount: 0, currency: "USD", period: "night" },
+                    price: { perNight: 0, currency: "USD", period: "night" },
                     rating: venue.average_rating || 0,
                     reviews: venue.total_reviews || 0,
+                    reviewCount: venue.total_reviews || 0,
                     amenities: venue.facilities || [],
                     slug: venue.slug,
+                    propertyType: (venue.accommodation_type as any) || "resort",
+                    naturistType: "Clothing Optional",
+                    description: venue.description || "",
+                    capacity: 0,
+                    availability: true,
+                    features: venue.facilities || [],
+                    contact: {
+                      email: "",
+                      phone: "",
+                      website: venue.website_url || "",
+                    }
                   }}
                   onClick={() => handlePropertyClick(venue.slug)}
                 />
