@@ -35,12 +35,14 @@ export function InteractiveMap({ properties, onCountryClick, selectedCountry }: 
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
 
   // Get unique coordinates for markers
-  const markers = properties.map(property => ({
-    coordinates: property.location.coordinates,
-    name: property.name,
-    country: property.location.country,
-    id: property.id,
-  }));
+  const markers = properties
+    .filter(p => p.location.coordinates && (p.location.coordinates.lat !== 0 || p.location.coordinates.lng !== 0))
+    .map(property => ({
+      coordinates: [property.location.coordinates!.lng, property.location.coordinates!.lat] as [number, number],
+      name: property.name,
+      country: property.location.country,
+      id: property.id,
+    }));
 
   return (
     <div className="w-full h-full bg-gray-50 rounded-2xl overflow-hidden shadow-lg">

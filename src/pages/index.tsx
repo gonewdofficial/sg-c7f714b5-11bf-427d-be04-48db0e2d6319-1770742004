@@ -151,7 +151,8 @@ export default function HomePage() {
                   location: {
                     country: venue.country,
                     city: venue.location,
-                    coordinates: [0, 0] // Placeholder coordinates
+                    region: "",
+                    coordinates: { lat: 0, lng: 0 }
                   },
                   accommodationType: venue.accommodation_type,
                   rating: venue.average_rating || 0,
