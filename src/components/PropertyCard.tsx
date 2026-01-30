@@ -8,11 +8,15 @@ import { Star, Heart, MapPin } from "lucide-react";
 
 interface PropertyCardProps {
   property: Property;
+  onClick?: () => void;
 }
 
-export function PropertyCard({ property }: PropertyCardProps) {
+export function PropertyCard({ property, onClick }: PropertyCardProps) {
   return (
-    <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 w-full">
+    <Card 
+      className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 w-full"
+      onClick={onClick}
+    >
       <Link href={`/property/${property.id}`}>
         <div className="relative h-48 md:h-64 overflow-hidden w-full">
           <Image

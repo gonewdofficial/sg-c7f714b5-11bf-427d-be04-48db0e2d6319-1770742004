@@ -1,148 +1,132 @@
-import { useState } from "react";
-import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
-import { Property } from "@/types";
-
-const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
-
-// Map GeoJSON country names to our property data country names
-const countryNameMap: Record<string, string> = {
-  "United States of America": "United States",
-  "United States": "United States",
-  "USA": "United States",
-  "Spain": "Spain",
-  "France": "France",
-  "Greece": "Greece",
-  "Croatia": "Croatia",
-  "Australia": "Australia",
-  "Brazil": "Brazil",
-  "Thailand": "Thailand",
-  "Austria": "Austria",
-  "Portugal": "Portugal",
-  "Switzerland": "Switzerland",
-};
-
-const normalizeCountryName = (countryName: string): string => {
-  return countryNameMap[countryName] || countryName;
-};
+import { useEffect, useRef, useState } from "react";
+import type { Property } from "@/types";
 
 interface InteractiveMapProps {
   properties: Property[];
-  onCountryClick?: (countryName: string) => void;
-  selectedCountry?: string | null;
+  onCountryClick?: (country: string) => void;
+  selectedCountries?: string[];
 }
 
-export function InteractiveMap({ properties, onCountryClick, selectedCountry }: InteractiveMapProps) {
-  const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
+export function InteractiveMap({ properties, onCountryClick, selectedCountries = [] }: InteractiveMapProps) {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
 
-  // Get unique coordinates for markers
   const markers = properties
-    .filter(p => p.location.coordinates && (p.location.coordinates.lat !== 0 || p.location.coordinates.lng !== 0))
+    .filter(p => p.location.coordinates.lat !== 0 && p.location.coordinates.lng !== 0)
     .map(property => ({
-      coordinates: [property.location.coordinates!.lng, property.location.coordinates!.lat] as [number, number],
+      lat: property.location.coordinates.lat,
+      lng: property.location.coordinates.lng,
       name: property.name,
       country: property.location.country,
       id: property.id,
     }));
 
-  return (
-    <div className="w-full h-full bg-gray-50 rounded-2xl overflow-hidden shadow-lg">
-      <ComposableMap
-        projection="geoMercator"
-        projectionConfig={{
-          scale: 140,
-          center: [10, 20],
-        }}
-        className="w-full h-full"
-      >
-        <Geographies geography={geoUrl}>
-          {({ geographies }) =>
-            geographies.map((geo) => {
-              const countryName = geo.properties.name;
-              const normalizedCountryName = normalizeCountryName(countryName);
-              const isSelected = selectedCountry === normalizedCountryName;
-              const isHovered = hoveredCountry === countryName;
+  const countriesWithVenues = Array.from(new Set(properties.map(p => p.location.country)));
 
-              return (
-                <Geography
-                  key={geo.rsmKey}
-                  geography={geo}
-                  onMouseEnter={() => setHoveredCountry(countryName)}
-                  onMouseLeave={() => setHoveredCountry(null)}
-                  onClick={() => {
-                    if (onCountryClick) {
-                      onCountryClick(countryName);
-                    }
-                  }}
-                  style={{
-                    default: {
-                      fill: isSelected ? "#93C5FD" : "#E5E7EB",
-                      stroke: "#FFFFFF",
-                      strokeWidth: 0.5,
-                      outline: "none",
-                    },
-                    hover: {
-                      fill: isHovered ? "#BFDBFE" : "#E5E7EB",
-                      stroke: "#FFFFFF",
-                      strokeWidth: 0.5,
-                      outline: "none",
-                      cursor: "pointer",
-                    },
-                    pressed: {
-                      fill: "#93C5FD",
-                      stroke: "#FFFFFF",
-                      strokeWidth: 0.5,
-                      outline: "none",
-                    },
-                  }}
-                />
-              );
-            })
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    const svg = mapRef.current.querySelector("svg");
+    if (!svg) return;
+
+    const countries = svg.querySelectorAll("path");
+    countries.forEach(path => {
+      const countryName = path.getAttribute("data-name") || "";
+      
+      if (countriesWithVenues.includes(countryName)) {
+        path.style.fill = selectedCountries.includes(countryName) ? "#FF6B35" : "#93C5FD";
+        path.style.cursor = "pointer";
+        path.style.transition = "fill 0.3s ease";
+
+        path.addEventListener("mouseenter", () => {
+          if (!selectedCountries.includes(countryName)) {
+            path.style.fill = "#FDBA74";
           }
-        </Geographies>
+        });
 
-        {/* Property Markers - Orange Dots */}
-        {markers.map((marker) => (
-          <Marker key={marker.id} coordinates={marker.coordinates}>
-            <g>
-              <circle
-                r={4}
-                fill="#FF8C42"
-                stroke="#FFFFFF"
-                strokeWidth={2}
-                className="animate-pulse"
-              />
-              <circle
-                r={8}
-                fill="#FF8C42"
-                fillOpacity={0.3}
-                className="animate-ping"
-                style={{ animationDuration: '2s' }}
-              />
-            </g>
-          </Marker>
+        path.addEventListener("mouseleave", () => {
+          if (!selectedCountries.includes(countryName)) {
+            path.style.fill = "#93C5FD";
+          }
+        });
+
+        path.addEventListener("click", () => {
+          if (onCountryClick) {
+            onCountryClick(countryName);
+          }
+        });
+      } else {
+        path.style.fill = "#E5E7EB";
+      }
+    });
+  }, [countriesWithVenues, onCountryClick, selectedCountries]);
+
+  return (
+    <div className="relative w-full h-full" ref={mapRef}>
+      <svg
+        viewBox="0 0 1000 500"
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-full h-full"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <defs>
+          <style>{`
+            .country { stroke: #fff; stroke-width: 0.5; }
+            .marker { animation: pulse 2s infinite; }
+            @keyframes pulse {
+              0%, 100% { opacity: 1; transform: scale(1); }
+              50% { opacity: 0.7; transform: scale(1.1); }
+            }
+          `}</style>
+        </defs>
+
+        <rect width="1000" height="500" fill="#E0F2FE" />
+
+        <g id="countries">
+          <path className="country" data-name="France" d="M 480 180 L 490 175 L 495 180 L 490 190 L 485 195 L 475 190 Z" />
+          <path className="country" data-name="Spain" d="M 460 210 L 475 205 L 485 210 L 480 225 L 465 230 L 455 220 Z" />
+          <path className="country" data-name="Italy" d="M 510 200 L 520 195 L 525 210 L 520 230 L 510 235 L 505 220 Z" />
+          <path className="country" data-name="Greece" d="M 540 220 L 550 215 L 555 225 L 550 235 L 540 230 Z" />
+          <path className="country" data-name="Croatia" d="M 520 185 L 530 180 L 535 190 L 530 200 L 520 195 Z" />
+          <path className="country" data-name="Germany" d="M 500 160 L 515 155 L 520 165 L 515 175 L 500 170 Z" />
+          <path className="country" data-name="Portugal" d="M 440 215 L 455 210 L 460 220 L 455 230 L 440 225 Z" />
+          <path className="country" data-name="Netherlands" d="M 490 150 L 500 145 L 505 155 L 500 160 L 490 155 Z" />
+          <path className="country" data-name="United Kingdom" d="M 470 140 L 480 135 L 485 145 L 480 155 L 470 150 Z" />
+          <path className="country" data-name="Turkey" d="M 560 210 L 580 205 L 590 215 L 585 225 L 565 220 Z" />
+        </g>
+
+        {markers.map((marker, index) => (
+          <g
+            key={`${marker.id}-${index}`}
+            className="marker cursor-pointer"
+            onClick={() => {
+              const property = properties.find(p => p.id === marker.id);
+              if (property) setSelectedProperty(property);
+            }}
+          >
+            <circle
+              cx={marker.lng * 5 + 200}
+              cy={marker.lat * 3.5 + 100}
+              r="6"
+              fill="#FF6B35"
+              stroke="white"
+              strokeWidth="2"
+            />
+          </g>
         ))}
-      </ComposableMap>
+      </svg>
 
-      {/* Legend */}
-      <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur rounded-lg p-3 shadow-md">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2 text-xs">
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-[#FF8C42] animate-pulse" />
-              <span style={{ color: '#1A1A1A' }}>Locations</span>
-            </div>
-          </div>
-          {selectedCountry && (
-            <div className="text-xs font-medium text-blue-600 mt-1">
-              Showing: {selectedCountry}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {hoveredCountry && (
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-white/90 backdrop-blur rounded-lg px-4 py-2 shadow-md">
-          <p className="text-sm font-semibold" style={{ color: '#FF6347' }}>{hoveredCountry}</p>
+      {selectedProperty && (
+        <div className="absolute top-4 right-4 bg-white p-4 rounded-lg shadow-xl max-w-xs z-10">
+          <button
+            onClick={() => setSelectedProperty(null)}
+            className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+          >
+            ✕
+          </button>
+          <h3 className="font-bold text-lg mb-2">{selectedProperty.name}</h3>
+          <p className="text-sm text-gray-600 mb-1">📍 {selectedProperty.location.country}</p>
+          <p className="text-sm text-gray-600">⭐ {selectedProperty.rating.toFixed(1)} ({selectedProperty.reviewCount} reviews)</p>
         </div>
       )}
     </div>
