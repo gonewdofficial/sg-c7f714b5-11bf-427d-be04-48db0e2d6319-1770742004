@@ -100,6 +100,8 @@ export type Database = {
           description: string | null
           facilities: string[] | null
           id: string
+          lat: number | null
+          lng: number | null
           location: string
           name: string
           slug: string
@@ -116,6 +118,8 @@ export type Database = {
           description?: string | null
           facilities?: string[] | null
           id?: string
+          lat?: number | null
+          lng?: number | null
           location: string
           name: string
           slug: string
@@ -132,6 +136,8 @@ export type Database = {
           description?: string | null
           facilities?: string[] | null
           id?: string
+          lat?: number | null
+          lng?: number | null
           location?: string
           name?: string
           slug?: string

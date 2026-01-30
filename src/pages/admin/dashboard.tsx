@@ -29,6 +29,8 @@ export default function AdminDashboard() {
     accommodation_type: "",
     website_url: "",
     booking_link: "",
+    lat: "",
+    lng: "",
     description: "",
     facilities: "",
   });
@@ -98,40 +100,35 @@ export default function AdminDashboard() {
     setSuccess("");
     setSubmitting(true);
 
-    const facilitiesArray = formData.facilities
-      .split(",")
-      .map((f) => f.trim())
-      .filter((f) => f.length > 0);
+    try {
+      const venueData = {
+        ...formData,
+        facilities: formData.facilities.split(",").map((f) => f.trim()).filter(Boolean),
+        lat: formData.lat ? parseFloat(formData.lat) : null,
+        lng: formData.lng ? parseFloat(formData.lng) : null,
+      };
 
-    const venueData = {
-      name: formData.name,
-      location: formData.location,
-      country: formData.country,
-      accommodation_type: formData.accommodation_type,
-      website_url: formData.website_url || null,
-      booking_link: formData.booking_link || null,
-      description: formData.description || null,
-      facilities: facilitiesArray,
-    };
-
-    if (editingVenue) {
-      const { error: updateError } = await updateVenue(editingVenue.id, venueData);
-      if (updateError) {
-        setError(updateError);
+      if (editingVenue) {
+        const { error: updateError } = await updateVenue(editingVenue.id, venueData);
+        if (updateError) {
+          setError(updateError);
+        } else {
+          setSuccess("Venue updated successfully!");
+          await loadVenues();
+          setTimeout(() => setIsDialogOpen(false), 1500);
+        }
       } else {
-        setSuccess("Venue updated successfully!");
-        await loadVenues();
-        setTimeout(() => setIsDialogOpen(false), 1500);
+        const { error: createError } = await createVenue(venueData);
+        if (createError) {
+          setError(createError);
+        } else {
+          setSuccess("Venue created successfully!");
+          await loadVenues();
+          setTimeout(() => setIsDialogOpen(false), 1500);
+        }
       }
-    } else {
-      const { error: createError } = await createVenue(venueData);
-      if (createError) {
-        setError(createError);
-      } else {
-        setSuccess("Venue created successfully!");
-        await loadVenues();
-        setTimeout(() => setIsDialogOpen(false), 1500);
-      }
+    } catch (e) {
+      setError("An error occurred while submitting the form.");
     }
 
     setSubmitting(false);
@@ -215,15 +212,39 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="location">Location *</Label>
+                      <Label htmlFor="location">Full Location Address</Label>
                       <Input
                         id="location"
                         value={formData.location}
                         onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                         required
-                        disabled={submitting}
-                        placeholder="e.g., City, Region"
+                        placeholder="e.g. Carrer de la Platja, 07660 Cala d'Or, Spain"
                       />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="lat">Latitude</Label>
+                        <Input
+                          id="lat"
+                          type="number"
+                          step="any"
+                          value={formData.lat}
+                          onChange={(e) => setFormData({ ...formData, lat: e.target.value })}
+                          placeholder="e.g. 39.3758"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="lng">Longitude</Label>
+                        <Input
+                          id="lng"
+                          type="number"
+                          step="any"
+                          value={formData.lng}
+                          onChange={(e) => setFormData({ ...formData, lng: e.target.value })}
+                          placeholder="e.g. 3.2267"
+                        />
+                      </div>
                     </div>
 
                     <div className="space-y-2">

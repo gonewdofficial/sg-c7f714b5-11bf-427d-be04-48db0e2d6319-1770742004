@@ -1,19 +1,17 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { SEO } from "@/components/SEO";
 import { Header } from "@/components/Header";
+import { SEO } from "@/components/SEO";
+import { PropertyCard } from "@/components/PropertyCard";
 import { InteractiveMap } from "@/components/InteractiveMap";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, Star, Loader2 } from "lucide-react";
 import { getVenues, getCountries, getAccommodationTypes } from "@/services/venueService";
 import type { Database } from "@/integrations/supabase/types";
 
 type Venue = Database["public"]["Tables"]["venues"]["Row"];
 
-export default function HomePage() {
+export default function Home() {
   const router = useRouter();
   const [venues, setVenues] = useState<Venue[]>([]);
   const [filteredVenues, setFilteredVenues] = useState<Venue[]>([]);
@@ -21,7 +19,7 @@ export default function HomePage() {
   const [accommodationTypes, setAccommodationTypes] = useState<string[]>([]);
   const [selectedCountry, setSelectedCountry] = useState<string>("all");
   const [selectedType, setSelectedType] = useState<string>("all");
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     loadData();
@@ -29,21 +27,20 @@ export default function HomePage() {
 
   useEffect(() => {
     filterVenues();
-  }, [selectedCountry, selectedType, venues]);
+  }, [venues, selectedCountry, selectedType]);
 
   const loadData = async () => {
-    setLoading(true);
-    
-    const { venues: venuesData } = await getVenues();
-    const { countries: countriesData } = await getCountries();
-    const { types: typesData } = await getAccommodationTypes();
+    setIsLoading(true);
+    const [venuesResult, countriesResult, typesResult] = await Promise.all([
+      getVenues(),
+      getCountries(),
+      getAccommodationTypes(),
+    ]);
 
-    setVenues(venuesData);
-    setFilteredVenues(venuesData);
-    setCountries(countriesData);
-    setAccommodationTypes(typesData);
-    
-    setLoading(false);
+    if (!venuesResult.error) setVenues(venuesResult.venues);
+    if (!countriesResult.error) setCountries(countriesResult.countries);
+    if (!typesResult.error) setAccommodationTypes(typesResult.types);
+    setIsLoading(false);
   };
 
   const filterVenues = () => {
@@ -60,37 +57,82 @@ export default function HomePage() {
     setFilteredVenues(filtered);
   };
 
-  const handleVenueClick = (venue: Venue) => {
-    router.push(`/property/${venue.slug}`);
+  const handleClearFilters = () => {
+    setSelectedCountry("all");
+    setSelectedType("all");
+  };
+
+  const handlePropertyClick = (slug: string) => {
+    router.push(`/property/${slug}`);
   };
 
   return (
     <>
       <SEO
-        title="GO/NEWD - Discover Naturist Resorts & Hotels Worldwide"
-        description="Find and book authentic clothing-optional resorts and hotels across the globe"
+        title="Go/Newd - Discover Naturist Destinations"
+        description="Explore authentic clothing-optional resorts and hotels across the globe"
       />
       <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white">
         <Header />
-        
-        {/* Hero Section */}
-        <section className="container mx-auto px-4 pt-12 pb-8">
-          <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
-              Discover Your Next Naturist Destination
-            </h1>
-            <p className="text-xl text-gray-700 mb-8">
-              Explore authentic clothing-optional resorts and hotels across the globe
-            </p>
-          </div>
 
-          {/* Search Filters */}
-          <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-6 border-2 border-orange-100">
-            <div className="grid md:grid-cols-3 gap-4">
+        {/* Hero Section */}
+        <section className="container mx-auto px-4 py-12 text-center">
+          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">
+            Discover Your Next <span className="text-orange-500">Naturist Destination</span>
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Explore authentic clothing-optional resorts and hotels across the globe
+          </p>
+        </section>
+
+        {/* Map Section - RIGHT AFTER HEADLINE */}
+        <section className="container mx-auto px-4 mb-12">
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Explore Locations on Map</h2>
+            <div className="w-full h-[500px] rounded-lg overflow-hidden border border-gray-200">
+              <InteractiveMap
+                properties={filteredVenues.map(venue => ({
+                  id: venue.id,
+                  name: venue.name,
+                  description: venue.description || "",
+                  images: [],
+                  price: { amount: 0, currency: "USD", period: "night" },
+                  rating: venue.average_rating || 0,
+                  reviews: venue.total_reviews || 0,
+                  amenities: venue.facilities || [],
+                  slug: venue.slug,
+                  capacity: 0,
+                  availability: true,
+                  features: venue.facilities || [],
+                  contact: {
+                    email: "",
+                    phone: "",
+                    website: venue.website_url || "",
+                  },
+                  location: {
+                    country: venue.country,
+                    address: venue.location,
+                    region: "",
+                    coordinates: { 
+                      lat: venue.lat || 0, 
+                      lng: venue.lng || 0 
+                    }
+                  },
+                }))}
+                selectedCountry={selectedCountry !== "all" ? selectedCountry : null}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Search Filters */}
+        <section className="container mx-auto px-4 mb-8">
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700">Country</label>
+                <label className="text-sm font-medium text-gray-700">Country</label>
                 <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                  <SelectTrigger className="h-12">
+                  <SelectTrigger>
                     <SelectValue placeholder="All Countries" />
                   </SelectTrigger>
                   <SelectContent>
@@ -105,9 +147,9 @@ export default function HomePage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700">Accommodation Type</label>
+                <label className="text-sm font-medium text-gray-700">Accommodation Type</label>
                 <Select value={selectedType} onValueChange={setSelectedType}>
-                  <SelectTrigger className="h-12">
+                  <SelectTrigger>
                     <SelectValue placeholder="All Types" />
                   </SelectTrigger>
                   <SelectContent>
@@ -122,13 +164,10 @@ export default function HomePage() {
               </div>
 
               <div className="flex items-end">
-                <Button 
-                  onClick={() => {
-                    setSelectedCountry("all");
-                    setSelectedType("all");
-                  }}
+                <Button
+                  onClick={handleClearFilters}
                   variant="outline"
-                  className="h-12 w-full"
+                  className="w-full"
                 >
                   Clear Filters
                 </Button>
@@ -137,131 +176,43 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Interactive Map Section */}
-        <section className="container mx-auto px-4 py-8">
-          <div className="bg-white rounded-2xl shadow-lg p-6 border-2 border-orange-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Explore Locations on Map
-            </h2>
-            <div className="h-[500px] rounded-xl overflow-hidden">
-              <InteractiveMap
-                properties={filteredVenues.map(venue => ({
-                  id: venue.id,
-                  name: venue.name,
-                  location: {
-                    country: venue.country,
-                    city: venue.location,
-                    region: "",
-                    coordinates: { lat: 0, lng: 0 }
-                  },
-                  accommodationType: venue.accommodation_type,
-                  rating: venue.average_rating || 0,
-                  reviewCount: venue.total_reviews || 0,
-                  images: [],
-                  description: venue.description || "",
-                  pricePerNight: 0,
-                  amenities: venue.facilities || [],
-                  slug: venue.slug,
-                  // Add missing required fields with defaults
-                  price: {
-                    perNight: 0,
-                    currency: "USD"
-                  },
-                  capacity: {
-                    guests: 0,
-                    rooms: 0
-                  },
-                  availability: true,
-                  propertyType: venue.accommodation_type as any, // Cast to any to avoid strict union type mismatch for now
-                  naturistType: "clothing-optional", // Default value
-                  features: venue.facilities || [],
-                  contact: {
-                    email: "",
-                    phone: "",
-                    website: venue.website_url || ""
-                  }
-                }))}
-                selectedCountry={selectedCountry !== "all" ? selectedCountry : null}
-              />
-            </div>
-          </div>
-        </section>
-
         {/* Results Section */}
-        <section className="container mx-auto px-4 py-8">
-          <div className="flex justify-between items-center mb-6">
+        <section className="container mx-auto px-4 pb-16">
+          <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-900">
-              {filteredVenues.length} {filteredVenues.length === 1 ? "Property" : "Properties"} Found
+              {filteredVenues.length} {filteredVenues.length === 1 ? "Location" : "Locations"} Found
             </h2>
           </div>
 
-          {loading ? (
-            <div className="flex justify-center py-16">
-              <Loader2 className="h-8 w-8 animate-spin text-brand" />
+          {isLoading ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600">Loading venues...</p>
             </div>
           ) : filteredVenues.length === 0 ? (
-            <div className="text-center py-16">
-              <p className="text-gray-600 text-lg mb-4">No properties found matching your filters</p>
-              <Button 
-                onClick={() => {
-                  setSelectedCountry("all");
-                  setSelectedType("all");
-                }}
-                className="bg-brand hover:bg-brand/90"
-              >
+            <div className="text-center py-12">
+              <p className="text-gray-600">No venues found matching your filters.</p>
+              <Button onClick={handleClearFilters} className="mt-4">
                 Clear Filters
               </Button>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredVenues.map((venue) => (
-                <Card 
+                <PropertyCard
                   key={venue.id}
-                  className="overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer border-2 hover:border-orange-200"
-                  onClick={() => handleVenueClick(venue)}
-                >
-                  <div className="relative h-48 bg-gradient-to-br from-orange-200 to-amber-200">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-6xl opacity-20">🏖️</div>
-                    </div>
-                    <Badge className="absolute top-4 right-4 bg-white text-gray-900">
-                      {venue.accommodation_type}
-                    </Badge>
-                  </div>
-
-                  <CardContent className="p-5">
-                    <h3 className="text-xl font-bold mb-2 text-gray-900 line-clamp-1">
-                      {venue.name}
-                    </h3>
-                    
-                    <div className="flex items-center gap-2 text-gray-600 mb-3">
-                      <MapPin className="h-4 w-4 flex-shrink-0" />
-                      <span className="text-sm line-clamp-1">{venue.location}</span>
-                    </div>
-
-                    {venue.average_rating && venue.average_rating > 0 ? (
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center">
-                          <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                          <span className="ml-1 font-semibold text-lg">
-                            {venue.average_rating.toFixed(1)}
-                          </span>
-                        </div>
-                        <span className="text-sm text-gray-600">
-                          ({venue.total_reviews} {venue.total_reviews === 1 ? "review" : "reviews"})
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="text-sm text-gray-500">No reviews yet</div>
-                    )}
-
-                    {venue.description && (
-                      <p className="text-sm text-gray-600 mt-3 line-clamp-2">
-                        {venue.description}
-                      </p>
-                    )}
-                  </CardContent>
-                </Card>
+                  property={{
+                    id: venue.id,
+                    name: venue.name,
+                    location: { country: venue.country, address: venue.location, region: "" },
+                    images: [],
+                    price: { amount: 0, currency: "USD", period: "night" },
+                    rating: venue.average_rating || 0,
+                    reviews: venue.total_reviews || 0,
+                    amenities: venue.facilities || [],
+                    slug: venue.slug,
+                  }}
+                  onClick={() => handlePropertyClick(venue.slug)}
+                />
               ))}
             </div>
           )}
