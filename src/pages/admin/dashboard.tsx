@@ -73,6 +73,8 @@ export default function AdminDashboard() {
         accommodation_type: venue.accommodation_type,
         website_url: venue.website_url || "",
         booking_link: venue.booking_link || "",
+        lat: venue.lat?.toString() || "",
+        lng: venue.lng?.toString() || "",
         description: venue.description || "",
         facilities: Array.isArray(venue.facilities) ? venue.facilities.join(", ") : "",
       });
@@ -85,6 +87,8 @@ export default function AdminDashboard() {
         accommodation_type: "",
         website_url: "",
         booking_link: "",
+        lat: "",
+        lng: "",
         description: "",
         facilities: "",
       });
