@@ -216,7 +216,6 @@ export default function Home() {
                     images: [],
                     price: { perNight: 0, currency: "USD" },
                     rating: venue.average_rating || 0,
-                    reviews: venue.total_reviews || 0,
                     reviewCount: venue.total_reviews || 0,
                     amenities: venue.facilities || [],
                     slug: venue.slug,
