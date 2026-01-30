@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { SEO } from "@/components/SEO";
 import { Header } from "@/components/Header";
+import { InteractiveMap } from "@/components/InteractiveMap";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -132,6 +133,37 @@ export default function HomePage() {
                   Clear Filters
                 </Button>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Interactive Map Section */}
+        <section className="container mx-auto px-4 py-8">
+          <div className="bg-white rounded-2xl shadow-lg p-6 border-2 border-orange-100">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Explore Locations on Map
+            </h2>
+            <div className="h-[500px] rounded-xl overflow-hidden">
+              <InteractiveMap
+                properties={filteredVenues.map(venue => ({
+                  id: venue.id,
+                  name: venue.name,
+                  location: {
+                    country: venue.country,
+                    city: venue.location,
+                    coordinates: [0, 0] // Will need to add coordinates to database
+                  },
+                  accommodationType: venue.accommodation_type,
+                  rating: venue.average_rating || 0,
+                  reviewCount: venue.total_reviews || 0,
+                  images: [],
+                  description: venue.description || "",
+                  pricePerNight: 0,
+                  amenities: venue.facilities || [],
+                  slug: venue.slug
+                }))}
+                selectedCountry={selectedCountry !== "all" ? selectedCountry : null}
+              />
             </div>
           </div>
         </section>

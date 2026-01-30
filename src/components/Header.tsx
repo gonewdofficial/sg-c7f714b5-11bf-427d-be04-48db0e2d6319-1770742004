@@ -15,12 +15,12 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
       <div className="container mx-auto flex h-20 items-center justify-between px-4">
         <Link href="/" className="flex items-center">
-          <div className="relative h-12 w-auto">
+          <div className="relative h-16 w-auto">
             <Image
               src="/Untitled_design_20260127_163212_0000.png"
               alt="Go/Newd Logo"
-              width={140}
-              height={48}
+              width={180}
+              height={64}
               className="object-contain"
               priority
             />
