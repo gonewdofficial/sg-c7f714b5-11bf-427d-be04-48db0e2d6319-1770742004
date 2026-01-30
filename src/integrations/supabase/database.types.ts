@@ -48,6 +48,99 @@ export type Database = {
         }
         Relationships: []
       }
+      reviews: {
+        Row: {
+          comment: string | null
+          created_at: string | null
+          id: string
+          rating: number
+          user_id: string | null
+          venue_id: string | null
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          rating: number
+          user_id?: string | null
+          venue_id?: string | null
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          rating?: number
+          user_id?: string | null
+          venue_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      venues: {
+        Row: {
+          accommodation_type: string
+          average_rating: number | null
+          booking_link: string | null
+          country: string
+          created_at: string | null
+          description: string | null
+          facilities: string[] | null
+          id: string
+          location: string
+          name: string
+          slug: string
+          total_reviews: number | null
+          updated_at: string | null
+          website_url: string | null
+        }
+        Insert: {
+          accommodation_type: string
+          average_rating?: number | null
+          booking_link?: string | null
+          country: string
+          created_at?: string | null
+          description?: string | null
+          facilities?: string[] | null
+          id?: string
+          location: string
+          name: string
+          slug: string
+          total_reviews?: number | null
+          updated_at?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          accommodation_type?: string
+          average_rating?: number | null
+          booking_link?: string | null
+          country?: string
+          created_at?: string | null
+          description?: string | null
+          facilities?: string[] | null
+          id?: string
+          location?: string
+          name?: string
+          slug?: string
+          total_reviews?: number | null
+          updated_at?: string | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

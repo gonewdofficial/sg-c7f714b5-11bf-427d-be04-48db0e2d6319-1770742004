@@ -29,8 +29,8 @@ export function Header() {
         <Link href="/" className="flex items-center">
           <div className="relative h-10 w-auto">
             <Image
-              src="/Untitled_design_20260127_163222_0000.png"
-              alt="GO/NEWD Logo"
+              src="/Untitled_design_20260127_163212_0000.png"
+              alt="Go/Newd Logo"
               width={120}
               height={40}
               className="object-contain"
