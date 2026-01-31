@@ -1,99 +1,86 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Search, MapPin, CalendarIcon, Users } from "lucide-react";
-import { format } from "date-fns";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Search, MapPin } from "lucide-react";
 
 interface SearchBarProps {
-  searchQuery: string;
-  onSearchChange: (query: string) => void;
+  onSearch: () => void;
   selectedCountries: string[];
-  onCountryChange: (countries: string[]) => void;
-  selectedTypes: string[];
-  onTypeChange: (types: string[]) => void;
-  priceRange: [number, number];
-  onPriceChange: (range: [number, number]) => void;
+  onCountrySelect: (country: string) => void;
+  availableCountries: string[];
+  availableTags: string[];
 }
 
 export function SearchBar({ 
-  searchQuery, 
-  onSearchChange,
-  selectedCountries,
-  onCountryChange,
-  selectedTypes,
-  onTypeChange,
-  priceRange,
-  onPriceChange
+  onSearch, 
+  selectedCountries, 
+  onCountrySelect, 
+  availableCountries,
+  availableTags 
 }: SearchBarProps) {
-  const [checkIn, setCheckIn] = useState<Date>();
-  const [checkOut, setCheckOut] = useState<Date>();
-  const [guests, setGuests] = useState(2);
+  const [showTagsDropdown, setShowTagsDropdown] = useState(false);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  const handleTagToggle = (tag: string) => {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  };
 
   return (
-    <div className="w-full max-w-5xl mx-auto bg-white rounded-2xl shadow-2xl p-3 md:p-2">
-      <div className="flex flex-col md:grid md:grid-cols-4 gap-3 md:gap-2">
-        <div className="relative w-full">
-          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
-          <Input
-            placeholder="Where to? (Country, City, or Resort)"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-10 h-12 md:h-14 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 w-full"
-            style={{ color: '#1A1A1A' }}
-          />
+    <div className="w-full max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-6">
+      <div className="grid grid-cols-1 md:grid-cols-[2fr,auto] gap-4 items-start">
+        {/* Country Dropdown */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+            <MapPin className="h-4 w-4" />
+            Where to?
+          </label>
+          <Select onValueChange={onCountrySelect}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="All Countries" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Countries</SelectItem>
+              {availableCountries.map((country) => (
+                <SelectItem key={country} value={country}>
+                  {country}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className="h-12 md:h-14 justify-start text-left font-normal border-0 hover:bg-gray-50 w-full"
-              style={{ color: '#1A1A1A' }}
-            >
-              <CalendarIcon className="mr-2 h-5 w-5 text-gray-400 shrink-0" />
-              <span className="truncate">{checkIn ? format(checkIn, "MMM dd") : "Check-in"}</span>
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar mode="single" selected={checkIn} onSelect={setCheckIn} initialFocus />
-          </PopoverContent>
-        </Popover>
-
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className="h-12 md:h-14 justify-start text-left font-normal border-0 hover:bg-gray-50 w-full"
-              style={{ color: '#1A1A1A' }}
-            >
-              <CalendarIcon className="mr-2 h-5 w-5 text-gray-400 shrink-0" />
-              <span className="truncate">{checkOut ? format(checkOut, "MMM dd") : "Check-out"}</span>
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar mode="single" selected={checkOut} onSelect={setCheckOut} initialFocus />
-          </PopoverContent>
-        </Popover>
-
-        <div className="flex items-center gap-2 w-full">
-          <div className="relative flex-1">
-            <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
-            <Input
-              type="number"
-              min="1"
-              value={guests}
-              onChange={(e) => setGuests(parseInt(e.target.value))}
-              className="pl-10 h-12 md:h-14 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 w-full"
-              style={{ color: '#1A1A1A' }}
-            />
-          </div>
-          <Button size="lg" className="h-12 md:h-14 px-6 md:px-8 text-white hover:opacity-90 shrink-0" style={{ backgroundColor: '#FF6347' }}>
-            <Search className="h-5 w-5" />
-          </Button>
-        </div>
+        {/* Search Button */}
+        <Button
+          onClick={onSearch}
+          className="bg-orange-500 hover:bg-orange-600 text-white px-8 h-[56px] mt-7"
+        >
+          <Search className="h-5 w-5" />
+        </Button>
       </div>
+
+      {/* Admin Tags Section - Only shown when tags exist */}
+      {availableTags.length > 0 && (
+        <div className="mt-4 space-y-2">
+          <label className="text-sm font-medium text-gray-700">Filter by Tags</label>
+          <div className="flex flex-wrap gap-2">
+            {availableTags.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => handleTagToggle(tag)}
+                className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
+                  selectedTags.includes(tag)
+                    ? "bg-orange-500 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

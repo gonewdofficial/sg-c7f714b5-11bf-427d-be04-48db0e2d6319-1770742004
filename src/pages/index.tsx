@@ -8,25 +8,27 @@ import { mockProperties } from "@/lib/mockData";
 import type { Property } from "@/types";
 
 export default function Home() {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [properties] = useState<Property[]>(mockProperties);
   const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
   const [filteredProperties, setFilteredProperties] = useState<Property[]>(mockProperties);
+  const [location, setLocation] = useState("");
+  const [checkIn, setCheckIn] = useState("");
+  const [checkOut, setCheckOut] = useState("");
+  const [guests, setGuests] = useState(2);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+
+  // Get unique countries from properties
+  const availableCountries = Array.from(new Set(mockProperties.map(p => p.location.country))).sort();
+  
+  // TODO: Get tags from admin/database - for now empty array
+  const availableTags: string[] = [];
 
   useEffect(() => {
-    let results = [...mockProperties];
+    filterProperties();
+  }, [selectedCountries, location, checkIn, checkOut, guests, priceRange]);
 
-    // Search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      results = results.filter(
-        (property) =>
-          property.name.toLowerCase().includes(query) ||
-          property.location.country.toLowerCase().includes(query) ||
-          property.location.city.toLowerCase().includes(query)
-      );
-    }
+  const filterProperties = () => {
+    let results = [...properties];
 
     // Country filter - only apply if countries are selected
     if (selectedCountries.length > 0) {
@@ -35,10 +37,13 @@ export default function Home() {
       );
     }
 
-    // Property type filter - only apply if types are selected
-    if (selectedTypes.length > 0) {
-      results = results.filter((property) =>
-        selectedTypes.includes(property.propertyType)
+    // Location search
+    if (location) {
+      results = results.filter(
+        (property) =>
+          property.name.toLowerCase().includes(location.toLowerCase()) ||
+          property.location.city.toLowerCase().includes(location.toLowerCase()) ||
+          property.location.country.toLowerCase().includes(location.toLowerCase())
       );
     }
 
@@ -57,113 +62,120 @@ export default function Home() {
     });
 
     setFilteredProperties(results);
-  }, [searchQuery, selectedCountries, selectedTypes, priceRange]);
-
-  const handleCountrySelect = (countries: string[]) => {
-    setSelectedCountries(countries);
   };
 
-  const handleRemoveCountry = (country: string) => {
-    setSelectedCountries(selectedCountries.filter((c) => c !== country));
+  const handleCountryToggle = (country: string) => {
+    setSelectedCountries((prev) => {
+      if (prev.includes(country)) {
+        return prev.filter((c) => c !== country);
+      } else {
+        return [...prev, country];
+      }
+    });
+  };
+
+  const removeCountry = (country: string) => {
+    setSelectedCountries((prev) => prev.filter((c) => c !== country));
   };
 
   return (
     <>
       <SEO
-        title="GO/NEWD - Discover Naturist Hotels & Resorts"
-        description="Explore naturist hotels, resorts, and accommodations across the globe"
+        title="GO/NEWD - Discover Naturist Hotels Across the Globe"
+        description="Find your perfect clothing-optional getaway"
       />
       <div className="min-h-screen bg-white">
         <Header />
         
         <main className="pt-16">
+          {/* Hero Section */}
           <section className="py-16 px-4">
-            <div className="container mx-auto max-w-7xl">
-              <div className="text-center mb-12">
-                <h1 className="text-5xl md:text-6xl font-bold mb-4">
-                  Discover Naturist Hotels Across the Globe
-                </h1>
-                <p className="text-xl text-gray-600">
-                  Find your perfect clothing-optional getaway
-                </p>
+            <div className="max-w-4xl mx-auto text-center space-y-6">
+              <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
+                Discover Naturist Hotels Across the Globe
+              </h1>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                Find your perfect clothing-optional getaway
+              </p>
+            </div>
+          </section>
+
+          {/* Interactive Map Section */}
+          <section className="px-4 py-8 bg-gray-50">
+            <div className="max-w-6xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
+                Explore Locations on Map
+              </h2>
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <InteractiveMap
+                  properties={mockProperties}
+                  selectedCountries={selectedCountries}
+                  onCountryClick={handleCountryToggle}
+                />
               </div>
-
-              <SearchBar
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-                selectedCountries={selectedCountries}
-                onCountryChange={setSelectedCountries}
-                selectedTypes={selectedTypes}
-                onTypeChange={setSelectedTypes}
-                priceRange={priceRange}
-                onPriceChange={setPriceRange}
-              />
-            </div>
-          </section>
-
-          <section className="py-12 px-4 bg-gray-50">
-            <div className="container mx-auto max-w-7xl">
-              <h2 className="text-3xl font-bold mb-8">Explore Locations on Map</h2>
               
-              <InteractiveMap
-                properties={mockProperties}
-                selectedCountries={selectedCountries}
-                onCountryClick={handleCountrySelect}
-              />
-
-              {selectedCountries.length > 0 && (
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <span className="text-sm text-gray-600">Selected countries:</span>
-                  {selectedCountries.map((country) => (
-                    <button
-                      key={country}
-                      onClick={() => handleRemoveCountry(country)}
-                      className="px-3 py-1 bg-[#FF6B35] text-white rounded-full text-sm hover:bg-[#FF6B35]/90 transition-colors"
-                    >
-                      {country} ×
-                    </button>
-                  ))}
-                  <button
-                    onClick={() => setSelectedCountries([])}
-                    className="px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-sm hover:bg-gray-300 transition-colors"
-                  >
-                    Clear all
-                  </button>
+              {/* Location Pills - Orange dot + Selected Countries */}
+              <div className="flex flex-wrap gap-2 mt-4 items-center">
+                <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                  <span className="text-sm font-medium text-gray-700">Locations</span>
                 </div>
-              )}
+                
+                {selectedCountries.map((country) => (
+                  <button
+                    key={country}
+                    onClick={() => removeCountry(country)}
+                    className="flex items-center gap-2 px-4 py-2 bg-orange-100 text-orange-700 rounded-full hover:bg-orange-200 transition-colors"
+                  >
+                    <span className="text-sm font-medium">{country}</span>
+                    <span className="text-lg leading-none">×</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </section>
 
-          <section className="py-16 px-4">
-            <div className="container mx-auto max-w-7xl">
-              <div className="flex justify-between items-center mb-8">
-                <h2 className="text-3xl font-bold">
-                  {selectedCountries.length > 0 || searchQuery || selectedTypes.length > 0
-                    ? `${filteredProperties.length} Properties Found`
-                    : "All Properties"}
+          {/* Search Filters */}
+          <section className="px-4 py-8">
+            <SearchBar
+              onSearch={() => {
+                // Filters apply automatically
+              }}
+              selectedCountries={selectedCountries}
+              onCountrySelect={(country) => {
+                if (country === "all") {
+                  setSelectedCountries([]);
+                } else {
+                  if (!selectedCountries.includes(country)) {
+                    setSelectedCountries(prev => [...prev, country]);
+                  }
+                }
+              }}
+              availableCountries={availableCountries}
+              availableTags={availableTags}
+            />
+          </section>
+
+          {/* Properties Grid */}
+          <section className="px-4 pb-16">
+            <div className="container mx-auto max-w-6xl">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {filteredProperties.length} Properties Available
                 </h2>
               </div>
 
-              {filteredProperties.length === 0 ? (
-                <div className="text-center py-16">
-                  <p className="text-xl text-gray-600 mb-4">No properties found matching your criteria</p>
-                  <button
-                    onClick={() => {
-                      setSearchQuery("");
-                      setSelectedCountries([]);
-                      setSelectedTypes([]);
-                      setPriceRange([0, 1000]);
-                    }}
-                    className="px-6 py-3 bg-[#FF6B35] text-white rounded-lg hover:bg-[#FF6B35]/90 transition-colors"
-                  >
-                    Clear All Filters
-                  </button>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredProperties.map((property) => (
-                    <PropertyCard key={property.id} property={property} />
-                  ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredProperties.map((property) => (
+                  <PropertyCard key={property.id} property={property} />
+                ))}
+              </div>
+
+              {filteredProperties.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-gray-500 text-lg">
+                    No properties found matching your criteria.
+                  </p>
                 </div>
               )}
             </div>
