@@ -16,12 +16,18 @@ export default function Home() {
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState(2);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+  const [accommodationType, setAccommodationType] = useState<string>("all");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   // Get unique countries from properties
-  const availableCountries = Array.from(new Set(mockProperties.map(p => p.location.country))).sort();
+  const availableCountries = Array.from(new Set(mockProperties.map((p) => p.location.country)));
   
-  // TODO: Get tags from admin/database - for now empty array
-  const availableTags: string[] = [];
+  // Extract all unique tags/facilities from venue listings
+  const availableTags = Array.from(
+    new Set(
+      mockProperties.flatMap((p) => p.amenities || [])
+    )
+  ).sort();
 
   useEffect(() => {
     filterProperties();
@@ -65,13 +71,15 @@ export default function Home() {
   };
 
   const handleCountryToggle = (country: string) => {
-    setSelectedCountries((prev) => {
-      if (prev.includes(country)) {
-        return prev.filter((c) => c !== country);
-      } else {
-        return [...prev, country];
-      }
-    });
+    setSelectedCountries((prev) =>
+      prev.includes(country) ? prev.filter((c) => c !== country) : [...prev, country]
+    );
+  };
+
+  const handleTagToggle = (tag: string) => {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
   };
 
   const removeCountry = (country: string) => {
@@ -138,21 +146,12 @@ export default function Home() {
           {/* Search Filters */}
           <section className="px-4 py-8">
             <SearchBar
-              onSearch={() => {
-                // Filters apply automatically
-              }}
               selectedCountries={selectedCountries}
-              onCountrySelect={(country) => {
-                if (country === "all") {
-                  setSelectedCountries([]);
-                } else {
-                  if (!selectedCountries.includes(country)) {
-                    setSelectedCountries(prev => [...prev, country]);
-                  }
-                }
-              }}
+              onCountrySelect={handleCountryToggle}
               availableCountries={availableCountries}
               availableTags={availableTags}
+              selectedTags={selectedTags}
+              onTagToggle={handleTagToggle}
             />
           </section>
 
