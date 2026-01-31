@@ -56,7 +56,6 @@ export default function RespondToReview() {
       if (error) throw error;
       
       // Verify the current user owns the venue
-      // @ts-expect-error - Supabase types join workaround
       if (data.venues?.owner_id !== user.id) {
         throw new Error("You don't have permission to respond to this review");
       }
