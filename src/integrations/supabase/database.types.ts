@@ -1,4 +1,4 @@
- 
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 export type Json =
   | string
   | number
@@ -125,6 +125,41 @@ export type Database = {
           },
           {
             foreignKeyName: "reviews_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      venue_images: {
+        Row: {
+          caption: string | null
+          created_at: string | null
+          display_order: number | null
+          id: string
+          url: string
+          venue_id: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          url: string
+          venue_id: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          url?: string
+          venue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_images_venue_id_fkey"
             columns: ["venue_id"]
             isOneToOne: false
             referencedRelation: "venues"
