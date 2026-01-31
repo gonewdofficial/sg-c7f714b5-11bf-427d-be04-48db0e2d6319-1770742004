@@ -102,7 +102,7 @@ export function SearchBar({
         {/* Search Button */}
         <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white py-6 rounded-xl text-lg font-semibold">
           <Search className="mr-2 h-5 w-5" />
-          Search Properties
+          Start Exploring
         </Button>
       </div>
     </div>

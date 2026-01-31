@@ -105,9 +105,6 @@ export default function Home() {
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
                 Real photos, real reviews, real experiences.
               </p>
-              <button className="px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition-colors">
-                Start Exploring
-              </button>
             </div>
           </section>
 
