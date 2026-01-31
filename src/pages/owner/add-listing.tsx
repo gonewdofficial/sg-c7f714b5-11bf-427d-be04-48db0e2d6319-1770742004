@@ -69,10 +69,10 @@ export default function AddListing() {
         .insert({
           name: venueName,
           slug: venueSlug,
-          description: formData.get("description"),
-          location: formData.get("location"),
-          country: formData.get("country"),
-          accommodation_type: formData.get("type"),
+          description: formData.get("description") as string,
+          location: formData.get("location") as string,
+          country: formData.get("country") as string,
+          accommodation_type: formData.get("type") as string,
           owner_id: user.id,
           facilities: selectedAmenities,
           status: "draft"
