@@ -92,6 +92,9 @@ export function InteractiveMap({ properties, selectedCountries, onCountrySelect 
           onMoveEnd={handleMoveEnd}
           maxZoom={4}
           minZoom={1}
+          filterZoomEvent={(evt) => {
+            return evt.type === "wheel" ? false : true;
+          }}
         >
           <Geographies geography={geoUrl}>
             {({ geographies }) =>

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { PropertyCard } from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
@@ -9,11 +9,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { properties } from "@/lib/mockData";
 import { Property, SearchFilters } from "@/types";
 import { Search, MapPin, CalendarIcon, Users, SlidersHorizontal, X } from "lucide-react";
 import { format } from "date-fns";
 import { SEO } from "@/components/SEO";
+import { getVenues } from "@/services/venueService";
+import type { Database } from "@/integrations/supabase/types";
+
+type Venue = Database["public"]["Tables"]["venues"]["Row"];
 
 export default function SearchPage() {
   const [filters, setFilters] = useState<SearchFilters>({
@@ -30,61 +33,51 @@ export default function SearchPage() {
   const [checkOut, setCheckOut] = useState<Date>();
   const [sortBy, setSortBy] = useState("featured");
   const [showFilters, setShowFilters] = useState(false);
+  const [venues, setVenues] = useState<Venue[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadVenues();
+  }, []);
+
+  const loadVenues = async () => {
+    setLoading(true);
+    const { venues: data } = await getVenues();
+    setVenues(data.filter(v => v.status === "active"));
+    setLoading(false);
+  };
 
   const propertyTypes = ["hotel", "resort", "campsite", "villa", "bungalow"];
   const naturistTypes = ["clothing-optional", "fully-naturist", "naturist-friendly"];
   const allAmenities = ["Pool", "Spa", "Restaurant", "Bar", "Beach Access", "Gym", "Sauna", "Yoga Studio", "Tennis Court", "Hot Tub", "Garden", "Bike Rental", "Water Sports", "Nightclub", "Kids Club"];
 
   const filteredProperties = useMemo(() => {
-    const result = properties.filter(property => {
+    const result = venues.filter(venue => {
       if (searchTerm) {
         const term = searchTerm.toLowerCase();
         const matchesSearch = 
-          property.name.toLowerCase().includes(term) ||
-          property.location.city.toLowerCase().includes(term) ||
-          property.location.country.toLowerCase().includes(term) ||
-          property.description.toLowerCase().includes(term);
+          venue.name.toLowerCase().includes(term) ||
+          venue.location.toLowerCase().includes(term) ||
+          venue.country.toLowerCase().includes(term) ||
+          (venue.description && venue.description.toLowerCase().includes(term));
         if (!matchesSearch) return false;
       }
 
-      if (property.price.perNight < filters.priceMin! || property.price.perNight > filters.priceMax!) {
-        return false;
-      }
-
       if (filters.propertyType && filters.propertyType.length > 0) {
-        if (!filters.propertyType.includes(property.propertyType)) return false;
-      }
-
-      if (filters.naturistType && filters.naturistType.length > 0) {
-        if (!filters.naturistType.includes(property.naturistType)) return false;
-      }
-
-      if (filters.amenities && filters.amenities.length > 0) {
-        const hasAllAmenities = filters.amenities.every(amenity => 
-          property.amenities.includes(amenity)
-        );
-        if (!hasAllAmenities) return false;
-      }
-
-      if (filters.guests && property.capacity.guests < filters.guests) {
-        return false;
+        if (!filters.propertyType.includes(venue.accommodation_type)) return false;
       }
 
       return true;
     });
 
-    if (sortBy === "price-low") {
-      result.sort((a, b) => a.price.perNight - b.price.perNight);
-    } else if (sortBy === "price-high") {
-      result.sort((a, b) => b.price.perNight - a.price.perNight);
-    } else if (sortBy === "rating") {
-      result.sort((a, b) => b.rating - a.rating);
+    if (sortBy === "rating") {
+      result.sort((a, b) => (b.average_rating || 0) - (a.average_rating || 0));
     } else if (sortBy === "featured") {
-      result.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+      result.sort((a, b) => (b.total_reviews || 0) - (a.total_reviews || 0));
     }
 
     return result;
-  }, [filters, searchTerm, sortBy]);
+  }, [venues, filters, searchTerm, sortBy]);
 
   const togglePropertyType = (type: string) => {
     setFilters(prev => ({
@@ -399,7 +392,7 @@ export default function SearchPage() {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div>
                     <h1 className="text-xl md:text-2xl font-bold mb-1">
-                      {filteredProperties.length} Properties Found
+                      {loading ? "Loading..." : `${filteredProperties.length} Properties Found`}
                     </h1>
                     {searchTerm && (
                       <p className="text-sm md:text-base text-gray-600 truncate">
@@ -482,10 +475,38 @@ export default function SearchPage() {
               </div>
 
               {/* Property Grid - Mobile First */}
-              {filteredProperties.length > 0 ? (
+              {loading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
-                  {filteredProperties.map((property) => (
-                    <PropertyCard key={property.id} property={property} />
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <div key={i} className="bg-white rounded-xl p-4 animate-pulse">
+                      <div className="bg-gray-200 h-48 rounded-lg mb-4"></div>
+                      <div className="bg-gray-200 h-4 rounded mb-2"></div>
+                      <div className="bg-gray-200 h-4 rounded w-2/3"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : filteredProperties.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
+                  {filteredProperties.map((venue) => (
+                    <div key={venue.id} className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                      <div className="p-4">
+                        <h3 className="font-bold text-lg mb-2">{venue.name}</h3>
+                        <p className="text-sm text-gray-600 mb-2">{venue.location}, {venue.country}</p>
+                        <p className="text-sm text-gray-500 mb-3 line-clamp-2">{venue.description}</p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1">
+                            <span className="text-yellow-500">⭐</span>
+                            <span className="font-semibold">{venue.average_rating?.toFixed(1) || "New"}</span>
+                            {venue.total_reviews > 0 && (
+                              <span className="text-gray-500 text-sm">({venue.total_reviews})</span>
+                            )}
+                          </div>
+                          <span className="text-xs bg-gray-100 px-2 py-1 rounded capitalize">
+                            {venue.accommodation_type}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   ))}
                 </div>
               ) : (
