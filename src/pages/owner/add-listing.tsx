@@ -61,17 +61,21 @@ export default function AddListing() {
       if (!user) throw new Error("You must be logged in");
 
       // 1. Create Venue
+      const venueName = formData.get("name") as string;
+      const venueSlug = venueName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      
       const { data: venue, error: venueError } = await supabase
         .from("venues")
         .insert({
-          name: formData.get("name"),
+          name: venueName,
+          slug: venueSlug,
           description: formData.get("description"),
           location: formData.get("location"),
           country: formData.get("country"),
-          type: formData.get("type"),
+          accommodation_type: formData.get("type"),
           owner_id: user.id,
           facilities: selectedAmenities,
-          status: "draft" // Default to draft
+          status: "draft"
         })
         .select()
         .single();

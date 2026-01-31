@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Header } from "@/components/Header";
@@ -38,6 +39,9 @@ export default function RespondToReview() {
         return;
       }
 
+      const reviewId = typeof id === "string" ? id : id?.[0];
+      if (!reviewId) return;
+
       // Check ownership via the venue linked to the review
       const { data, error } = await supabase
         .from("reviews")
@@ -46,7 +50,7 @@ export default function RespondToReview() {
           profiles:user_id (full_name),
           venues:venue_id (name, owner_id)
         `)
-        .eq("id", id)
+        .eq("id", reviewId)
         .single();
 
       if (error) throw error;
@@ -71,14 +75,15 @@ export default function RespondToReview() {
     setError("");
 
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("You must be logged in");
+
       const { error: submitError } = await supabase
         .from("review_responses")
         .insert({
           review_id: id as string,
-          response: response,
-          // owner_id is not in the schema I see, usually it's inferred or linked via review -> venue -> owner
-          // checking schema from previous turns: review_responses table likely has id, review_id, response, created_at
-          // Let's double check schema if needed, but usually it's simple.
+          owner_id: user.id,
+          response: response
         });
 
       if (submitError) throw submitError;
