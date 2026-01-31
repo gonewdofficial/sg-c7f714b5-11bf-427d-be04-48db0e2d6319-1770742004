@@ -320,7 +320,7 @@ export default function OwnerDashboard() {
                               {new Date(review.response.created_at).toLocaleDateString()}
                             </span>
                           </div>
-                          <p className="text-gray-700">{review.response.response_text}</p>
+                          <p className="text-gray-700">{review.response.response}</p>
                         </div>
                       )}
                     </CardContent>
