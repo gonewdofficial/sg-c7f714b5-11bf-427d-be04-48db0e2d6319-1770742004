@@ -48,6 +48,48 @@ export type Database = {
         }
         Relationships: []
       }
+      review_responses: {
+        Row: {
+          created_at: string | null
+          id: string
+          owner_id: string
+          response: string
+          review_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          owner_id: string
+          response: string
+          review_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          owner_id?: string
+          response?: string
+          review_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_responses_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_responses_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reviews: {
         Row: {
           comment: string | null
@@ -104,6 +146,7 @@ export type Database = {
           lng: number | null
           location: string
           name: string
+          owner_id: string | null
           slug: string
           total_reviews: number | null
           updated_at: string | null
@@ -122,6 +165,7 @@ export type Database = {
           lng?: number | null
           location: string
           name: string
+          owner_id?: string | null
           slug: string
           total_reviews?: number | null
           updated_at?: string | null
@@ -140,12 +184,21 @@ export type Database = {
           lng?: number | null
           location?: string
           name?: string
+          owner_id?: string | null
           slug?: string
           total_reviews?: number | null
           updated_at?: string | null
           website_url?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "venues_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
