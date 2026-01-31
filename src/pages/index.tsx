@@ -100,46 +100,43 @@ export default function Home() {
           <section className="py-16 px-4">
             <div className="max-w-4xl mx-auto text-center space-y-6">
               <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
-                Discover Naturist Hotels Across the Globe
+                Go/Newd Somewhere New
               </h1>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Find your perfect clothing-optional getaway
+                Real photos, real reviews, real experiences.
               </p>
+              <button className="px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition-colors">
+                Start Exploring
+              </button>
             </div>
           </section>
 
           {/* Interactive Map Section */}
-          <section className="px-4 py-8 bg-gray-50">
-            <div className="max-w-6xl mx-auto">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
-                Explore Locations on Map
-              </h2>
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <InteractiveMap
-                  properties={mockProperties}
-                  selectedCountries={selectedCountries}
-                  onCountryClick={handleCountryToggle}
-                />
+          <section className="px-4 py-8 bg-gray-50 rounded-lg mb-8">
+            <h2 className="text-3xl font-bold mb-6 text-black">Explore locations</h2>
+            <InteractiveMap
+              properties={properties}
+              selectedCountries={selectedCountries}
+              onCountrySelect={handleCountryToggle}
+            />
+            
+            {/* Selected Locations Pills */}
+            <div className="mt-4 flex flex-wrap gap-2 items-center">
+              <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full">
+                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                <span className="text-sm font-medium text-gray-700">Locations</span>
               </div>
               
-              {/* Location Pills - Orange dot + Selected Countries */}
-              <div className="flex flex-wrap gap-2 mt-4 items-center">
-                <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full">
-                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                  <span className="text-sm font-medium text-gray-700">Locations</span>
-                </div>
-                
-                {selectedCountries.map((country) => (
-                  <button
-                    key={country}
-                    onClick={() => removeCountry(country)}
-                    className="flex items-center gap-2 px-4 py-2 bg-orange-100 text-orange-700 rounded-full hover:bg-orange-200 transition-colors"
-                  >
-                    <span className="text-sm font-medium">{country}</span>
-                    <span className="text-lg leading-none">×</span>
-                  </button>
-                ))}
-              </div>
+              {selectedCountries.map((country) => (
+                <button
+                  key={country}
+                  onClick={() => removeCountry(country)}
+                  className="flex items-center gap-2 px-4 py-2 bg-orange-100 text-orange-700 rounded-full hover:bg-orange-200 transition-colors"
+                >
+                  <span className="text-sm font-medium">{country}</span>
+                  <span className="text-lg leading-none">×</span>
+                </button>
+              ))}
             </div>
           </section>
 
