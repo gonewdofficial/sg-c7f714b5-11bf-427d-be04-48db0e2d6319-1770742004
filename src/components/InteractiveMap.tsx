@@ -29,93 +29,128 @@ export function InteractiveMap({ properties, onCountryClick, selectedCountries =
     const svg = mapRef.current.querySelector("svg");
     if (!svg) return;
 
-    const countries = svg.querySelectorAll("path");
+    const countries = svg.querySelectorAll("path[data-name]");
     countries.forEach(path => {
       const countryName = path.getAttribute("data-name") || "";
       
       if (countriesWithVenues.includes(countryName)) {
-        path.style.fill = selectedCountries.includes(countryName) ? "#FF6B35" : "#93C5FD";
-        path.style.cursor = "pointer";
-        path.style.transition = "fill 0.3s ease";
+        path.setAttribute("fill", selectedCountries.includes(countryName) ? "#FF6B35" : "#93C5FD");
+        path.setAttribute("style", "cursor: pointer; transition: fill 0.3s ease;");
 
-        path.addEventListener("mouseenter", () => {
+        const handleMouseEnter = () => {
           if (!selectedCountries.includes(countryName)) {
-            path.style.fill = "#FDBA74";
+            path.setAttribute("fill", "#FDBA74");
           }
-        });
+        };
 
-        path.addEventListener("mouseleave", () => {
+        const handleMouseLeave = () => {
           if (!selectedCountries.includes(countryName)) {
-            path.style.fill = "#93C5FD";
+            path.setAttribute("fill", "#93C5FD");
           }
-        });
+        };
 
-        path.addEventListener("click", () => {
+        const handleClick = () => {
           if (onCountryClick) {
             onCountryClick(countryName);
           }
-        });
+        };
+
+        path.addEventListener("mouseenter", handleMouseEnter);
+        path.addEventListener("mouseleave", handleMouseLeave);
+        path.addEventListener("click", handleClick);
+
+        return () => {
+          path.removeEventListener("mouseenter", handleMouseEnter);
+          path.removeEventListener("mouseleave", handleMouseLeave);
+          path.removeEventListener("click", handleClick);
+        };
       } else {
-        path.style.fill = "#E5E7EB";
+        path.setAttribute("fill", "#E5E7EB");
       }
     });
   }, [countriesWithVenues, onCountryClick, selectedCountries]);
 
   return (
-    <div className="relative w-full h-full" ref={mapRef}>
+    <div className="relative w-full h-full bg-blue-50 rounded-lg" ref={mapRef}>
       <svg
-        viewBox="0 0 1000 500"
+        viewBox="0 0 2000 1000"
         xmlns="http://www.w3.org/2000/svg"
         className="w-full h-full"
         preserveAspectRatio="xMidYMid meet"
       >
         <defs>
           <style>{`
-            .country { stroke: #fff; stroke-width: 0.5; }
-            .marker { animation: pulse 2s infinite; }
+            .country { stroke: #fff; stroke-width: 1; }
+            .marker { animation: pulse 2s infinite; cursor: pointer; }
             @keyframes pulse {
               0%, 100% { opacity: 1; transform: scale(1); }
-              50% { opacity: 0.7; transform: scale(1.1); }
+              50% { opacity: 0.7; transform: scale(1.2); }
             }
           `}</style>
         </defs>
 
-        <rect width="1000" height="500" fill="#E0F2FE" />
+        {/* Ocean background */}
+        <rect width="2000" height="1000" fill="#E0F2FE" />
 
+        {/* Simple world map - Major countries */}
         <g id="countries">
-          <path className="country" data-name="France" d="M 480 180 L 490 175 L 495 180 L 490 190 L 485 195 L 475 190 Z" />
-          <path className="country" data-name="Spain" d="M 460 210 L 475 205 L 485 210 L 480 225 L 465 230 L 455 220 Z" />
-          <path className="country" data-name="Italy" d="M 510 200 L 520 195 L 525 210 L 520 230 L 510 235 L 505 220 Z" />
-          <path className="country" data-name="Greece" d="M 540 220 L 550 215 L 555 225 L 550 235 L 540 230 Z" />
-          <path className="country" data-name="Croatia" d="M 520 185 L 530 180 L 535 190 L 530 200 L 520 195 Z" />
-          <path className="country" data-name="Germany" d="M 500 160 L 515 155 L 520 165 L 515 175 L 500 170 Z" />
-          <path className="country" data-name="Portugal" d="M 440 215 L 455 210 L 460 220 L 455 230 L 440 225 Z" />
-          <path className="country" data-name="Netherlands" d="M 490 150 L 500 145 L 505 155 L 500 160 L 490 155 Z" />
-          <path className="country" data-name="United Kingdom" d="M 470 140 L 480 135 L 485 145 L 480 155 L 470 150 Z" />
-          <path className="country" data-name="Turkey" d="M 560 210 L 580 205 L 590 215 L 585 225 L 565 220 Z" />
+          {/* Europe */}
+          <path className="country" data-name="France" d="M1050,350 L1070,340 L1090,345 L1100,360 L1095,380 L1075,390 L1055,385 L1045,370 Z" fill="#E5E7EB" />
+          <path className="country" data-name="Spain" d="M1020,390 L1050,385 L1070,395 L1075,410 L1060,425 L1035,420 L1015,410 Z" fill="#E5E7EB" />
+          <path className="country" data-name="Italy" d="M1110,370 L1130,365 L1140,380 L1145,400 L1135,430 L1125,445 L1115,440 L1110,420 L1105,400 Z" fill="#E5E7EB" />
+          <path className="country" data-name="Greece" d="M1160,400 L1180,395 L1190,410 L1185,425 L1170,430 L1155,420 Z" fill="#E5E7EB" />
+          <path className="country" data-name="Croatia" d="M1115,360 L1135,355 L1145,365 L1140,380 L1125,385 L1110,375 Z" fill="#E5E7EB" />
+          <path className="country" data-name="Germany" d="M1080,310 L1110,305 L1130,315 L1135,335 L1120,350 L1095,345 L1075,335 Z" fill="#E5E7EB" />
+          <path className="country" data-name="Portugal" d="M990,390 L1015,385 L1025,400 L1020,420 L1000,425 L985,410 Z" fill="#E5E7EB" />
+          <path className="country" data-name="Netherlands" d="M1065,285 L1085,280 L1095,290 L1090,305 L1075,310 L1060,300 Z" fill="#E5E7EB" />
+          <path className="country" data-name="United Kingdom" d="M1010,280 L1035,275 L1050,285 L1055,305 L1045,320 L1025,315 L1005,300 Z" fill="#E5E7EB" />
+          <path className="country" data-name="Turkey" d="M1200,390 L1250,385 L1280,395 L1285,410 L1270,425 L1240,430 L1210,420 Z" fill="#E5E7EB" />
+          
+          {/* Americas */}
+          <path className="country" data-name="United States" d="M200,300 L400,290 L450,310 L480,350 L470,400 L440,430 L380,440 L320,430 L250,410 L190,380 Z" fill="#E5E7EB" />
+          <path className="country" data-name="Mexico" d="M250,440 L350,435 L380,450 L390,480 L370,510 L330,520 L280,505 L240,480 Z" fill="#E5E7EB" />
+          <path className="country" data-name="Brazil" d="M600,600 L700,590 L750,620 L770,680 L750,740 L700,760 L640,750 L590,710 L580,650 Z" fill="#E5E7EB" />
+          
+          {/* Asia */}
+          <path className="country" data-name="China" d="M1500,350 L1600,340 L1650,360 L1670,400 L1660,450 L1620,470 L1560,465 L1510,440 L1490,400 Z" fill="#E5E7EB" />
+          <path className="country" data-name="Japan" d="M1720,350 L1750,345 L1770,360 L1775,390 L1765,420 L1745,430 L1720,420 L1710,390 Z" fill="#E5E7EB" />
+          <path className="country" data-name="Thailand" d="M1550,500 L1580,495 L1600,510 L1605,540 L1590,560 L1565,555 L1545,535 Z" fill="#E5E7EB" />
+          
+          {/* Oceania */}
+          <path className="country" data-name="Australia" d="M1550,700 L1700,690 L1760,710 L1780,750 L1770,800 L1720,830 L1640,835 L1570,820 L1530,780 L1525,730 Z" fill="#E5E7EB" />
+          
+          {/* Africa */}
+          <path className="country" data-name="South Africa" d="M1150,750 L1220,745 L1260,760 L1270,790 L1250,820 L1210,825 L1170,810 L1145,780 Z" fill="#E5E7EB" />
         </g>
 
-        {markers.map((marker, index) => (
-          <g
-            key={`${marker.id}-${index}`}
-            className="marker cursor-pointer"
-            onClick={() => {
-              const property = properties.find(p => p.id === marker.id);
-              if (property) setSelectedProperty(property);
-            }}
-          >
-            <circle
-              cx={marker.lng * 5 + 200}
-              cy={marker.lat * 3.5 + 100}
-              r="6"
-              fill="#FF6B35"
-              stroke="white"
-              strokeWidth="2"
-            />
-          </g>
-        ))}
+        {/* Markers for properties with coordinates */}
+        {markers.map((marker, index) => {
+          const x = ((marker.lng + 180) / 360) * 2000;
+          const y = ((90 - marker.lat) / 180) * 1000;
+          
+          return (
+            <g
+              key={`${marker.id}-${index}`}
+              className="marker"
+              onClick={() => {
+                const property = properties.find(p => p.id === marker.id);
+                if (property) setSelectedProperty(property);
+              }}
+            >
+              <circle
+                cx={x}
+                cy={y}
+                r="8"
+                fill="#FF6B35"
+                stroke="white"
+                strokeWidth="3"
+              />
+            </g>
+          );
+        })}
       </svg>
 
+      {/* Property detail popup */}
       {selectedProperty && (
         <div className="absolute top-4 right-4 bg-white p-4 rounded-lg shadow-xl max-w-xs z-10">
           <button

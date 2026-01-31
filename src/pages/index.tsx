@@ -70,7 +70,7 @@ export default function Home() {
         title="GO/NEWD - Discover Naturist Hotels & Resorts"
         description="Explore authentic clothing-optional resorts and hotels across the globe"
       />
-      <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white">
+      <div className="min-h-screen bg-white">
         <Header />
 
         {/* Hero Section */}
