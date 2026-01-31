@@ -6,8 +6,27 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Search, MapPin, CalendarIcon, Users } from "lucide-react";
 import { format } from "date-fns";
 
-export function SearchBar() {
-  const [location, setLocation] = useState("");
+interface SearchBarProps {
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+  selectedCountries: string[];
+  onCountryChange: (countries: string[]) => void;
+  selectedTypes: string[];
+  onTypeChange: (types: string[]) => void;
+  priceRange: [number, number];
+  onPriceChange: (range: [number, number]) => void;
+}
+
+export function SearchBar({ 
+  searchQuery, 
+  onSearchChange,
+  selectedCountries,
+  onCountryChange,
+  selectedTypes,
+  onTypeChange,
+  priceRange,
+  onPriceChange
+}: SearchBarProps) {
   const [checkIn, setCheckIn] = useState<Date>();
   const [checkOut, setCheckOut] = useState<Date>();
   const [guests, setGuests] = useState(2);
@@ -18,9 +37,9 @@ export function SearchBar() {
         <div className="relative w-full">
           <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
           <Input
-            placeholder="Where to?"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
+            placeholder="Where to? (Country, City, or Resort)"
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
             className="pl-10 h-12 md:h-14 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 w-full"
             style={{ color: '#1A1A1A' }}
           />
