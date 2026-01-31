@@ -233,7 +233,7 @@ export default function PropertyDetailsPage() {
                     <div className="flex items-center gap-3 text-sm">
                       <Users className="h-4 w-4 text-gray-500" />
                       <span className="text-gray-700">
-                        Max {property.capacity || "varies"} guests
+                        Max {property.capacity?.guests || "varies"} guests
                       </span>
                     </div>
                   </div>

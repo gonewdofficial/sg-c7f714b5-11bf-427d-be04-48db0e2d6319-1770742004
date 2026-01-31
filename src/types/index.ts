@@ -31,6 +31,18 @@ export interface Property {
   };
   availability: boolean;
   featured?: boolean;
+  verified?: boolean;
+  tags?: string[];
+  bookingUrl?: string;
+  websiteUrl?: string;
+  reviews?: {
+    id: string;
+    author: string;
+    rating: number;
+    date: string;
+    comment: string;
+    verified?: boolean;
+  }[];
 }
 
 export interface Review {
