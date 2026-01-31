@@ -26,13 +26,14 @@ export default function OwnerSignup() {
     setError("");
 
     try {
-      // Sign up the user
+      // Sign up the user with metadata - the database trigger will automatically create the profile
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
             full_name: fullName,
+            phone: phone || null,
             role: "owner"
           }
         }
@@ -41,19 +42,6 @@ export default function OwnerSignup() {
       if (authError) throw authError;
 
       if (authData.user) {
-        // Create profile with owner role
-        const { error: profileError } = await supabase
-          .from("profiles")
-          .insert({
-            id: authData.user.id,
-            email,
-            full_name: fullName,
-            phone,
-            role: "owner"
-          });
-
-        if (profileError) throw profileError;
-
         setSuccess(true);
         setTimeout(() => {
           router.push("/owner/login");
