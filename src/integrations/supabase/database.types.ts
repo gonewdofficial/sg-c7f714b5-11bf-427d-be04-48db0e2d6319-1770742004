@@ -148,6 +148,7 @@ export type Database = {
           name: string
           owner_id: string | null
           slug: string
+          status: string | null
           total_reviews: number | null
           updated_at: string | null
           website_url: string | null
@@ -167,6 +168,7 @@ export type Database = {
           name: string
           owner_id?: string | null
           slug: string
+          status?: string | null
           total_reviews?: number | null
           updated_at?: string | null
           website_url?: string | null
@@ -186,6 +188,7 @@ export type Database = {
           name?: string
           owner_id?: string | null
           slug?: string
+          status?: string | null
           total_reviews?: number | null
           updated_at?: string | null
           website_url?: string | null

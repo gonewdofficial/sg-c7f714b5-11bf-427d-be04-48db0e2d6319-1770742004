@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { SEO } from "@/components/SEO";
-import Header from "@/components/Header";
+import { Header } from "@/components/Header";
 import { Building2, Star, MessageSquare, Plus, Edit, LogOut } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -229,7 +229,7 @@ export default function OwnerDashboard() {
                         <div>
                           <CardTitle>{venue.name}</CardTitle>
                           <CardDescription className="mt-1">
-                            {venue.city}, {venue.country}
+                            {venue.location}, {venue.country}
                           </CardDescription>
                         </div>
                         <Link href={`/owner/edit-listing/${venue.id}`}>
@@ -244,7 +244,7 @@ export default function OwnerDashboard() {
                       <div className="flex gap-4 text-sm text-gray-600">
                         <div className="flex items-center gap-1">
                           <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                          <span>{venue.rating || "No rating"}</span>
+                          <span>{venue.average_rating || "No rating"}</span>
                         </div>
                         <div>
                           {reviews.filter(r => r.venue_id === venue.id).length} reviews
