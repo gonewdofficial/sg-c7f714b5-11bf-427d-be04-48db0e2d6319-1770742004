@@ -365,3 +365,214 @@ export const reviews: Review[] = [
     verified: true
   }
 ];
+
+export const mockProperties: Property[] = [
+  {
+    id: "1",
+    name: "Naturist Resort Koversada",
+    slug: "naturist-resort-koversada",
+    description: "Large naturist resort on the Adriatic coast with extensive facilities.",
+    location: {
+      address: "Lim Bay, Vrsar",
+      city: "Vrsar",
+      country: "Croatia",
+      region: "Istria",
+      coordinates: { lat: 45.1517, lng: 13.6014 }
+    },
+    propertyType: "resort",
+    naturistType: "fully-naturist",
+    price: { perNight: 120, currency: "EUR" },
+    rating: 4.7,
+    reviewCount: 342,
+    images: [
+      "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=800",
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800"
+    ],
+    amenities: ["Pool", "Restaurant", "Spa", "Beach Access", "WiFi"],
+    features: [],
+    capacity: { guests: 5000, rooms: 2000 },
+    availability: true
+  },
+  {
+    id: "2",
+    name: "Cap d'Agde Naturist Village",
+    slug: "cap-d-agde-naturist-village",
+    description: "The world's largest naturist resort with a vibrant community.",
+    location: {
+      address: "Port Nature, Cap d'Agde",
+      city: "Agde",
+      country: "France",
+      region: "Occitanie",
+      coordinates: { lat: 43.2812, lng: 3.5147 }
+    },
+    propertyType: "resort",
+    naturistType: "fully-naturist",
+    price: { perNight: 150, currency: "EUR" },
+    rating: 4.8,
+    reviewCount: 891,
+    images: [
+      "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800",
+      "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800"
+    ],
+    amenities: ["Pool", "Restaurant", "Beach", "Shops", "Nightlife", "WiFi"],
+    features: [],
+    capacity: { guests: 40000, rooms: 15000 },
+    availability: true
+  },
+  {
+    id: "3",
+    name: "Vera Playa Club Hotel",
+    slug: "vera-playa-club-hotel",
+    description: "Beachfront naturist hotel in southern Spain with modern facilities.",
+    location: {
+      address: "Calle Isla de Lobos 1, Vera",
+      city: "Vera",
+      country: "Spain",
+      region: "Andalusia",
+      coordinates: { lat: 37.2458, lng: -1.8328 }
+    },
+    propertyType: "hotel",
+    naturistType: "fully-naturist",
+    price: { perNight: 95, currency: "EUR" },
+    rating: 4.5,
+    reviewCount: 256,
+    images: [
+      "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800",
+      "https://images.unsplash.com/photo-1563911302283-d2bc129e7570?w=800"
+    ],
+    amenities: ["Pool", "Restaurant", "Bar", "Beach Access", "WiFi", "Gym"],
+    features: [],
+    capacity: { guests: 300, rooms: 120 },
+    availability: true
+  },
+  {
+    id: "4",
+    name: "Colina do Sol",
+    slug: "colina-do-sol",
+    description: "Eco-friendly naturist resort in the Algarve countryside.",
+    location: {
+      address: "Vale de Telhas, Aljezur",
+      city: "Aljezur",
+      country: "Portugal",
+      region: "Algarve",
+      coordinates: { lat: 37.3167, lng: -8.8000 }
+    },
+    propertyType: "resort",
+    naturistType: "fully-naturist",
+    price: { perNight: 80, currency: "EUR" },
+    rating: 4.6,
+    reviewCount: 178,
+    images: [
+      "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800",
+      "https://images.unsplash.com/photo-1574643156929-51fa098b0394?w=800"
+    ],
+    amenities: ["Pool", "Restaurant", "Yoga", "Hiking", "WiFi"],
+    features: [],
+    capacity: { guests: 150, rooms: 60 },
+    availability: true
+  },
+  {
+    id: "5",
+    name: "Bare Oaks Family Naturist Park",
+    slug: "bare-oaks-family-naturist-park",
+    description: "Family-friendly naturist park near Toronto with camping and cabins.",
+    location: {
+      address: "20237 Kennedy Road, East Gwillimbury",
+      city: "Toronto",
+      country: "Canada",
+      region: "Ontario",
+      coordinates: { lat: 44.1000, lng: -79.4500 }
+    },
+    propertyType: "campsite",
+    naturistType: "fully-naturist",
+    price: { perNight: 45, currency: "CAD" },
+    rating: 4.4,
+    reviewCount: 124,
+    images: [
+      "https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?w=800",
+      "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=800"
+    ],
+    amenities: ["Pool", "Camping", "Trails", "Playground", "WiFi"],
+    features: [],
+    capacity: { guests: 200, rooms: 80 },
+    availability: true
+  },
+  {
+    id: "6",
+    name: "Hidden Beach Resort",
+    slug: "hidden-beach-resort",
+    description: "Luxury clothing-optional resort on the Riviera Maya.",
+    location: {
+      address: "Bahía de Petempich, Puerto Morelos",
+      city: "Cancun",
+      country: "Mexico",
+      region: "Quintana Roo",
+      coordinates: { lat: 20.8467, lng: -86.8792 }
+    },
+    propertyType: "resort",
+    naturistType: "clothing-optional",
+    price: { perNight: 280, currency: "USD" },
+    rating: 4.9,
+    reviewCount: 567,
+    images: [
+      "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800",
+      "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800"
+    ],
+    amenities: ["Pool", "Beach", "Spa", "Gourmet Dining", "Bar", "WiFi"],
+    features: [],
+    capacity: { guests: 400, rooms: 180 },
+    availability: true
+  },
+  {
+    id: "7",
+    name: "Vritomartis Naturist Resort",
+    slug: "vritomartis-naturist-resort",
+    description: "Secluded naturist hotel on the south coast of Crete.",
+    location: {
+      address: "Chora Sfakion",
+      city: "Sfakia",
+      country: "Greece",
+      region: "Crete",
+      coordinates: { lat: 35.2044, lng: 24.1386 }
+    },
+    propertyType: "hotel",
+    naturistType: "fully-naturist",
+    price: { perNight: 110, currency: "EUR" },
+    rating: 4.7,
+    reviewCount: 289,
+    images: [
+      "https://images.unsplash.com/photo-1602002418082-a4443e081dd1?w=800",
+      "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=800"
+    ],
+    amenities: ["Pool", "Beach", "Restaurant", "Bar", "WiFi", "Spa"],
+    features: [],
+    capacity: { guests: 250, rooms: 100 },
+    availability: true
+  },
+  {
+    id: "8",
+    name: "Fiume Naturist Resort",
+    slug: "fiume-naturist-resort",
+    description: "Tuscan naturist resort with beautiful countryside views.",
+    location: {
+      address: "Via delle Colline 5, Grosseto",
+      city: "Grosseto",
+      country: "Italy",
+      region: "Tuscany",
+      coordinates: { lat: 42.7603, lng: 11.1135 }
+    },
+    propertyType: "resort",
+    naturistType: "fully-naturist",
+    price: { perNight: 105, currency: "EUR" },
+    rating: 4.5,
+    reviewCount: 198,
+    images: [
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
+      "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800"
+    ],
+    amenities: ["Pool", "Restaurant", "Spa", "Beach Access", "WiFi"],
+    features: [],
+    capacity: { guests: 300, rooms: 125 },
+    availability: true
+  }
+];
