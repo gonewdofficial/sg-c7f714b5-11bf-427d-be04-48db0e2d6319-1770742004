@@ -127,7 +127,7 @@ export function InteractiveMap({ properties, onCountryClick, selectedCountries }
           <p className="text-sm text-gray-600 mb-2">{selectedProperty.location.city}, {selectedProperty.location.country}</p>
           <div className="flex items-center gap-2 mb-2">
              <span className="px-2 py-0.5 bg-gray-100 rounded text-xs uppercase font-medium tracking-wide">
-               {property.propertyType}
+               {selectedProperty.propertyType}
              </span>
              <span className="text-sm text-[#FF6B35] font-semibold">
                ⭐ {selectedProperty.rating.toFixed(1)} <span className="text-gray-400 font-normal">({selectedProperty.reviewCount})</span>
