@@ -246,58 +246,6 @@ export default function PropertyDetail() {
                   </CardContent>
                 </Card>
               </div>
-
-              {/* Booking Sidebar */}
-              <div className="lg:col-span-1">
-                <Card className="sticky top-20">
-                  <CardContent className="p-6">
-                    <div className="mb-6">
-                      <div className="flex items-baseline gap-2 mb-2">
-                        <span className="text-3xl font-bold text-gray-900">
-                          {property.price.currency === "EUR" ? "€" : property.price.currency === "USD" ? "$" : property.price.currency === "GBP" ? "£" : property.price.currency}
-                          {property.price.perNight}
-                        </span>
-                        <span className="text-gray-600">/ night</span>
-                      </div>
-                      {property.price.perWeek && (
-                        <p className="text-sm text-gray-600">
-                          {property.price.currency === "EUR" ? "€" : property.price.currency === "USD" ? "$" : property.price.currency === "GBP" ? "£" : property.price.currency}
-                          {property.price.perWeek} per week
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="space-y-4 mb-6">
-                      <div className="flex items-center gap-3 text-sm">
-                        <Users className="h-5 w-5 text-orange-500" />
-                        <span className="text-gray-700">
-                          Up to {property.capacity.guests} guests
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-3 text-sm">
-                        <Calendar className="h-5 w-5 text-orange-500" />
-                        <span className="text-gray-700">
-                          {property.capacity.rooms} rooms available
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-3 text-sm">
-                        <MapPin className="h-5 w-5 text-orange-500" />
-                        <span className="text-gray-700">
-                          {property.location.address}
-                        </span>
-                      </div>
-                    </div>
-
-                    <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white mb-4">
-                      Check Availability
-                    </Button>
-
-                    <div className="text-center text-sm text-gray-600">
-                      <p>Free cancellation within 48 hours</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
             </div>
           </div>
         </main>
