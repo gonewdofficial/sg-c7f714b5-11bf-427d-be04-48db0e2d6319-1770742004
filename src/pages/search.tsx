@@ -33,9 +33,13 @@ export default function SearchPage() {
     async function loadVenues() {
       try {
         setLoading(true);
-        const data = await getVenues();
+        const { venues: data, error } = await getVenues(); // Destructure venues and rename to data for existing code
+        if (error) {
+           console.error("Error loading venues:", error);
+           return;
+        }
         console.log("Loaded venues:", data);
-        setVenues(data);
+        setVenues(data || []);
       } catch (error) {
         console.error("Error loading venues:", error);
       } finally {
@@ -114,11 +118,11 @@ export default function SearchPage() {
     name: v.name,
     location: v.location,
     country: v.country,
-    latitude: v.latitude || 0,
-    longitude: v.longitude || 0,
+    latitude: v.lat || 0,
+    longitude: v.lng || 0,
     image: v.main_image || "/placeholder.jpg",
-    price: v.price_per_night,
-    rating: v.rating || 0,
+    price: v.price_per_night || 0,
+    rating: v.average_rating || 0,
   }));
 
   return (
@@ -278,9 +282,9 @@ export default function SearchPage() {
                       name={property.name}
                       location={property.location}
                       image={property.main_image || "/placeholder.jpg"}
-                      price={property.price_per_night}
-                      rating={property.rating || 0}
-                      reviews={0}
+                      price={property.price_per_night || 0}
+                      rating={property.average_rating || 0}
+                      reviews={property.total_reviews || 0}
                     />
                   ))}
                 </div>

@@ -47,12 +47,23 @@ export function InteractiveMap({
   const handleZoomOut = () => {
     if (zoom > 1) {
       setZoom(zoom / 1.5);
+    } else {
+      // Force reset to center if we go back to zoom 1
+      setCenter([0, 20]);
+      setZoom(1);
     }
   };
 
   const handleMoveEnd = (position: { coordinates: [number, number]; zoom: number }) => {
-    setCenter(position.coordinates);
-    setZoom(position.zoom);
+    // LOCK PANNING IF ZOOM IS 1
+    // If user tries to pan at zoom 1, we force it back to default center
+    if (position.zoom <= 1) {
+      setCenter([0, 20]);
+      setZoom(1);
+    } else {
+      setCenter(position.coordinates);
+      setZoom(position.zoom);
+    }
   };
 
   return (
@@ -87,12 +98,14 @@ export function InteractiveMap({
           zoom={zoom}
           center={center}
           onMoveEnd={handleMoveEnd}
-          filterZoomEvent={(evt: WheelEvent | TouchEvent | MouseEvent) => {
-            if (zoom <= 1) {
-              return false;
-            }
-            return true;
+          disablePanning={zoom === 1}
+          filterZoomEvent={(evt) => {
+            // COMPLETELY DISABLE scroll zoom and double-click zoom
+            // Only button zooming allowed
+            return false;
           }}
+          // Limiting translation extent to prevent panning too far
+          translateExtent={[[ -100, -100 ], [ 900, 700 ]]}
         >
           <Geographies geography={geoUrl}>
             {({ geographies }) =>

@@ -70,6 +70,19 @@ export default function Home() {
     setFilteredProperties(results);
   };
 
+  // Map properties to the format expected by InteractiveMap
+  const mapProperties = filteredProperties.map(p => ({
+    id: p.id,
+    name: p.name,
+    location: `${p.location.city}, ${p.location.country}`,
+    country: p.location.country,
+    latitude: p.location.coordinates?.lat || 0,
+    longitude: p.location.coordinates?.lng || 0,
+    image: p.images[0],
+    price: p.price.perNight,
+    rating: p.rating
+  }));
+
   const handleCountryToggle = (country: string) => {
     setSelectedCountries((prev) =>
       prev.includes(country) ? prev.filter((c) => c !== country) : [...prev, country]
@@ -112,9 +125,9 @@ export default function Home() {
           <section className="px-4 py-8 bg-gray-50 rounded-lg mb-8">
             <h2 className="text-3xl font-bold mb-6 text-black">Explore locations</h2>
             <InteractiveMap
-              properties={properties}
+              properties={mapProperties}
               selectedCountries={selectedCountries}
-              onCountrySelect={handleCountryToggle}
+              onCountryClick={handleCountryToggle}
             />
             
             {/* Selected Locations Pills */}
@@ -160,7 +173,16 @@ export default function Home() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredProperties.map((property) => (
-                  <PropertyCard key={property.id} property={property} />
+                  <PropertyCard 
+                    key={property.id} 
+                    id={property.id}
+                    name={property.name}
+                    location={`${property.location.city}, ${property.location.country}`}
+                    image={property.images[0]}
+                    price={property.price.perNight}
+                    rating={property.rating}
+                    reviews={property.reviewCount}
+                  />
                 ))}
               </div>
 
