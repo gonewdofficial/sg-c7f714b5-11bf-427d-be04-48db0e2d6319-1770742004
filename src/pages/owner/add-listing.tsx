@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "@/integrations/supabase/client";
+import { generateSlug } from "@/services/venueService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -80,30 +81,39 @@ export default function AddListing() {
 
       if (!user) throw new Error("You must be logged in");
 
-      const venueName = formData.get("name") as string;
-      const venueSlug = venueName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-      
-      const { data: venue, error: venueError } = await supabase
-        .from("venues")
-        .insert({
-          name: venueName,
-          slug: venueSlug,
-          description: formData.get("description") as string,
-          location: formData.get("location") as string,
-          country: formData.get("country") as string,
-          accommodation_type: formData.get("type") as string,
-          clothing_policy: formData.get("clothing_policy") as string,
-          website: formData.get("website") as string,
-          contact_email: formData.get("contact_email") as string || null,
-          contact_phone: formData.get("contact_phone") as string || null,
-          owner_id: user.id,
-          facilities: selectedAmenities,
-          status: "draft"
-        })
-        .select()
-        .single();
+      const name = formData.get("name") as string;
+      const description = formData.get("description") as string;
+      const location = formData.get("location") as string;
+      const country = formData.get("country") as string;
+      const accommodationType = formData.get("type") as string; // Changed from accommodationType to match select name
+      const clothingPolicy = formData.get("clothing_policy") as string;
+      const website = formData.get("website") as string;
+      const contactEmail = formData.get("contact_email") as string;
+      const contactPhone = formData.get("contact_phone") as string;
 
-      if (venueError) throw venueError;
+      const slug = generateSlug(name);
+      
+      // Create venue
+      const { data: venue, error } = await supabase.from("venues").insert({
+        name,
+        slug,
+        description,
+        city: location.split(',')[0].trim(), // Simple city extraction
+        country,
+        address: location,
+        accommodation_type: accommodationType,
+        clothing_policy: clothingPolicy,
+        website_url: website,
+        contact_email: contactEmail,
+        contact_phone: contactPhone,
+        owner_id: user.id,
+        amenities: selectedAmenities, // Use state for amenities
+        status: "draft",
+        // Default values for required fields
+        location: `${location}, ${country}`,
+      }).select().single();
+
+      if (error) throw error;
 
       if (images.length > 0 && venue) {
         for (let i = 0; i < images.length; i++) {

@@ -107,6 +107,7 @@ export default function AdminDashboard() {
     try {
       const venueData = {
         ...formData,
+        city: formData.location.split(',')[0].trim() || formData.location, // Derive city from location
         facilities: formData.facilities.split(",").map((f) => f.trim()).filter(Boolean),
         lat: formData.lat ? parseFloat(formData.lat) : null,
         lng: formData.lng ? parseFloat(formData.lng) : null,

@@ -170,22 +170,30 @@ export type Database = {
       venues: {
         Row: {
           accommodation_type: string
+          address: string | null
+          amenities: string[] | null
           average_rating: number | null
           booking_link: string | null
+          capacity: number | null
+          city: string
           clothing_policy: string | null
           contact_email: string | null
           contact_phone: string | null
           country: string
           created_at: string | null
+          currency: string | null
           description: string | null
           facilities: string[] | null
+          features: string[] | null
           id: string
+          images: string[] | null
           lat: number | null
           lng: number | null
           location: string
           name: string
           owner_id: string | null
           price_per_night: number | null
+          region: string | null
           slug: string
           status: string | null
           total_reviews: number | null
@@ -195,22 +203,30 @@ export type Database = {
         }
         Insert: {
           accommodation_type: string
+          address?: string | null
+          amenities?: string[] | null
           average_rating?: number | null
           booking_link?: string | null
+          capacity?: number | null
+          city: string
           clothing_policy?: string | null
           contact_email?: string | null
           contact_phone?: string | null
           country: string
           created_at?: string | null
+          currency?: string | null
           description?: string | null
           facilities?: string[] | null
+          features?: string[] | null
           id?: string
+          images?: string[] | null
           lat?: number | null
           lng?: number | null
           location: string
           name: string
           owner_id?: string | null
           price_per_night?: number | null
+          region?: string | null
           slug: string
           status?: string | null
           total_reviews?: number | null
@@ -220,22 +236,30 @@ export type Database = {
         }
         Update: {
           accommodation_type?: string
+          address?: string | null
+          amenities?: string[] | null
           average_rating?: number | null
           booking_link?: string | null
+          capacity?: number | null
+          city?: string
           clothing_policy?: string | null
           contact_email?: string | null
           contact_phone?: string | null
           country?: string
           created_at?: string | null
+          currency?: string | null
           description?: string | null
           facilities?: string[] | null
+          features?: string[] | null
           id?: string
+          images?: string[] | null
           lat?: number | null
           lng?: number | null
           location?: string
           name?: string
           owner_id?: string | null
           price_per_night?: number | null
+          region?: string | null
           slug?: string
           status?: string | null
           total_reviews?: number | null
