@@ -11,6 +11,8 @@ import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, MapPin, SlidersHorizontal } from "lucide-react";
 import { getVenues } from "@/services/venueService";
+import { getVenueCoordinates } from "@/lib/utils";
+import { getCountryCoordinates } from "@/lib/utils";
 
 const propertyTypes = ["hotel", "resort", "campsite", "villa", "bungalow"];
 
@@ -118,11 +120,11 @@ export default function SearchPage() {
     name: v.name,
     location: v.location,
     country: v.country,
-    latitude: v.lat || 0,
-    longitude: v.lng || 0,
-    image: v.main_image || "/placeholder.jpg",
+    lat: v.lat || getCountryCoordinates(v.country).lat,
+    lng: v.lng || getCountryCoordinates(v.country).lng,
+    image: v.image_urls?.[0] || "/placeholder.png",
     price: v.price_per_night || 0,
-    rating: v.average_rating || 0,
+    rating: v.rating || 0,
   }));
 
   return (

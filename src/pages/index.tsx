@@ -76,8 +76,8 @@ export default function Home() {
     name: p.name,
     location: `${p.location.city}, ${p.location.country}`,
     country: p.location.country,
-    latitude: p.location.coordinates?.lat || 0,
-    longitude: p.location.coordinates?.lng || 0,
+    lat: p.location.coordinates?.lat || 0,
+    lng: p.location.coordinates?.lng || 0,
     image: p.images[0],
     price: p.price.perNight,
     rating: p.rating

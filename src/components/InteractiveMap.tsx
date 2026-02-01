@@ -6,85 +6,61 @@ import {
   Marker,
   ZoomableGroup,
 } from "react-simple-maps";
-import { Button } from "@/components/ui/button";
-import { Plus, Minus } from "lucide-react";
 
-const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json";
+const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
-interface Property {
+interface MapProperty {
   id: string;
   name: string;
   location: string;
   country: string;
-  latitude: number;
-  longitude: number;
+  lat: number;
+  lng: number;
   image: string;
   price: number;
   rating: number;
 }
 
 interface InteractiveMapProps {
-  properties: Property[];
+  properties: MapProperty[];
   selectedCountries: string[];
-  onCountryClick?: (country: string) => void;
+  onCountryClick: (country: string) => void;
 }
 
-export function InteractiveMap({
+export const InteractiveMap = memo(function InteractiveMap({
   properties,
   selectedCountries,
   onCountryClick,
 }: InteractiveMapProps) {
+  const [hoveredProperty, setHoveredProperty] = useState<MapProperty | null>(null);
   const [zoom, setZoom] = useState(1);
-  const [center, setCenter] = useState<[number, number]>([0, 20]);
-  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
 
   const handleZoomIn = () => {
-    if (zoom < 4) {
-      setZoom(zoom * 1.5);
-    }
+    setZoom((prev) => Math.min(prev + 0.5, 4));
   };
 
   const handleZoomOut = () => {
-    if (zoom > 1) {
-      setZoom(zoom / 1.5);
-    } else {
-      // Force reset to center if we go back to zoom 1
-      setCenter([0, 20]);
-      setZoom(1);
-    }
-  };
-
-  const handleMoveEnd = (position: { coordinates: [number, number]; zoom: number }) => {
-    // LOCK PANNING IF ZOOM IS 1
-    // If user tries to pan at zoom 1, we force it back to default center
-    if (position.zoom <= 1) {
-      setCenter([0, 20]);
-      setZoom(1);
-    } else {
-      setCenter(position.coordinates);
-      setZoom(position.zoom);
-    }
+    setZoom((prev) => Math.max(prev - 0.5, 1));
   };
 
   return (
-    <div className="relative w-full h-[600px] bg-gray-50 rounded-lg overflow-hidden">
+    <div className="relative w-full h-[500px] bg-gray-50 rounded-lg overflow-hidden">
+      {/* Zoom Controls */}
       <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
-        <Button
+        <button
           onClick={handleZoomIn}
-          size="icon"
-          variant="secondary"
-          className="bg-white shadow-md hover:bg-gray-100"
+          className="w-10 h-10 bg-white rounded-lg shadow-md hover:bg-gray-50 flex items-center justify-center text-xl font-bold"
+          aria-label="Zoom in"
         >
-          <Plus className="h-4 w-4" />
-        </Button>
-        <Button
+          +
+        </button>
+        <button
           onClick={handleZoomOut}
-          size="icon"
-          variant="secondary"
-          className="bg-white shadow-md hover:bg-gray-100"
+          className="w-10 h-10 bg-white rounded-lg shadow-md hover:bg-gray-50 flex items-center justify-center text-xl font-bold"
+          aria-label="Zoom out"
         >
-          <Minus className="h-4 w-4" />
-        </Button>
+          −
+        </button>
       </div>
 
       <ComposableMap
@@ -92,55 +68,42 @@ export function InteractiveMap({
         projectionConfig={{
           scale: 147,
         }}
-        style={{ width: "100%", height: "100%" }}
+        className="w-full h-full"
       >
         <ZoomableGroup
           zoom={zoom}
-          center={center}
-          onMoveEnd={handleMoveEnd}
+          center={[0, 20]}
           disablePanning={zoom === 1}
-          filterZoomEvent={(evt) => {
-            // COMPLETELY DISABLE scroll zoom and double-click zoom
-            // Only button zooming allowed
-            return false;
-          }}
-          // Limiting translation extent to prevent panning too far
-          translateExtent={[[ -100, -100 ], [ 900, 700 ]]}
+          minZoom={1}
+          maxZoom={4}
         >
           <Geographies geography={geoUrl}>
             {({ geographies }) =>
               geographies.map((geo) => {
                 const countryName = geo.properties.name;
                 const isSelected = selectedCountries.includes(countryName);
-                const hasProperties = properties.some(
-                  (p) => p.country === countryName
-                );
 
                 return (
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
-                    onClick={() => onCountryClick?.(countryName)}
+                    onClick={() => onCountryClick(countryName)}
                     style={{
                       default: {
-                        fill: isSelected
-                          ? "#FF6B35"
-                          : hasProperties
-                          ? "#FFE5DC"
-                          : "#E5E7EB",
+                        fill: isSelected ? "#FF6347" : "#E5E7EB",
                         stroke: "#FFFFFF",
                         strokeWidth: 0.5,
                         outline: "none",
                       },
                       hover: {
-                        fill: isSelected ? "#FF6B35" : "#FFD4C4",
+                        fill: isSelected ? "#FF6347" : "#D1D5DB",
                         stroke: "#FFFFFF",
                         strokeWidth: 0.5,
                         outline: "none",
                         cursor: "pointer",
                       },
                       pressed: {
-                        fill: "#FF6B35",
+                        fill: "#FF6347",
                         stroke: "#FFFFFF",
                         strokeWidth: 0.5,
                         outline: "none",
@@ -152,49 +115,45 @@ export function InteractiveMap({
             }
           </Geographies>
 
-          {properties.map((property) => (
-            <Marker
-              key={property.id}
-              coordinates={[property.longitude, property.latitude]}
-              onClick={() => setSelectedProperty(property)}
-            >
-              <circle
-                r={8}
-                fill="#FF6B35"
-                stroke="#FFFFFF"
-                strokeWidth={2}
-                className="cursor-pointer hover:r-10 transition-all"
-              />
-            </Marker>
-          ))}
+          {/* Property Markers */}
+          {properties.map((property) => {
+            const isCountrySelected = selectedCountries.includes(property.country);
+            
+            return (
+              <Marker
+                key={property.id}
+                coordinates={[property.lng, property.lat]}
+                onMouseEnter={() => setHoveredProperty(property)}
+                onMouseLeave={() => setHoveredProperty(null)}
+              >
+                <circle
+                  r={6}
+                  fill={isCountrySelected ? "#000000" : "#FF6347"}
+                  stroke="#FFFFFF"
+                  strokeWidth={2}
+                  style={{ cursor: "pointer" }}
+                />
+              </Marker>
+            );
+          })}
         </ZoomableGroup>
       </ComposableMap>
 
-      {selectedProperty && (
-        <div className="absolute bottom-4 left-4 right-4 bg-white p-4 rounded-lg shadow-lg z-10 max-w-sm">
-          <button
-            onClick={() => setSelectedProperty(null)}
-            className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
-          >
-            ×
-          </button>
-          <img
-            src={selectedProperty.image}
-            alt={selectedProperty.name}
-            className="w-full h-32 object-cover rounded-lg mb-2"
-          />
-          <h3 className="font-semibold text-lg">{selectedProperty.name}</h3>
-          <p className="text-sm text-gray-600">{selectedProperty.location}</p>
-          <div className="flex justify-between items-center mt-2">
+      {/* Property Hover Card */}
+      {hoveredProperty && (
+        <div className="absolute bottom-4 left-4 bg-white rounded-lg shadow-xl p-4 max-w-xs z-20">
+          <h3 className="font-bold text-lg mb-1">{hoveredProperty.name}</h3>
+          <p className="text-sm text-gray-600 mb-2">{hoveredProperty.location}</p>
+          <div className="flex items-center justify-between">
             <span className="text-orange-600 font-bold">
-              ${selectedProperty.price}/night
+              ${hoveredProperty.price}/night
             </span>
-            <span className="text-sm text-gray-600">
-              ⭐ {selectedProperty.rating}
+            <span className="text-sm text-gray-700">
+              ⭐ {hoveredProperty.rating}
             </span>
           </div>
         </div>
       )}
     </div>
   );
-}
+});
