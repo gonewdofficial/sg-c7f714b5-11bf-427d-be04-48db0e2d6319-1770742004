@@ -182,8 +182,8 @@ export default function SearchPage() {
           <div className="mb-8">
             <h2 className="text-2xl font-bold mb-4 text-black">Explore locations</h2>
             <InteractiveMap
-              properties={filteredProperties}
-              selectedCountry={filters.countries[0]}
+              properties={venues}
+              selectedCountries={filters.countries}
               onCountryClick={handleCountryToggle}
             />
           </div>

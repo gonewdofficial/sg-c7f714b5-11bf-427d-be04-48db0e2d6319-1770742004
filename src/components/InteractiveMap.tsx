@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import {
   ComposableMap,
   Geographies,
@@ -6,99 +6,84 @@ import {
   Marker,
   ZoomableGroup,
 } from "react-simple-maps";
+import { Property } from "@/types";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
-interface Property {
-  id: string;
-  name: string;
-  location: {
-    city: string;
-    country: string;
-    coordinates?: {
-      lat: number;
-      lng: number;
-    };
-  };
-  price: {
-    perNight: number;
-    currency: string;
-  };
-  rating: number;
-}
-
 interface InteractiveMapProps {
   properties: Property[];
-  selectedCountry?: string;
-  onCountryClick?: (country: string) => void;
-  hoveredProperty?: string | null;
+  selectedCountries: string[];
+  onCountryClick: (country: string) => void;
 }
 
 export const InteractiveMap = memo(({ 
   properties, 
-  selectedCountry,
-  onCountryClick,
-  hoveredProperty 
+  selectedCountries = [],
+  onCountryClick 
 }: InteractiveMapProps) => {
+  const [tooltipContent, setTooltipContent] = useState<{
+    name: string;
+    rating: number;
+    x: number;
+    y: number;
+  } | null>(null);
+
   const handleCountryClick = (geo: any) => {
     const countryName = geo.properties.name || geo.properties.NAME || geo.properties.ADMIN;
-    if (onCountryClick && countryName) {
+    if (countryName) {
       onCountryClick(countryName);
     }
   };
 
   return (
-    <div className="w-full h-[400px] md:h-[500px] lg:h-[600px] bg-gray-50 rounded-lg overflow-hidden relative">
+    <div 
+      className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] bg-gray-50 rounded-lg overflow-hidden outline-none focus:outline-none"
+    >
       <ComposableMap
         projection="geoMercator"
         projectionConfig={{
           scale: 147,
-          center: [0, 20],
         }}
-        style={{ width: "100%", height: "100%" }}
+        style={{
+          width: "100%",
+          height: "100%",
+          outline: "none",
+        }}
       >
         <ZoomableGroup
           center={[0, 20]}
           zoom={1}
           minZoom={1}
           maxZoom={8}
-          translateExtent={[
-            [-1000, -500],
-            [1000, 500],
-          ]}
+          filterZoomEvent={(evt) => {
+            // Disable scroll zoom
+            return evt.type !== "wheel";
+          }}
+          style={{ outline: "none" }}
         >
           <Geographies geography={geoUrl}>
             {({ geographies }) =>
               geographies.map((geo) => {
                 const countryName = geo.properties.name || geo.properties.NAME || geo.properties.ADMIN;
-                const isSelected = selectedCountry === countryName;
+                const isSelected = selectedCountries.includes(countryName);
 
                 return (
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
                     onClick={() => handleCountryClick(geo)}
+                    fill={isSelected ? "#FF6347" : "#D1D5DB"}
+                    stroke="#FFFFFF"
+                    strokeWidth={0.5}
                     style={{
-                      default: {
-                        fill: isSelected ? "#FF6347" : "#D1D5DB",
-                        stroke: "#FFFFFF",
-                        strokeWidth: 0.5,
+                      default: { outline: "none" },
+                      hover: { 
+                        fill: isSelected ? "#FF4500" : "#9CA3AF",
                         outline: "none",
+                        cursor: "pointer"
                       },
-                      hover: {
-                        fill: isSelected ? "#FF6347" : "#9CA3AF",
-                        stroke: "#FFFFFF",
-                        strokeWidth: 0.5,
-                        outline: "none",
-                      },
-                      pressed: {
-                        fill: "#FF6347",
-                        stroke: "#FFFFFF",
-                        strokeWidth: 0.5,
-                        outline: "none",
-                      },
+                      pressed: { outline: "none" },
                     }}
-                    className="cursor-pointer transition-colors duration-200"
                   />
                 );
               })
@@ -106,47 +91,53 @@ export const InteractiveMap = memo(({
           </Geographies>
 
           {/* DATA POINTS - ALWAYS VISIBLE IN STATIC BLACK */}
-          {properties
-            .filter((property) => property.location.coordinates)
-            .map((property) => (
+          {properties.map((property) => {
+            if (!property.location?.coordinates) return null;
+            
+            return (
               <Marker
                 key={property.id}
                 coordinates={[
-                  property.location.coordinates!.lng,
-                  property.location.coordinates!.lat,
+                  property.location.coordinates.lng,
+                  property.location.coordinates.lat,
                 ]}
+                onMouseEnter={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  setTooltipContent({
+                    name: property.name,
+                    rating: property.rating,
+                    x: rect.left + rect.width / 2,
+                    y: rect.top,
+                  });
+                }}
+                onMouseLeave={() => setTooltipContent(null)}
               >
                 <circle
-                  r={hoveredProperty === property.id ? 8 : 6}
+                  r={4}
                   fill="#000000"
                   stroke="#FFFFFF"
-                  strokeWidth={2}
-                  className="transition-all duration-200 cursor-pointer"
-                  style={{
-                    filter: hoveredProperty === property.id ? "drop-shadow(0 4px 6px rgba(0,0,0,0.3))" : "none",
-                  }}
+                  strokeWidth={1.5}
+                  style={{ cursor: "pointer" }}
                 />
               </Marker>
-            ))}
+            );
+          })}
         </ZoomableGroup>
       </ComposableMap>
 
-      {hoveredProperty && properties.find((p) => p.id === hoveredProperty) && (
-        <div className="absolute bottom-4 left-4 bg-white p-3 rounded-lg shadow-lg z-10 max-w-xs">
-          <div className="font-semibold text-sm">
-            {properties.find((p) => p.id === hoveredProperty)?.name}
-          </div>
-          <div className="text-xs text-gray-600 mt-1">
-            {properties.find((p) => p.id === hoveredProperty)?.location.city},{" "}
-            {properties.find((p) => p.id === hoveredProperty)?.location.country}
-          </div>
-          <div className="flex items-center justify-between mt-2">
-            <span className="text-sm font-bold" style={{ color: "#FF6347" }}>
-              ${properties.find((p) => p.id === hoveredProperty)?.price.perNight}/night
-            </span>
-            <span className="text-xs text-gray-600">
-              ⭐ {properties.find((p) => p.id === hoveredProperty)?.rating}
-            </span>
+      {/* Tooltip */}
+      {tooltipContent && (
+        <div
+          className="absolute bg-white px-3 py-2 rounded-lg shadow-lg text-sm pointer-events-none z-50"
+          style={{
+            left: `${tooltipContent.x}px`,
+            top: `${tooltipContent.y - 10}px`,
+            transform: "translate(-50%, -100%)",
+          }}
+        >
+          <div className="font-semibold">{tooltipContent.name}</div>
+          <div className="flex items-center gap-1 text-yellow-500">
+            ⭐ {tooltipContent.rating}
           </div>
         </div>
       )}

@@ -197,6 +197,7 @@ export default function Home() {
             <div className="mb-8">
               <InteractiveMap
                 properties={properties}
+                selectedCountries={selectedCountries}
                 onCountryClick={handleCountryToggle}
               />
             </div>
