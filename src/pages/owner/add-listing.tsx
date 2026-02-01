@@ -145,10 +145,10 @@ export default function AddListing() {
   return (
     <>
       <SEO title="Add New Listing - Owner Dashboard" />
-      <div className="min-h-screen bg-gray-50 pb-12">
+      <div className="min-h-screen bg-gray-50">
         <Header />
-        <main className="container mx-auto px-4 py-6 md:py-8">
-          <div className="max-w-3xl mx-auto">
+        <main className="pt-20 px-4 pb-16">
+          <div className="max-w-4xl mx-auto">
             <Card>
               <CardHeader>
                 <CardTitle className="text-xl md:text-2xl">Add New Listing</CardTitle>

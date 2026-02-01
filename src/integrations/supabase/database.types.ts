@@ -172,6 +172,9 @@ export type Database = {
           accommodation_type: string
           average_rating: number | null
           booking_link: string | null
+          clothing_policy: string | null
+          contact_email: string | null
+          contact_phone: string | null
           country: string
           created_at: string | null
           description: string | null
@@ -182,16 +185,21 @@ export type Database = {
           location: string
           name: string
           owner_id: string | null
+          price_per_night: number | null
           slug: string
           status: string | null
           total_reviews: number | null
           updated_at: string | null
+          website: string | null
           website_url: string | null
         }
         Insert: {
           accommodation_type: string
           average_rating?: number | null
           booking_link?: string | null
+          clothing_policy?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           country: string
           created_at?: string | null
           description?: string | null
@@ -202,16 +210,21 @@ export type Database = {
           location: string
           name: string
           owner_id?: string | null
+          price_per_night?: number | null
           slug: string
           status?: string | null
           total_reviews?: number | null
           updated_at?: string | null
+          website?: string | null
           website_url?: string | null
         }
         Update: {
           accommodation_type?: string
           average_rating?: number | null
           booking_link?: string | null
+          clothing_policy?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           country?: string
           created_at?: string | null
           description?: string | null
@@ -222,10 +235,12 @@ export type Database = {
           location?: string
           name?: string
           owner_id?: string | null
+          price_per_night?: number | null
           slug?: string
           status?: string | null
           total_reviews?: number | null
           updated_at?: string | null
+          website?: string | null
           website_url?: string | null
         }
         Relationships: [
