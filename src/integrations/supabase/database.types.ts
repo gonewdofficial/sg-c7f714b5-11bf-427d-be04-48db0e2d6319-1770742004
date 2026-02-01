@@ -189,7 +189,7 @@ export type Database = {
           images: string[] | null
           lat: number | null
           lng: number | null
-          location: string
+          location: string | null
           name: string
           owner_id: string | null
           price_per_night: number | null
@@ -222,7 +222,7 @@ export type Database = {
           images?: string[] | null
           lat?: number | null
           lng?: number | null
-          location: string
+          location?: string | null
           name: string
           owner_id?: string | null
           price_per_night?: number | null
@@ -255,7 +255,7 @@ export type Database = {
           images?: string[] | null
           lat?: number | null
           lng?: number | null
-          location?: string
+          location?: string | null
           name?: string
           owner_id?: string | null
           price_per_night?: number | null

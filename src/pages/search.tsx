@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { useRouter } from "next/router";
 import { Header } from "@/components/Header";
 import { SEO } from "@/components/SEO";
 import { PropertyCard } from "@/components/PropertyCard";
@@ -11,16 +12,18 @@ import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, MapPin, SlidersHorizontal } from "lucide-react";
 import { getVenues } from "@/services/venueService";
-import { getVenueCoordinates } from "@/lib/utils";
 import { getCountryCoordinates } from "@/lib/utils";
+import type { Property } from "@/types";
 
 const propertyTypes = ["hotel", "resort", "campsite", "villa", "bungalow"];
 
 export default function SearchPage() {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(true);
   const [sortBy, setSortBy] = useState("relevance");
-  const [venues, setVenues] = useState<any[]>([]);
+  const [venues, setVenues] = useState<Property[]>([]);
+  const [filteredVenues, setFilteredVenues] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   
   const [filters, setFilters] = useState({
@@ -31,44 +34,82 @@ export default function SearchPage() {
     amenities: [] as string[],
   });
 
+  // Load venues from Supabase on mount
   useEffect(() => {
-    async function loadVenues() {
-      try {
-        setLoading(true);
-        const { venues: data, error } = await getVenues(); // Destructure venues and rename to data for existing code
-        if (error) {
-           console.error("Error loading venues:", error);
-           return;
-        }
-        console.log("Loaded venues:", data);
-        setVenues(data || []);
-      } catch (error) {
-        console.error("Error loading venues:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
     loadVenues();
   }, []);
+
+  const loadVenues = async () => {
+    setLoading(true);
+    const { venues: data, error } = await getVenues();
+    
+    if (error) {
+      console.error("Error loading venues:", error);
+      setVenues([]);
+      setFilteredVenues([]);
+    } else {
+      // Map raw venue data to Property type
+      const mappedVenues: Property[] = data.map((v) => {
+        const coords = v.lat && v.lng 
+          ? { lat: v.lat, lng: v.lng }
+          : getCountryCoordinates(v.country);
+
+        return {
+          id: v.id,
+          name: v.name,
+          slug: v.slug,
+          description: v.description || "",
+          location: {
+            city: v.city || "",
+            country: v.country,
+            region: v.region || "",
+            address: v.address,
+            coordinates: coords,
+          },
+          images: v.images || [],
+          price: {
+            perNight: v.price_per_night || 0,
+            currency: "EUR",
+          },
+          rating: v.rating || 0,
+          reviewCount: 0,
+          propertyType: (v.accommodation_type as any) || "resort",
+          naturistType: "clothing-optional" as any,
+          amenities: v.amenities || [],
+          features: [],
+          capacity: {
+            guests: v.capacity || 0,
+            rooms: 0,
+          },
+          availability: v.status === "active",
+          verified: v.status === "active",
+        };
+      });
+
+      setVenues(mappedVenues);
+      setFilteredVenues(mappedVenues);
+    }
+    setLoading(false);
+  };
 
   const filteredProperties = useMemo(() => {
     let result = venues;
 
     if (filters.countries.length > 0) {
-      result = result.filter((p) => filters.countries.includes(p.country));
+      result = result.filter((p) => filters.countries.includes(p.location.country));
     }
 
     if (filters.propertyTypes.length > 0) {
       result = result.filter((p) =>
-        filters.propertyTypes.includes(p.property_type)
+        filters.propertyTypes.includes(p.propertyType)
       );
     }
 
     if (filters.priceRange[0] > 0 || filters.priceRange[1] < 1000) {
       result = result.filter(
         (p) =>
-          p.price_per_night >= filters.priceRange[0] &&
-          p.price_per_night <= filters.priceRange[1]
+          p.price.perNight >= filters.priceRange[0] &&
+          p.price.perNight <= filters.priceRange[1]
       );
     }
 
@@ -81,15 +122,15 @@ export default function SearchPage() {
       result = result.filter(
         (p) =>
           p.name.toLowerCase().includes(term) ||
-          p.location.toLowerCase().includes(term) ||
-          p.country.toLowerCase().includes(term)
+          p.location.city.toLowerCase().includes(term) ||
+          p.location.country.toLowerCase().includes(term)
       );
     }
 
     if (sortBy === "price-low") {
-      result = [...result].sort((a, b) => a.price_per_night - b.price_per_night);
+      result = [...result].sort((a, b) => a.price.perNight - b.price.perNight);
     } else if (sortBy === "price-high") {
-      result = [...result].sort((a, b) => b.price_per_night - a.price_per_night);
+      result = [...result].sort((a, b) => b.price.perNight - a.price.perNight);
     } else if (sortBy === "rating") {
       result = [...result].sort((a, b) => (b.rating || 0) - (a.rating || 0));
     }
@@ -114,18 +155,6 @@ export default function SearchPage() {
         : [...prev.propertyTypes, type],
     }));
   };
-
-  const mapProperties = venues.map(v => ({
-    id: v.id,
-    name: v.name,
-    location: v.location,
-    country: v.country,
-    lat: v.lat || getCountryCoordinates(v.country).lat,
-    lng: v.lng || getCountryCoordinates(v.country).lng,
-    image: v.image_urls?.[0] || "/placeholder.png",
-    price: v.price_per_night || 0,
-    rating: v.rating || 0,
-  }));
 
   return (
     <>
@@ -153,9 +182,8 @@ export default function SearchPage() {
           <div className="mb-8">
             <h2 className="text-2xl font-bold mb-4 text-black">Explore locations</h2>
             <InteractiveMap
-              properties={mapProperties}
-              selectedCountries={filters.countries}
-              onCountryClick={handleCountryToggle}
+              properties={venues}
+              onPropertyClick={(p) => router.push(`/property/${p.id}`)}
             />
           </div>
 
@@ -282,11 +310,11 @@ export default function SearchPage() {
                       key={property.id}
                       id={property.id}
                       name={property.name}
-                      location={property.location}
-                      image={property.main_image || "/placeholder.jpg"}
-                      price={property.price_per_night || 0}
-                      rating={property.average_rating || 0}
-                      reviews={property.total_reviews || 0}
+                      location={`${property.location.city}, ${property.location.country}`}
+                      image={property.images[0] || "/placeholder.jpg"}
+                      price={property.price.perNight}
+                      rating={property.rating}
+                      reviews={property.reviewCount}
                     />
                   ))}
                 </div>

@@ -4,13 +4,15 @@ import { Header } from "@/components/Header";
 import { SearchBar } from "@/components/SearchBar";
 import { PropertyCard } from "@/components/PropertyCard";
 import { InteractiveMap } from "@/components/InteractiveMap";
-import { mockProperties } from "@/lib/mockData";
+import { getVenues } from "@/services/venueService";
+import { getCountryCoordinates } from "@/lib/utils";
 import type { Property } from "@/types";
 
 export default function Home() {
-  const [properties] = useState<Property[]>(mockProperties);
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
-  const [filteredProperties, setFilteredProperties] = useState<Property[]>(mockProperties);
+  const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
   const [location, setLocation] = useState("");
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
@@ -19,19 +21,78 @@ export default function Home() {
   const [accommodationType, setAccommodationType] = useState<string>("all");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
+  // Load venues from Supabase on mount
+  useEffect(() => {
+    loadVenues();
+  }, []);
+
+  const loadVenues = async () => {
+    setLoading(true);
+    const { venues, error } = await getVenues();
+    
+    if (error) {
+      console.error("Error loading venues:", error);
+      setProperties([]);
+      setFilteredProperties([]);
+    } else {
+      // Map venues to Property type
+      const mappedProperties: Property[] = venues.map((v) => {
+        const coords = v.lat && v.lng 
+          ? { lat: v.lat, lng: v.lng }
+          : getCountryCoordinates(v.country);
+
+        return {
+          id: v.id,
+          name: v.name,
+          slug: v.slug,
+          description: v.description || "",
+          location: {
+            city: v.city || "",
+            country: v.country,
+            region: v.region || "",
+            address: v.address,
+            coordinates: coords,
+          },
+          images: v.images || [],
+          price: {
+            perNight: v.price_per_night || 0,
+            currency: "EUR",
+          },
+          rating: v.rating || 0,
+          reviewCount: 0, // Will be calculated from reviews
+          propertyType: (v.accommodation_type as any) || "resort",
+          naturistType: "clothing-optional" as any,
+          amenities: v.amenities || [],
+          features: [],
+          capacity: {
+            guests: v.capacity || 0,
+            rooms: 0,
+          },
+          availability: v.status === "active",
+          featured: false,
+          verified: v.status === "active",
+        };
+      });
+
+      setProperties(mappedProperties);
+      setFilteredProperties(mappedProperties);
+    }
+    setLoading(false);
+  };
+
   // Get unique countries from properties
-  const availableCountries = Array.from(new Set(mockProperties.map((p) => p.location.country)));
+  const availableCountries = Array.from(new Set(properties.map((p) => p.location.country)));
   
   // Extract all unique tags/facilities from venue listings
   const availableTags = Array.from(
     new Set(
-      mockProperties.flatMap((p) => p.amenities || [])
+      properties.flatMap((p) => p.amenities || [])
     )
   ).sort();
 
   useEffect(() => {
     filterProperties();
-  }, [selectedCountries, location, checkIn, checkOut, guests, priceRange]);
+  }, [selectedCountries, location, checkIn, checkOut, guests, priceRange, properties]);
 
   const filterProperties = () => {
     let results = [...properties];
@@ -70,19 +131,6 @@ export default function Home() {
     setFilteredProperties(results);
   };
 
-  // Map properties to the format expected by InteractiveMap
-  const mapProperties = filteredProperties.map(p => ({
-    id: p.id,
-    name: p.name,
-    location: `${p.location.city}, ${p.location.country}`,
-    country: p.location.country,
-    lat: p.location.coordinates?.lat || 0,
-    lng: p.location.coordinates?.lng || 0,
-    image: p.images[0],
-    price: p.price.perNight,
-    rating: p.rating
-  }));
-
   const handleCountryToggle = (country: string) => {
     setSelectedCountries((prev) =>
       prev.includes(country) ? prev.filter((c) => c !== country) : [...prev, country]
@@ -98,6 +146,28 @@ export default function Home() {
   const removeCountry = (country: string) => {
     setSelectedCountries((prev) => prev.filter((c) => c !== country));
   };
+
+  if (loading) {
+    return (
+      <>
+        <SEO
+          title="GO/NEWD - Discover Naturist Hotels Across the Globe"
+          description="Find your perfect clothing-optional getaway"
+        />
+        <div className="min-h-screen bg-white">
+          <Header />
+          <main className="pt-16">
+            <div className="flex items-center justify-center min-h-[60vh]">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+                <p className="text-gray-600">Loading venues...</p>
+              </div>
+            </div>
+          </main>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -124,11 +194,12 @@ export default function Home() {
           {/* Interactive Map Section */}
           <section className="px-4 py-8 bg-gray-50 rounded-lg mb-8">
             <h2 className="text-3xl font-bold mb-6 text-black">Explore locations</h2>
-            <InteractiveMap
-              properties={mapProperties}
-              selectedCountries={selectedCountries}
-              onCountryClick={handleCountryToggle}
-            />
+            <div className="mb-8">
+              <InteractiveMap
+                properties={properties}
+                onCountryClick={handleCountryToggle}
+              />
+            </div>
             
             {/* Selected Locations Pills */}
             <div className="mt-4 flex flex-wrap gap-2 items-center">
