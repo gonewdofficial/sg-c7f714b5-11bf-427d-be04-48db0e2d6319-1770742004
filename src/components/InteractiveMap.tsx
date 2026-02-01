@@ -1,41 +1,49 @@
-import { memo, useState } from "react";
+import { memo } from "react";
 import {
   ComposableMap,
   Geographies,
   Geography,
   Marker,
-  ZoomableGroup
+  ZoomableGroup,
 } from "react-simple-maps";
-import { Property } from "@/types";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
-interface InteractiveMapProps {
-  properties: Property[];
-  onCountryClick?: (country: string) => void;
-  onPropertyClick?: (property: Property) => void;
+interface Property {
+  id: string;
+  name: string;
+  location: {
+    city: string;
+    country: string;
+    coordinates?: {
+      lat: number;
+      lng: number;
+    };
+  };
+  price: {
+    perNight: number;
+    currency: string;
+  };
+  rating: number;
 }
 
-export const InteractiveMap = memo(function InteractiveMap({
-  properties,
+interface InteractiveMapProps {
+  properties: Property[];
+  selectedCountry?: string;
+  onCountryClick?: (country: string) => void;
+  hoveredProperty?: string | null;
+}
+
+export const InteractiveMap = memo(({ 
+  properties, 
+  selectedCountry,
   onCountryClick,
-  onPropertyClick
-}: InteractiveMapProps) {
-  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
-  const [hoveredProperty, setHoveredProperty] = useState<Property | null>(null);
-
+  hoveredProperty 
+}: InteractiveMapProps) => {
   const handleCountryClick = (geo: any) => {
-    const countryName = geo.properties.name;
-    
-    // Always notify parent of the click with the country name
-    // The parent (index.tsx) handles the toggle logic (add/remove from list)
-    onCountryClick?.(countryName);
-
-    // Update local visual state
-    if (selectedCountry === countryName) {
-      setSelectedCountry(null);
-    } else {
-      setSelectedCountry(countryName);
+    const countryName = geo.properties.name || geo.properties.NAME || geo.properties.ADMIN;
+    if (onCountryClick && countryName) {
+      onCountryClick(countryName);
     }
   };
 
@@ -44,20 +52,26 @@ export const InteractiveMap = memo(function InteractiveMap({
       <ComposableMap
         projection="geoMercator"
         projectionConfig={{
-          scale: 120,
-          center: [10, 50]
+          scale: 147,
+          center: [0, 20],
         }}
+        style={{ width: "100%", height: "100%" }}
       >
         <ZoomableGroup
-          center={[10, 50]}
+          center={[0, 20]}
           zoom={1}
           minZoom={1}
-          maxZoom={4}
+          maxZoom={8}
+          translateExtent={[
+            [-1000, -500],
+            [1000, 500],
+          ]}
         >
           <Geographies geography={geoUrl}>
             {({ geographies }) =>
               geographies.map((geo) => {
-                const isSelected = selectedCountry === geo.properties.name;
+                const countryName = geo.properties.name || geo.properties.NAME || geo.properties.ADMIN;
+                const isSelected = selectedCountry === countryName;
 
                 return (
                   <Geography
@@ -70,23 +84,21 @@ export const InteractiveMap = memo(function InteractiveMap({
                         stroke: "#FFFFFF",
                         strokeWidth: 0.5,
                         outline: "none",
-                        cursor: "pointer"
                       },
                       hover: {
                         fill: isSelected ? "#FF6347" : "#9CA3AF",
                         stroke: "#FFFFFF",
                         strokeWidth: 0.5,
                         outline: "none",
-                        cursor: "pointer"
                       },
                       pressed: {
                         fill: "#FF6347",
                         stroke: "#FFFFFF",
                         strokeWidth: 0.5,
                         outline: "none",
-                        cursor: "pointer"
-                      }
+                      },
                     }}
+                    className="cursor-pointer transition-colors duration-200"
                   />
                 );
               })
@@ -94,42 +106,46 @@ export const InteractiveMap = memo(function InteractiveMap({
           </Geographies>
 
           {/* DATA POINTS - ALWAYS VISIBLE IN STATIC BLACK */}
-          {properties.map((property) => {
-            if (!property.location?.coordinates) return null;
-
-            return (
+          {properties
+            .filter((property) => property.location.coordinates)
+            .map((property) => (
               <Marker
                 key={property.id}
                 coordinates={[
-                  property.location.coordinates.lng,
-                  property.location.coordinates.lat
+                  property.location.coordinates!.lng,
+                  property.location.coordinates!.lat,
                 ]}
-                onMouseEnter={() => setHoveredProperty(property)}
-                onMouseLeave={() => setHoveredProperty(null)}
-                onClick={() => onPropertyClick?.(property)}
               >
                 <circle
-                  r={4}
+                  r={hoveredProperty === property.id ? 8 : 6}
                   fill="#000000"
                   stroke="#FFFFFF"
-                  strokeWidth={1.5}
-                  style={{ cursor: "pointer" }}
+                  strokeWidth={2}
+                  className="transition-all duration-200 cursor-pointer"
+                  style={{
+                    filter: hoveredProperty === property.id ? "drop-shadow(0 4px 6px rgba(0,0,0,0.3))" : "none",
+                  }}
                 />
               </Marker>
-            );
-          })}
+            ))}
         </ZoomableGroup>
       </ComposableMap>
 
-      {hoveredProperty && (
-        <div className="absolute top-4 left-4 bg-white p-3 rounded-lg shadow-lg max-w-xs z-10">
-          <h3 className="font-bold text-sm text-gray-900">{hoveredProperty.name}</h3>
-          <p className="text-xs text-gray-600 mt-1">
-            {hoveredProperty.location.city}, {hoveredProperty.location.country}
-          </p>
-          <div className="flex items-center gap-2 mt-2">
-            <span className="text-xs font-semibold text-[#FF6347]">
-              ⭐ {hoveredProperty.rating}
+      {hoveredProperty && properties.find((p) => p.id === hoveredProperty) && (
+        <div className="absolute bottom-4 left-4 bg-white p-3 rounded-lg shadow-lg z-10 max-w-xs">
+          <div className="font-semibold text-sm">
+            {properties.find((p) => p.id === hoveredProperty)?.name}
+          </div>
+          <div className="text-xs text-gray-600 mt-1">
+            {properties.find((p) => p.id === hoveredProperty)?.location.city},{" "}
+            {properties.find((p) => p.id === hoveredProperty)?.location.country}
+          </div>
+          <div className="flex items-center justify-between mt-2">
+            <span className="text-sm font-bold" style={{ color: "#FF6347" }}>
+              ${properties.find((p) => p.id === hoveredProperty)?.price.perNight}/night
+            </span>
+            <span className="text-xs text-gray-600">
+              ⭐ {properties.find((p) => p.id === hoveredProperty)?.rating}
             </span>
           </div>
         </div>
@@ -137,3 +153,5 @@ export const InteractiveMap = memo(function InteractiveMap({
     </div>
   );
 });
+
+InteractiveMap.displayName = "InteractiveMap";
