@@ -16,6 +16,7 @@ interface SearchBarProps {
   onCountrySelect: (country: string) => void;
   selectedTags?: string[];
   onTagToggle?: (tag: string) => void;
+  onClearFilters?: () => void;
 }
 
 export function SearchBar({
@@ -24,19 +25,20 @@ export function SearchBar({
   selectedCountries,
   onCountrySelect,
   selectedTags = [],
-  onTagToggle
+  onTagToggle,
+  onClearFilters
 }: SearchBarProps) {
   const [showAllTags, setShowAllTags] = useState(false);
 
   const handleCountryChange = (value: string) => {
-    if (value === "all") {
-      selectedCountries.forEach((country) => onCountrySelect(country));
-    } else {
+    if (value && value !== "placeholder") {
       onCountrySelect(value);
     }
   };
 
   const visibleTags = showAllTags ? availableTags : availableTags.slice(0, 8);
+
+  const hasActiveFilters = selectedCountries.length > 0 || selectedTags.length > 0;
 
   return (
     <div className="w-full max-w-4xl mx-auto">
@@ -48,19 +50,41 @@ export function SearchBar({
             <MapPin className="h-4 w-4 text-orange-500" />
             Search for a country
           </label>
-          <Select onValueChange={handleCountryChange}>
+          <Select value="placeholder" onValueChange={handleCountryChange}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="All Countries" />
+              <SelectValue placeholder="Select a country to add" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Countries</SelectItem>
+              <SelectItem value="placeholder" disabled>
+                Select a country to add
+              </SelectItem>
               {availableCountries.map((country) => (
                 <SelectItem key={country} value={country}>
-                  {country}
+                  <span className="capitalize">{country}</span>
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
+
+          {/* Selected Countries Display */}
+          {selectedCountries.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {selectedCountries.map((country) => (
+                <div
+                  key={country}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-orange-100 text-orange-700 rounded-full text-sm"
+                >
+                  <span className="capitalize font-medium">{country}</span>
+                  <button
+                    onClick={() => onCountrySelect(country)}
+                    className="hover:bg-orange-200 rounded-full p-0.5 transition-colors"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Tags/Facilities Filter */}
@@ -97,6 +121,17 @@ export function SearchBar({
               </button>
             )}
           </div>
+        )}
+
+        {/* Clear Filters Button */}
+        {hasActiveFilters && (
+          <Button
+            onClick={onClearFilters}
+            variant="outline"
+            className="w-full border-orange-500 text-orange-500 hover:bg-orange-50"
+          >
+            Clear All Filters
+          </Button>
         )}
 
         {/* Search Button */}

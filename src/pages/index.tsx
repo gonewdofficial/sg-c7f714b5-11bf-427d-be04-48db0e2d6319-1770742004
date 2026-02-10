@@ -92,7 +92,7 @@ export default function Home() {
 
   useEffect(() => {
     filterProperties();
-  }, [selectedCountries, location, checkIn, checkOut, guests, priceRange, properties]);
+  }, [selectedCountries, location, checkIn, checkOut, guests, priceRange, properties, selectedTags]);
 
   const filterProperties = () => {
     let results = [...properties];
@@ -111,6 +111,13 @@ export default function Home() {
           property.name.toLowerCase().includes(location.toLowerCase()) ||
           property.location.city.toLowerCase().includes(location.toLowerCase()) ||
           property.location.country.toLowerCase().includes(location.toLowerCase())
+      );
+    }
+
+    // Tags filter
+    if (selectedTags.length > 0) {
+      results = results.filter((property) =>
+        selectedTags.every((tag) => property.amenities.includes(tag))
       );
     }
 
@@ -145,6 +152,13 @@ export default function Home() {
 
   const removeCountry = (country: string) => {
     setSelectedCountries((prev) => prev.filter((c) => c !== country));
+  };
+
+  const handleClearFilters = () => {
+    setSelectedCountries([]);
+    setSelectedTags([]);
+    setLocation("");
+    setPriceRange([0, 1000]);
   };
 
   if (loading) {
@@ -203,23 +217,25 @@ export default function Home() {
             </div>
             
             {/* Selected Locations Pills */}
-            <div className="mt-4 flex flex-wrap gap-2 items-center">
-              <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full">
-                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                <span className="text-sm font-medium text-gray-700">Locations</span>
+            {selectedCountries.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-2 items-center">
+                <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                  <span className="text-sm font-medium text-gray-700">Selected Locations</span>
+                </div>
+                
+                {selectedCountries.map((country) => (
+                  <button
+                    key={country}
+                    onClick={() => removeCountry(country)}
+                    className="flex items-center gap-2 px-4 py-2 bg-orange-100 text-orange-700 rounded-full hover:bg-orange-200 transition-colors"
+                  >
+                    <span className="text-sm font-medium capitalize">{country}</span>
+                    <span className="text-lg leading-none">×</span>
+                  </button>
+                ))}
               </div>
-              
-              {selectedCountries.map((country) => (
-                <button
-                  key={country}
-                  onClick={() => removeCountry(country)}
-                  className="flex items-center gap-2 px-4 py-2 bg-orange-100 text-orange-700 rounded-full hover:bg-orange-200 transition-colors"
-                >
-                  <span className="text-sm font-medium">{country}</span>
-                  <span className="text-lg leading-none">×</span>
-                </button>
-              ))}
-            </div>
+            )}
           </section>
 
           {/* Search Filters */}
@@ -231,6 +247,7 @@ export default function Home() {
               availableTags={availableTags}
               selectedTags={selectedTags}
               onTagToggle={handleTagToggle}
+              onClearFilters={handleClearFilters}
             />
           </section>
 
@@ -241,6 +258,14 @@ export default function Home() {
                 <h2 className="text-2xl font-bold text-gray-900">
                   {filteredProperties.length} Properties Available
                 </h2>
+                {(selectedCountries.length > 0 || selectedTags.length > 0) && (
+                  <button
+                    onClick={handleClearFilters}
+                    className="text-orange-500 hover:text-orange-600 font-medium text-sm"
+                  >
+                    Clear all filters
+                  </button>
+                )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -263,6 +288,12 @@ export default function Home() {
                   <p className="text-gray-500 text-lg">
                     No properties found matching your criteria.
                   </p>
+                  <button
+                    onClick={handleClearFilters}
+                    className="mt-4 text-orange-500 hover:text-orange-600 font-medium"
+                  >
+                    Clear filters and show all properties
+                  </button>
                 </div>
               )}
             </div>
