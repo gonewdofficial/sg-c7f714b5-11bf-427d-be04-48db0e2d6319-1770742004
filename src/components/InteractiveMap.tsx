@@ -47,6 +47,9 @@ const InteractiveMapComponent = ({
   const handleZoomOut = () => {
     if (zoom > 1) {
       setZoom(zoom / 1.5);
+      if (zoom / 1.5 <= 1) {
+        setHasZoomedIn(false);
+      }
     }
   };
 
@@ -123,6 +126,7 @@ const InteractiveMapComponent = ({
           filterZoomEvent={(evt) => {
             return evt.type !== "wheel";
           }}
+          translateExtent={hasZoomedIn ? undefined : [[0, 0], [0, 0]]}
         >
           <Geographies geography={geoUrl}>
             {({ geographies }) =>
