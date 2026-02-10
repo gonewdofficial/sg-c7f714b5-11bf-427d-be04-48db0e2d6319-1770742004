@@ -5,6 +5,22 @@ type Venue = Database["public"]["Tables"]["venues"]["Row"];
 type VenueInsert = Database["public"]["Tables"]["venues"]["Insert"];
 type VenueUpdate = Database["public"]["Tables"]["venues"]["Update"];
 
+// Define return type for getVenues to match the transformation
+export type VenueWithStats = Venue & {
+  average_rating: number;
+  review_count: number;
+  venue_images: {
+    id: string;
+    image_url: string;
+    display_order: number;
+    is_primary: boolean;
+  }[];
+  reviews: {
+    id: string;
+    rating: number | null;
+  }[];
+};
+
 /**
  * Generate URL-friendly slug from venue name
  */
@@ -65,22 +81,50 @@ export async function getVenues(filters?: {
 
     // Calculate average ratings
     const venuesWithRatings = data?.map((venue) => {
-      const reviews = Array.isArray(venue.reviews) ? venue.reviews : [];
+      // Cast to any to handle the joined data structure temporarily
+      const v = venue as any;
+      const reviews = Array.isArray(v.reviews) ? v.reviews : [];
       const avgRating = reviews.length > 0
-        ? reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length
+        ? reviews.reduce((sum: number, r: any) => sum + (r.rating || 0), 0) / reviews.length
         : 0;
       
       return {
-        ...venue,
+        ...v,
         average_rating: avgRating,
         review_count: reviews.length,
       };
     }) || [];
 
-    return { venues: venuesWithRatings, error: null };
+    return { venues: venuesWithRatings as VenueWithStats[], error: null };
   } catch (error: any) {
     console.error("getVenues error:", error);
     return { venues: [], error: error.message };
+  }
+}
+
+/**
+ * Get venue reviews
+ */
+export async function getVenueReviews(venueId: string) {
+  try {
+    const { data, error } = await supabase
+      .from("reviews")
+      .select(`
+        *,
+        profiles (
+          full_name,
+          avatar_url
+        )
+      `)
+      .eq("venue_id", venueId)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    return { reviews: data, error: null };
+  } catch (error: any) {
+    console.error("getVenueReviews error:", error);
+    return { reviews: [], error: error.message };
   }
 }
 

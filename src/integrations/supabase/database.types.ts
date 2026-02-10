@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type */
+ 
 export type Json =
   | string
   | number
@@ -130,6 +130,7 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          role: string | null
           updated_at: string | null
         }
         Insert: {
@@ -138,6 +139,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          role?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -146,9 +148,42 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          role?: string | null
           updated_at?: string | null
         }
         Relationships: []
+      }
+      review_responses: {
+        Row: {
+          created_at: string | null
+          id: string
+          response: string
+          review_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          response: string
+          review_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          response?: string
+          review_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_responses_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: true
+            referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reviews: {
         Row: {
@@ -257,6 +292,7 @@ export type Database = {
       }
       venues: {
         Row: {
+          accommodation_type: string | null
           address: string
           amenities: string[] | null
           bathrooms: number
@@ -271,12 +307,15 @@ export type Database = {
           featured: boolean | null
           id: string
           is_active: boolean | null
+          lat: number | null
           latitude: number
+          lng: number | null
           longitude: number
           max_guests: number
           name: string
           owner_id: string
           price_per_night: number
+          region: string | null
           rules: string[] | null
           slug: string | null
           status: string | null
@@ -285,6 +324,7 @@ export type Database = {
           website_url: string | null
         }
         Insert: {
+          accommodation_type?: string | null
           address: string
           amenities?: string[] | null
           bathrooms: number
@@ -299,12 +339,15 @@ export type Database = {
           featured?: boolean | null
           id?: string
           is_active?: boolean | null
+          lat?: number | null
           latitude: number
+          lng?: number | null
           longitude: number
           max_guests: number
           name: string
           owner_id: string
           price_per_night: number
+          region?: string | null
           rules?: string[] | null
           slug?: string | null
           status?: string | null
@@ -313,6 +356,7 @@ export type Database = {
           website_url?: string | null
         }
         Update: {
+          accommodation_type?: string | null
           address?: string
           amenities?: string[] | null
           bathrooms?: number
@@ -327,12 +371,15 @@ export type Database = {
           featured?: boolean | null
           id?: string
           is_active?: boolean | null
+          lat?: number | null
           latitude?: number
+          lng?: number | null
           longitude?: number
           max_guests?: number
           name?: string
           owner_id?: string
           price_per_night?: number
+          region?: string | null
           rules?: string[] | null
           slug?: string | null
           status?: string | null

@@ -12,7 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, MapPin, SlidersHorizontal } from "lucide-react";
 import { getVenues } from "@/services/venueService";
 import { getCountryCoordinates } from "@/lib/utils";
-import type { Property, VenueWithDetails } from "@/types";
+import type { Property } from "@/types";
+import type { VenueWithStats } from "@/services/venueService";
 
 const propertyTypes = ["hotel", "resort", "campsite", "villa", "bungalow", "eco_lodge"];
 
@@ -42,9 +43,9 @@ export default function SearchPage() {
       console.error("Error loading venues:", error);
       setVenues([]);
     } else {
-      const mappedVenues: Property[] = data.map((v: VenueWithDetails) => {
-        const coords = v.latitude && v.longitude 
-          ? { lat: v.latitude, lng: v.longitude }
+      const mappedVenues: Property[] = data.map((v: VenueWithStats) => {
+        const coords = v.lat && v.lng 
+          ? { lat: v.lat, lng: v.lng }
           : getCountryCoordinates(v.country);
 
         const images = Array.isArray(v.venue_images)
@@ -56,7 +57,7 @@ export default function SearchPage() {
         return {
           id: v.id,
           name: v.name,
-          slug: v.slug,
+          slug: v.slug || v.id,
           description: v.description || "",
           location: {
             city: v.city || "",
@@ -72,7 +73,7 @@ export default function SearchPage() {
           },
           rating: v.average_rating || 0,
           reviewCount: v.review_count || 0,
-          propertyType: v.venue_type || "resort",
+          propertyType: (v.venue_type as any) || "resort",
           naturistType: "clothing-optional",
           amenities: v.amenities || [],
           features: [],

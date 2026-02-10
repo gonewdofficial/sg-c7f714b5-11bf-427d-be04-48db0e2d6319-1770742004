@@ -11,7 +11,16 @@ import { Star, MapPin, Share2, Heart } from "lucide-react";
 import { getVenueBySlug, getVenueReviews } from "@/services/venueService";
 import type { Database } from "@/integrations/supabase/types";
 
-type Venue = Database["public"]["Tables"]["venues"]["Row"];
+// Define an extended type that includes the joined relationships
+type VenueDetail = Database["public"]["Tables"]["venues"]["Row"] & {
+  venue_images: {
+    id: string;
+    image_url: string;
+    display_order: number;
+    is_primary: boolean;
+  }[];
+};
+
 type Review = Database["public"]["Tables"]["reviews"]["Row"] & {
   profiles: {
     full_name: string | null;
@@ -22,7 +31,7 @@ type Review = Database["public"]["Tables"]["reviews"]["Row"] & {
 export default function PropertyDetail() {
   const router = useRouter();
   const { id } = router.query;
-  const [venue, setVenue] = useState<Venue | null>(null);
+  const [venue, setVenue] = useState<VenueDetail | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +54,8 @@ export default function PropertyDetail() {
       return;
     }
 
-    setVenue(venueData);
+    // Cast the response to our extended type since we know the query includes venue_images
+    setVenue(venueData as unknown as VenueDetail);
 
     const { reviews: reviewsData } = await getVenueReviews(venueData.id);
     setReviews(reviewsData || []);
@@ -95,8 +105,15 @@ export default function PropertyDetail() {
     : 0;
 
   const amenities = Array.isArray(venue.amenities) ? venue.amenities : [];
-  const features = Array.isArray(venue.features) ? venue.features : [];
-  const images = Array.isArray(venue.images) ? venue.images : [];
+  // Use amenities as features since features is not in DB yet, or use empty array
+  const features: string[] = []; 
+  
+  // Map venue_images to string array for display
+  const images = venue.venue_images 
+    ? venue.venue_images
+        .sort((a, b) => (a.display_order || 0) - (b.display_order || 0))
+        .map(img => img.image_url)
+    : [];
 
   return (
     <>
@@ -139,17 +156,9 @@ export default function PropertyDetail() {
               </div>
 
               <div className="flex flex-wrap gap-2">
-                {venue.featured && (
-                  <Badge className="bg-orange-500 text-white">Featured</Badge>
-                )}
                 <Badge variant="outline" className="border-orange-500 text-orange-600">
-                  {venue.accommodation_type}
+                  {venue.accommodation_type || venue.venue_type}
                 </Badge>
-                {venue.clothing_policy && (
-                  <Badge variant="outline" className="border-orange-500 text-orange-600">
-                    {venue.clothing_policy}
-                  </Badge>
-                )}
               </div>
             </div>
 

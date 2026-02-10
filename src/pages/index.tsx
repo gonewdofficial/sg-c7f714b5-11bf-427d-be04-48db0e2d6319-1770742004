@@ -6,7 +6,8 @@ import { PropertyCard } from "@/components/PropertyCard";
 import { InteractiveMap } from "@/components/InteractiveMap";
 import { getVenues } from "@/services/venueService";
 import { getCountryCoordinates } from "@/lib/utils";
-import type { Property, VenueWithDetails } from "@/types";
+import type { Property } from "@/types";
+import type { VenueWithStats } from "@/services/venueService";
 
 export default function Home() {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -30,9 +31,9 @@ export default function Home() {
       setProperties([]);
       setFilteredProperties([]);
     } else {
-      const mappedProperties: Property[] = venues.map((v: VenueWithDetails) => {
-        const coords = v.latitude && v.longitude 
-          ? { lat: v.latitude, lng: v.longitude }
+      const mappedProperties: Property[] = venues.map((v: VenueWithStats) => {
+        const coords = v.lat && v.lng 
+          ? { lat: v.lat, lng: v.lng }
           : getCountryCoordinates(v.country);
 
         const images = Array.isArray(v.venue_images)
@@ -44,7 +45,7 @@ export default function Home() {
         return {
           id: v.id,
           name: v.name,
-          slug: v.slug,
+          slug: v.slug || v.id, // Fallback to ID if slug is missing
           description: v.description || "",
           location: {
             city: v.city || "",
@@ -60,7 +61,7 @@ export default function Home() {
           },
           rating: v.average_rating || 0,
           reviewCount: v.review_count || 0,
-          propertyType: v.venue_type || "resort",
+          propertyType: (v.venue_type as any) || "resort",
           naturistType: "clothing-optional",
           amenities: v.amenities || [],
           features: [],
