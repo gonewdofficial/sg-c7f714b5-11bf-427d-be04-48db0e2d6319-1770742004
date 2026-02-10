@@ -157,7 +157,7 @@ export const properties: Property[] = [
     id: "6",
     name: "Serenity Naturist Villa Collection",
     slug: "serenity-naturist-villa-collection",
-    description: "Exclusive private villas for intimate naturist getaways. Each villa with private pool and complete privacy. The Serenity Collection represents the pinnacle of private naturist luxury in Santorini. Each of our six villas is a self-contained paradise with 2 bedrooms, 2 bathrooms, full kitchen, and expansive living spaces opening onto private terraces. Your infinity pool seems to merge with the Aegean Sea beyond, while the outdoor dining area and sun loungers offer complete seclusion. Interiors feature cycladic architecture with modern luxury touches: handcrafted furniture, premium linens, rain showers, and high-end appliances. Daily cleaning service keeps everything pristine, while our concierge arranges everything from private chef dinners to yacht charters. Each villa includes welcome provisions, wine, and fresh flowers. The location in Oia offers stunning sunset views and easy access to Santorini's attractions, yet complete privacy within your villa compound. Perfect for honeymoons, anniversaries, or simply escaping the world in absolute luxury. Some villas feature outdoor showers, hot tubs, and even small gyms. This is naturist hospitality at its most refined.",
+    description: "Exclusive private villas for intimate naturist getaways. Each villa with private pool and complete privacy. The Serenity Collection represents the pinnacle of private naturist luxury in Santorini. Each of our six villas is a self-contained paradise with 2 bedrooms, 2 bathrooms, full kitchen, and expansive living spaces opening onto private terraces. Your infinity pool seems to merge with the Aegean Sea beyond, while the outdoor dining area and sun loungers offer complete seclusion. Interiors feature Cycladic architecture with modern luxury touches: handcrafted furniture, premium linens, rain showers, and high-end appliances. Daily cleaning service keeps everything pristine, while our concierge arranges everything from private chef dinners to yacht charters. Each villa includes welcome provisions, wine, and fresh flowers. The location in Oia offers stunning sunset views and easy access to Santorini's attractions, yet complete privacy within your villa compound. Perfect for honeymoons, anniversaries, or simply escaping the world in absolute luxury. Some villas feature outdoor showers, hot tubs, and even small gyms. This is naturist hospitality at its most refined.",
     location: {
       city: "Santorini",
       country: "Greece",
@@ -354,243 +354,183 @@ export const properties: Property[] = [
   }
 ];
 
-export const reviews: Review[] = [
+export const reviews: any[] = [
   // Azure Naturist Resort & Spa reviews
   {
     id: "r1",
-    propertyId: "1",
-    userId: "u1",
-    userName: "Sophie M.",
+    venue_id: "1",
+    user_id: "u1",
     rating: 5,
-    title: "Absolutely Perfect Paradise",
     comment: "This resort exceeded all expectations. The staff is incredibly professional and respectful, the facilities are pristine, and the atmosphere is wonderfully liberating. The spa treatments were divine, and the Mediterranean cuisine in the fine dining restaurant was exceptional. We spent our days between the infinity pool and private beach, and every moment was pure bliss. The evening entertainment was tasteful and fun. We've already booked our return visit for next year. Worth every euro!",
-    date: "2026-01-15",
-    verified: true
+    created_at: "2026-01-15",
   },
   {
     id: "r2",
-    propertyId: "1",
-    userId: "u2",
-    userName: "Michael R.",
+    venue_id: "1",
+    user_id: "u2",
     rating: 5,
-    title: "Best Naturist Resort Experience",
     comment: "My partner and I have visited many naturist resorts across Europe, and this is by far the best. Beautiful grounds maintained to perfection, excellent food in all three restaurants, and a very welcoming international community. The adults-only policy creates a sophisticated atmosphere. The yoga classes overlooking the sea were a highlight, and the tennis courts are professional quality. Can't recommend highly enough for couples seeking luxury naturist holidays.",
-    date: "2026-01-10",
-    verified: true
+    created_at: "2026-01-10",
   },
   {
     id: "r3",
-    propertyId: "1",
-    userId: "u3",
-    userName: "Lars & Ingrid K.",
+    venue_id: "1",
+    user_id: "u3",
     rating: 4,
-    title: "Luxurious and Liberating",
     comment: "Wonderful resort with top-notch amenities. Our room was spacious with a gorgeous sea view. The all-inclusive option provided excellent value. Only minor complaint is that the resort can feel crowded during peak season, but the private beach areas help. The spa massages were heavenly, and we loved the live music nights. Great place for a special celebration.",
-    date: "2026-01-05",
-    verified: true
+    created_at: "2026-01-05",
   },
 
   // Hidden Valley Naturist Hotel reviews
   {
     id: "r4",
-    propertyId: "2",
-    userId: "u4",
-    userName: "Emma L.",
+    venue_id: "2",
+    user_id: "u4",
     rating: 5,
-    title: "Charming Boutique Gem",
     comment: "This family-run hotel has real heart and soul. The owners Michel and Claire made us feel like old friends from day one. Our room overlooking the lavender fields was beautifully decorated with antique French furniture. The organic meals using herbs from their garden were delicious. Perfect if you want authentic Provençal experience and genuine naturist philosophy rather than resort glamour. The painting workshop was a wonderful addition. So peaceful!",
-    date: "2026-01-18",
-    verified: true
+    created_at: "2026-01-18",
   },
   {
     id: "r5",
-    propertyId: "2",
-    userId: "u5",
-    userName: "Robert S.",
+    venue_id: "2",
+    user_id: "u5",
     rating: 5,
-    title: "Haven of Tranquility",
     comment: "Exactly what we needed after stressful months at work. Hidden Valley is truly hidden - peaceful, quiet, and restorative. Loved cycling through the countryside, reading in the library, and long conversations with interesting fellow guests. The sauna sessions were perfect after days exploring. Food was simple but excellent. This isn't a party resort - it's for people who appreciate simplicity and nature. We'll definitely return.",
-    date: "2026-01-12",
-    verified: true
+    created_at: "2026-01-12",
   },
   {
     id: "r6",
-    propertyId: "2",
-    userId: "u6",
-    userName: "Patricia D.",
+    venue_id: "2",
+    user_id: "u6",
     rating: 4,
-    title: "Lovely Peaceful Retreat",
-    comment: "Beautiful setting and warm hospitality. The meditation sessions and nature walks were highlights. Rooms are comfortable though not luxurious - but that's not what this place is about. Perfect for solo travelers or couples seeking connection with nature and like-minded people. The other guests were friendly and respectful. Only downside is limited evening entertainment, but honestly that's part of the charm.",
-    date: "2026-01-08",
-    verified: true
+    comment: "Lovely Peaceful Retreat",
+    created_at: "2026-01-08",
   },
 
   // Sunset Bay Clothing-Optional Resort reviews
   {
     id: "r7",
-    propertyId: "3",
-    userId: "u7",
-    userName: "Jennifer & Mark T.",
+    venue_id: "3",
+    user_id: "u7",
     rating: 5,
-    title: "Perfect for First-Timers",
     comment: "We were nervous about our first naturist experience, and Sunset Bay was the perfect introduction. The clothing-optional zones meant we could ease into it at our own pace. By day two we were fully comfortable at the pool and beach. The water sports were fantastic - my husband loved the kayaking and I took paddleboard lessons. Kids club kept our children entertained while we relaxed. The flexibility of having both textile and naturist areas is genius. Highly recommended for families considering this lifestyle!",
-    date: "2026-01-20",
-    verified: true
+    created_at: "2026-01-20",
   },
   {
     id: "r8",
-    propertyId: "3",
-    userId: "u8",
-    userName: "Carlos M.",
+    venue_id: "3",
+    user_id: "u8",
     rating: 4,
-    title: "Great Energy and Facilities",
     comment: "Vibrant resort with something for everyone. The beachfront location is unbeatable - white sand and clear water. We did a different water sport every day - snorkeling, jet skiing, parasailing. The themed parties at the nightclub were super fun, great way to meet people. Food quality across the three restaurants was consistently good. The only reason I didn't give 5 stars is that it can feel a bit crowded, but that's also what creates the lively atmosphere. Would come back!",
-    date: "2026-01-14",
-    verified: true
+    created_at: "2026-01-14",
   },
   {
     id: "r9",
-    propertyId: "3",
-    userId: "u9",
-    userName: "Diana R.",
+    venue_id: "3",
+    user_id: "u9",
     rating: 5,
-    title: "Active and Fun Resort",
     comment: "Loved every minute! The daily activities kept us busy - beach volleyball tournaments, salsa lessons, aqua aerobics. Made so many friends from around the world. The entertainment team is energetic and inclusive. Rooms are spacious and modern with great ocean views. The swim-up bar at the pool is perfect for lazy afternoons. This resort understands that people want different experiences, and they deliver on all fronts. Miami location means great nightlife nearby too!",
-    date: "2026-01-06",
-    verified: true
+    created_at: "2026-01-06",
   },
 
   // Mountain View Naturist Retreat reviews
   {
     id: "r10",
-    propertyId: "4",
-    userId: "u10",
-    userName: "Hans W.",
+    venue_id: "4",
+    user_id: "u10",
     rating: 5,
-    title: "Alpine Perfection",
     comment: "As an avid hiker, this was paradise. Every morning we'd set off on different trails, all clearly marked and beautifully maintained. The views are absolutely stunning - snow-capped peaks, alpine meadows, pristine forests. Coming back to the hot tub with mountain panoramas after a long hike is unforgettable. The wellness center's sauna circuit was excellent, very authentic Austrian style. Food was hearty and delicious. The adults-only atmosphere was peaceful and sophisticated. Already planning our return in winter!",
-    date: "2026-01-19",
-    verified: true
+    created_at: "2026-01-19",
   },
   {
     id: "r11",
-    propertyId: "4",
-    userId: "u11",
-    userName: "Sarah & Tom B.",
+    venue_id: "4",
+    user_id: "u11",
     rating: 5,
-    title: "Breathtaking Mountain Escape",
     comment: "Our anniversary trip was magical. The mountain setting is spectacular, and our balcony was the perfect spot for morning coffee watching the sunrise over the peaks. Guided hikes with Klaus were informative and fun - he knows every plant and bird. The stargazing night was incredibly romantic. Austrian cuisine at the restaurant was authentic and satisfying. The meditation garden became our favorite spot. This place has soul. Highly recommended for couples!",
-    date: "2026-01-11",
-    verified: true
+    created_at: "2026-01-11",
   },
 
   // Tropical Paradise Naturist Camp reviews
   {
     id: "r12",
-    propertyId: "5",
-    userId: "u12",
-    userName: "Lukas V.",
+    venue_id: "5",
+    user_id: "u12",
     rating: 4,
-    title: "Great Value and Community",
     comment: "Don't expect luxury, but do expect authenticity! The bungalows are simple but clean and comfortable. The real treasure here is the community - we made friends from all over Europe. The communal dinners and beach parties create amazing atmosphere. Pool is great for socializing, beach is stunning, and the price can't be beat. Perfect for young travelers or anyone wanting a social naturist experience without breaking the bank. Bring your own booze to save money!",
-    date: "2026-01-17",
-    verified: true
+    created_at: "2026-01-17",
   },
   {
     id: "r13",
-    propertyId: "5",
-    userId: "u13",
-    userName: "Maya & Felix",
+    venue_id: "5",
+    user_id: "u13",
     rating: 5,
-    title: "Budget-Friendly Paradise",
     comment: "This camp proves you don't need luxury to have an amazing naturist holiday. We camped with our van and loved it - spacious pitches under pine trees, clean facilities, super friendly staff. The social vibe is incredible - volleyball games, BBQs, beach bonfires. Met people from 15+ countries! The beach is gorgeous and never crowded. If you want fancy resort amenities, look elsewhere. If you want authentic naturist camping with great people, this is it!",
-    date: "2026-01-09",
-    verified: true
+    created_at: "2026-01-09",
   },
 
   // Serenity Naturist Villa Collection reviews
   {
     id: "r14",
-    propertyId: "6",
-    userId: "u14",
-    userName: "Alexander & Sophia K.",
+    venue_id: "6",
+    user_id: "u14",
     rating: 5,
-    title: "Honeymoon Heaven",
     comment: "Our honeymoon villa was absolutely perfect - private infinity pool, stunning caldera views, and complete seclusion. The interior design was impeccable, blending traditional Cycladic style with modern luxury. We used the concierge to arrange a private yacht trip and chef dinner - both exceptional. Daily cleaning kept everything pristine. Watched the famous Santorini sunset from our pool every evening with champagne. This is naturist luxury at its finest. Worth every penny for a special occasion!",
-    date: "2026-01-21",
-    verified: true
+    created_at: "2026-01-21",
   },
   {
     id: "r15",
-    propertyId: "6",
-    userId: "u15",
-    userName: "James & Victoria",
+    venue_id: "6",
+    user_id: "u15",
     rating: 5,
-    title: "Ultimate Privacy and Luxury",
     comment: "After years of resort vacations, we wanted something more private and intimate. These villas delivered beyond expectations. Our villa felt like our own Santorini estate - spacious, beautifully appointed, with that magical infinity pool seeming to float above the Aegean. The kitchen allowed us to shop at local markets and cook when we wanted, but the concierge arranged amazing restaurant reservations too. Location in Oia is perfect. This is how naturism should be experienced - in private luxury!",
-    date: "2026-01-13",
-    verified: true
+    created_at: "2026-01-13",
   },
 
   // Sunshine Coast Naturist Resort reviews
   {
     id: "r16",
-    propertyId: "7",
-    userId: "u16",
-    userName: "Rebecca L.",
+    venue_id: "7",
+    user_id: "u16",
     rating: 5,
-    title: "Surfer's Paradise - Literally!",
-    comment: "As a surfing enthusiast, this resort is a dream come true. Direct beach access to great waves, surf lessons available, board storage - everything a surfer needs. The beachfront location means you can literally wake up and hit the waves. When not surfing, the pools are amazing and the spa helped with sore muscles. The Australian naturist community is super welcoming and laid-back. Facilities are modern and well-maintained. Year-round sunshine means any time is good time to visit!",
-    date: "2026-01-16",
-    verified: true
+    comment: "As a surfing enthusiast, this resort is a dream come true. Direct beach access to great waves, surf lessons available, board storage - everything a surfer needs. The beachfront location means you can literally wake up and hit the waves. When not surfing, the pools are amazing and the spa helped with sore muscles. The Australian naturist community is welcoming and laid-back. Facilities are modern and well-maintained. Year-round sunshine means any time is good time to visit!",
+    created_at: "2026-01-16",
   },
   {
     id: "r17",
-    propertyId: "7",
-    userId: "u17",
-    userName: "David & Michelle",
+    venue_id: "7",
+    user_id: "u17",
     rating: 5,
-    title: "Perfect Beach Resort",
     comment: "Three weeks in paradise! The Gold Coast location is stunning - 300 meters of private beach with golden sand. We tried all the water sports - paddleboarding, kayaking, even went on the whale watching tour (saw several humpbacks!). The three pools cater to different moods perfectly. Food was consistently excellent, especially the seafood. The Australian contemporary cuisine showcased local ingredients beautifully. Beach yoga at sunrise became our morning ritual. Can't wait to return!",
-    date: "2026-01-07",
-    verified: true
+    created_at: "2026-01-07",
   },
 
   // Additional reviews for other properties...
   {
     id: "r18",
-    propertyId: "8",
-    userId: "u18",
-    userName: "Marcus T.",
+    venue_id: "8",
+    user_id: "u18",
     rating: 5,
-    title: "Life-Changing Amazon Experience",
     comment: "This isn't a typical resort - it's an adventure and education rolled into one. The rainforest setting is incredible, and being naturist in this environment feels completely natural and profound. Our indigenous guide taught us about medicinal plants, survival skills, and rainforest ecology. Saw incredible wildlife - monkeys, macaws, sloths, pink dolphins! The night sounds of the jungle are unforgettable. Accommodations are basic but comfortable. This experience changed how I see naturism and nature. Absolutely unique!",
-    date: "2026-01-22",
-    verified: true
+    created_at: "2026-01-22",
   },
 
   {
     id: "r19",
-    propertyId: "9",
-    userId: "u19",
-    userName: "Petra & Klaus",
+    venue_id: "9",
+    user_id: "u19",
     rating: 5,
-    title: "Croatian Coast at Its Best",
     comment: "The Adriatic Pearl is a gem! The rocky peninsula setting with crystal-clear water is beautiful. We spent days diving - the underwater caves and wrecks were spectacular. The diving center is professional with excellent equipment. The seafood restaurant terrace hanging over the sea is romantic and delicious. Split is nearby for cultural day trips - we visited Diocletian's Palace and local markets. The Mediterranean atmosphere and Croatian hospitality made this special. Highly recommended!",
-    date: "2026-01-15",
-    verified: true
+    created_at: "2026-01-15",
   },
 
   {
     id: "r20",
-    propertyId: "10",
-    userId: "u20",
-    userName: "Amanda & Friends",
+    venue_id: "10",
+    user_id: "u20",
     rating: 5,
-    title: "Thai Paradise for Groups",
     comment: "Our group of 8 rented a villa for two weeks - best decision ever! Having our own private pool and kitchen while experiencing Thailand was perfect. The villa was beautifully designed with traditional Thai elements. Daily cleaning and the on-site Thai restaurant made it easy. The cooking class was so much fun - we learned to make authentic pad thai and curry. Thai massage in the garden pavilion was divine. Staff went above and beyond. Great base for exploring Phuket while having private naturist space. Excellent value!",
-    date: "2026-01-04",
-    verified: true
+    created_at: "2026-01-04",
   }
 ];
 

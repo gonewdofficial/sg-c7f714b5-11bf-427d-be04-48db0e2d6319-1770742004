@@ -1,4 +1,4 @@
- 
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 export type Json =
   | string
   | number
@@ -261,6 +261,7 @@ export type Database = {
           amenities: string[] | null
           bathrooms: number
           bedrooms: number
+          booking_link: string | null
           check_in_time: string
           check_out_time: string
           city: string
@@ -277,14 +278,18 @@ export type Database = {
           owner_id: string
           price_per_night: number
           rules: string[] | null
+          slug: string | null
+          status: string | null
           updated_at: string | null
           venue_type: Database["public"]["Enums"]["venue_type"]
+          website_url: string | null
         }
         Insert: {
           address: string
           amenities?: string[] | null
           bathrooms: number
           bedrooms: number
+          booking_link?: string | null
           check_in_time?: string
           check_out_time?: string
           city: string
@@ -301,14 +306,18 @@ export type Database = {
           owner_id: string
           price_per_night: number
           rules?: string[] | null
+          slug?: string | null
+          status?: string | null
           updated_at?: string | null
           venue_type: Database["public"]["Enums"]["venue_type"]
+          website_url?: string | null
         }
         Update: {
           address?: string
           amenities?: string[] | null
           bathrooms?: number
           bedrooms?: number
+          booking_link?: string | null
           check_in_time?: string
           check_out_time?: string
           city?: string
@@ -325,8 +334,11 @@ export type Database = {
           owner_id?: string
           price_per_night?: number
           rules?: string[] | null
+          slug?: string | null
+          status?: string | null
           updated_at?: string | null
           venue_type?: Database["public"]["Enums"]["venue_type"]
+          website_url?: string | null
         }
         Relationships: [
           {
