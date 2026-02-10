@@ -32,7 +32,7 @@ export function SearchBar({
 
   const handleCountryChange = (value: string) => {
     if (value && value !== "placeholder") {
-      onCountrySelect(value);
+      onCountrySelect(value.toLowerCase());
     }
   };
 

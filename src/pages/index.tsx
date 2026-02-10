@@ -81,7 +81,7 @@ export default function Home() {
   };
 
   // Get unique countries from properties
-  const availableCountries = Array.from(new Set(properties.map((p) => p.location.country)));
+  const availableCountries = Array.from(new Set(properties.map((p) => p.location.country.toLowerCase())));
   
   // Extract all unique tags/facilities from venue listings
   const availableTags = Array.from(
@@ -100,7 +100,9 @@ export default function Home() {
     // Country filter - only apply if countries are selected
     if (selectedCountries.length > 0) {
       results = results.filter((property) =>
-        selectedCountries.includes(property.location.country)
+        selectedCountries.some(
+          (selected) => selected.toLowerCase() === property.location.country.toLowerCase()
+        )
       );
     }
 

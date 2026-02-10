@@ -65,7 +65,9 @@ const InteractiveMapComponent = ({
   const getCountryFill = (geo: any, isHovered: boolean) => {
     const countryName = geo.properties.name || geo.properties.NAME || geo.properties.ADMIN;
     const normalizedCountryName = countryName?.toLowerCase();
-    const isSelected = selectedCountries.includes(normalizedCountryName);
+    const isSelected = selectedCountries.some(
+      (selected) => selected.toLowerCase() === normalizedCountryName
+    );
 
     if (isSelected) {
       return "#FF6347";
