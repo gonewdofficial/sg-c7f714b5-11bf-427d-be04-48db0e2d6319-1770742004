@@ -110,25 +110,27 @@ export default function AdminDashboard() {
 
     try {
       const venueData = {
-        ...formData,
-        address: `${formData.city}, ${formData.country}`, // Construct address
+        name: formData.name,
+        city: formData.city,
+        country: formData.country,
+        address: `${formData.city}, ${formData.country}`,
+        accommodation_type: formData.accommodation_type,
+        website_url: formData.website_url,
+        booking_link: formData.booking_link,
+        description: formData.description,
         amenities: formData.amenities.split(",").map((f) => f.trim()).filter(Boolean),
-        latitude: formData.lat ? parseFloat(formData.lat) : null,
-        longitude: formData.lng ? parseFloat(formData.lng) : null,
-        venue_type: "resort" as const, // Default to resort for admin creation
+        latitude: formData.lat ? parseFloat(formData.lat) : 0,
+        longitude: formData.lng ? parseFloat(formData.lng) : 0,
+        lat: formData.lat ? parseFloat(formData.lat) : null,
+        lng: formData.lng ? parseFloat(formData.lng) : null,
+        venue_type: "resort" as const,
         bathrooms: 1,
         bedrooms: 1,
-        max_guests: 4, // Default
-        price_per_night: 100, // Default
+        max_guests: 4,
+        price_per_night: 100,
       };
 
       if (editingVenue) {
-        // Only include fields that exist in VenueUpdate
-        const updates: any = { ...venueData };
-        delete updates.city; // if not in update type
-        delete updates.lat; // Remove local form field
-        delete updates.lng; // Remove local form field
-        
         const { error: updateError } = await updateVenue(editingVenue.id, venueData);
         if (updateError) {
           setError(updateError);

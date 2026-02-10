@@ -67,7 +67,7 @@ export async function getVenues(filters?: {
     }
 
     if (filters?.venue_type) {
-      query = query.eq("venue_type", filters.venue_type);
+      query = query.eq("venue_type", filters.venue_type as VenueType);
     }
 
     if (filters?.min_price) {

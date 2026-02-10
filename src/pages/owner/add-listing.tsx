@@ -114,7 +114,9 @@ export default function AddListing() {
         bathrooms: 1,
         bedrooms: 1,
         max_guests: 2,
-        price_per_night: 0
+        price_per_night: 0,
+        latitude: 0,
+        longitude: 0
       }).select().single();
 
       if (error) throw error;
