@@ -31,7 +31,9 @@ export const InteractiveMap = memo(({
   const handleCountryClick = (geo: any) => {
     const countryName = geo.properties.name || geo.properties.NAME || geo.properties.ADMIN;
     if (countryName) {
-      onCountryClick(countryName);
+      // Normalize country name to match database format (first letter uppercase, rest lowercase)
+      const normalizedCountryName = countryName.charAt(0).toUpperCase() + countryName.slice(1).toLowerCase();
+      onCountryClick(normalizedCountryName);
     }
   };
 
@@ -65,24 +67,28 @@ export const InteractiveMap = memo(({
             {({ geographies }) =>
               geographies.map((geo) => {
                 const countryName = geo.properties.name || geo.properties.NAME || geo.properties.ADMIN;
-                const isSelected = selectedCountries.includes(countryName);
+                const normalizedCountryName = countryName.charAt(0).toUpperCase() + countryName.slice(1).toLowerCase();
+                const isSelected = selectedCountries.includes(normalizedCountryName);
 
                 return (
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
                     onClick={() => handleCountryClick(geo)}
-                    fill={isSelected ? "#FF6347" : "#D1D5DB"}
+                    fill={isSelected ? "#FF6347" : "#E5E7EB"}
                     stroke="#FFFFFF"
                     strokeWidth={0.5}
                     style={{
                       default: { outline: "none" },
                       hover: { 
-                        fill: isSelected ? "#FF4500" : "#9CA3AF",
+                        fill: isSelected ? "#FF4500" : "#D1D5DB",
                         outline: "none",
                         cursor: "pointer"
                       },
-                      pressed: { outline: "none" },
+                      pressed: { 
+                        fill: isSelected ? "#FF4500" : "#D1D5DB",
+                        outline: "none" 
+                      },
                     }}
                   />
                 );
