@@ -12,6 +12,52 @@ import { Plus, Minus, RotateCcw } from "lucide-react";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
+// Country name mapping: database name -> map geography name(s)
+const COUNTRY_NAME_MAP: Record<string, string[]> = {
+  "united states": ["united states of america", "usa", "united states"],
+  "usa": ["united states of america", "usa", "united states"],
+  "uk": ["united kingdom", "great britain"],
+  "united kingdom": ["united kingdom", "great britain"],
+  "south korea": ["korea", "republic of korea", "south korea"],
+  "north korea": ["dem. rep. korea", "korea", "north korea"],
+  "czech republic": ["czechia", "czech republic"],
+  "czechia": ["czechia", "czech republic"],
+  "turkey": ["turkey", "türkiye"],
+  "congo": ["democratic republic of the congo", "congo", "dem. rep. congo"],
+  "ivory coast": ["côte d'ivoire", "ivory coast"],
+  "myanmar": ["myanmar", "burma"],
+  "east timor": ["timor-leste", "east timor"],
+  "swaziland": ["eswatini", "swaziland"],
+};
+
+// Normalize and check if country matches any variant
+const countryMatches = (dbCountryName: string, geoCountryName: string): boolean => {
+  const normalizedDb = dbCountryName.toLowerCase().trim();
+  const normalizedGeo = geoCountryName.toLowerCase().trim();
+  
+  // Direct match
+  if (normalizedDb === normalizedGeo) return true;
+  
+  // Check mapped variants
+  const variants = COUNTRY_NAME_MAP[normalizedDb] || [];
+  return variants.some(variant => variant === normalizedGeo);
+};
+
+// Get standardized country name for database storage
+const getStandardCountryName = (geoCountryName: string): string => {
+  const normalized = geoCountryName.toLowerCase().trim();
+  
+  // Find if this geo name matches any mapped variant
+  for (const [dbName, variants] of Object.entries(COUNTRY_NAME_MAP)) {
+    if (variants.some(variant => variant === normalized)) {
+      return dbName;
+    }
+  }
+  
+  // Return normalized name if no mapping found
+  return normalized;
+};
+
 interface InteractiveMapProps {
   properties: Property[];
   selectedCountries: string[];
@@ -31,8 +77,8 @@ const InteractiveMapComponent = ({
   const handleCountryClick = (geo: any) => {
     const countryName = geo.properties.name || geo.properties.NAME || geo.properties.ADMIN;
     if (countryName) {
-      const normalizedCountryName = countryName.toLowerCase();
-      onCountryClick(normalizedCountryName);
+      const standardizedName = getStandardCountryName(countryName);
+      onCountryClick(standardizedName);
       setHoveredCountry(null);
     }
   };
@@ -63,10 +109,11 @@ const InteractiveMapComponent = ({
   };
 
   const getCountryFill = (geo: any, isHovered: boolean) => {
-    const countryName = geo.properties.name || geo.properties.NAME || geo.properties.ADMIN;
-    const normalizedCountryName = countryName?.toLowerCase();
-    const isSelected = selectedCountries.some(
-      (selected) => selected.toLowerCase() === normalizedCountryName
+    const geoCountryName = geo.properties.name || geo.properties.NAME || geo.properties.ADMIN;
+    
+    // Check if any selected country matches this geography country
+    const isSelected = selectedCountries.some(selectedCountry => 
+      countryMatches(selectedCountry, geoCountryName)
     );
 
     if (isSelected) {
