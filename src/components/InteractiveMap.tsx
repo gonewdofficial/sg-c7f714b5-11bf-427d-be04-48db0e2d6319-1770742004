@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useState, useCallback } from "react";
 import {
   ComposableMap,
   Geographies,
@@ -16,7 +16,7 @@ interface InteractiveMapProps {
   onCountryClick: (country: string) => void;
 }
 
-export const InteractiveMap = memo(({ 
+const InteractiveMapComponent = ({ 
   properties, 
   selectedCountries = [],
   onCountryClick 
@@ -28,14 +28,41 @@ export const InteractiveMap = memo(({
     y: number;
   } | null>(null);
 
-  const handleCountryClick = (geo: any) => {
+  const handleCountryClick = useCallback((geo: any) => {
     const countryName = geo.properties.name || geo.properties.NAME || geo.properties.ADMIN;
     if (countryName) {
-      // Normalize country name to match database format (first letter uppercase, rest lowercase)
-      const normalizedCountryName = countryName.charAt(0).toUpperCase() + countryName.slice(1).toLowerCase();
+      const normalizedCountryName = countryName.toLowerCase();
       onCountryClick(normalizedCountryName);
     }
-  };
+  }, [onCountryClick]);
+
+  const getGeographyStyle = useCallback((geo: any) => {
+    const countryName = geo.properties.name || geo.properties.NAME || geo.properties.ADMIN;
+    const normalizedCountryName = countryName?.toLowerCase();
+    const isSelected = selectedCountries.includes(normalizedCountryName);
+
+    return {
+      default: {
+        fill: isSelected ? "#FF6347" : "#E5E7EB",
+        stroke: "#FFFFFF",
+        strokeWidth: 0.5,
+        outline: "none",
+      },
+      hover: {
+        fill: isSelected ? "#FF4500" : "#D1D5DB",
+        stroke: "#FFFFFF",
+        strokeWidth: 0.5,
+        outline: "none",
+        cursor: "pointer",
+      },
+      pressed: {
+        fill: isSelected ? "#FF4500" : "#D1D5DB",
+        stroke: "#FFFFFF",
+        strokeWidth: 0.5,
+        outline: "none",
+      },
+    };
+  }, [selectedCountries]);
 
   return (
     <div 
@@ -58,45 +85,23 @@ export const InteractiveMap = memo(({
           minZoom={1}
           maxZoom={8}
           filterZoomEvent={(evt) => {
-            // Disable scroll zoom
             return evt.type !== "wheel";
           }}
           style={{ outline: "none" }}
         >
           <Geographies geography={geoUrl}>
             {({ geographies }) =>
-              geographies.map((geo) => {
-                const countryName = geo.properties.name || geo.properties.NAME || geo.properties.ADMIN;
-                const normalizedCountryName = countryName.charAt(0).toUpperCase() + countryName.slice(1).toLowerCase();
-                const isSelected = selectedCountries.includes(normalizedCountryName);
-
-                return (
-                  <Geography
-                    key={geo.rsmKey}
-                    geography={geo}
-                    onClick={() => handleCountryClick(geo)}
-                    fill={isSelected ? "#FF6347" : "#E5E7EB"}
-                    stroke="#FFFFFF"
-                    strokeWidth={0.5}
-                    style={{
-                      default: { outline: "none" },
-                      hover: { 
-                        fill: isSelected ? "#FF4500" : "#D1D5DB",
-                        outline: "none",
-                        cursor: "pointer"
-                      },
-                      pressed: { 
-                        fill: isSelected ? "#FF4500" : "#D1D5DB",
-                        outline: "none" 
-                      },
-                    }}
-                  />
-                );
-              })
+              geographies.map((geo) => (
+                <Geography
+                  key={geo.rsmKey}
+                  geography={geo}
+                  onClick={() => handleCountryClick(geo)}
+                  style={getGeographyStyle(geo)}
+                />
+              ))
             }
           </Geographies>
 
-          {/* DATA POINTS - ALWAYS VISIBLE IN STATIC BLACK */}
           {properties.map((property) => {
             if (!property.location?.coordinates) return null;
             
@@ -131,7 +136,6 @@ export const InteractiveMap = memo(({
         </ZoomableGroup>
       </ComposableMap>
 
-      {/* Tooltip */}
       {tooltipContent && (
         <div
           className="absolute bg-white px-3 py-2 rounded-lg shadow-lg text-sm pointer-events-none z-50"
@@ -149,6 +153,8 @@ export const InteractiveMap = memo(({
       )}
     </div>
   );
-});
+};
+
+export const InteractiveMap = memo(InteractiveMapComponent);
 
 InteractiveMap.displayName = "InteractiveMap";
