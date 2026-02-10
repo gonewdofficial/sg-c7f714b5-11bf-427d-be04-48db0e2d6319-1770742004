@@ -15,6 +15,114 @@ export type Database = {
   }
   public: {
     Tables: {
+      bookings: {
+        Row: {
+          check_in_date: string
+          check_out_date: string
+          created_at: string | null
+          guest_id: string
+          id: string
+          num_guests: number
+          special_requests: string | null
+          status: Database["public"]["Enums"]["booking_status"] | null
+          total_price: number
+          updated_at: string | null
+          venue_id: string
+        }
+        Insert: {
+          check_in_date: string
+          check_out_date: string
+          created_at?: string | null
+          guest_id: string
+          id?: string
+          num_guests: number
+          special_requests?: string | null
+          status?: Database["public"]["Enums"]["booking_status"] | null
+          total_price: number
+          updated_at?: string | null
+          venue_id: string
+        }
+        Update: {
+          check_in_date?: string
+          check_out_date?: string
+          created_at?: string | null
+          guest_id?: string
+          id?: string
+          num_guests?: number
+          special_requests?: string | null
+          status?: Database["public"]["Enums"]["booking_status"] | null
+          total_price?: number
+          updated_at?: string | null
+          venue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_guest_id_fkey"
+            columns: ["guest_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inquiries: {
+        Row: {
+          created_at: string | null
+          guest_id: string
+          id: string
+          message: string
+          owner_response: string | null
+          responded_at: string | null
+          status: Database["public"]["Enums"]["inquiry_status"] | null
+          subject: string
+          venue_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          guest_id: string
+          id?: string
+          message: string
+          owner_response?: string | null
+          responded_at?: string | null
+          status?: Database["public"]["Enums"]["inquiry_status"] | null
+          subject: string
+          venue_id: string
+        }
+        Update: {
+          created_at?: string | null
+          guest_id?: string
+          id?: string
+          message?: string
+          owner_response?: string | null
+          responded_at?: string | null
+          status?: Database["public"]["Enums"]["inquiry_status"] | null
+          subject?: string
+          venue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inquiries_guest_id_fkey"
+            columns: ["guest_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inquiries_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -22,8 +130,6 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
-          phone: string | null
-          role: string | null
           updated_at: string | null
         }
         Insert: {
@@ -32,8 +138,6 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
-          phone?: string | null
-          role?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -42,80 +146,64 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
-          phone?: string | null
-          role?: string | null
           updated_at?: string | null
         }
         Relationships: []
       }
-      review_responses: {
-        Row: {
-          created_at: string | null
-          id: string
-          owner_id: string
-          response: string
-          review_id: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          owner_id: string
-          response: string
-          review_id: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          owner_id?: string
-          response?: string
-          review_id?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "review_responses_owner_id_fkey"
-            columns: ["owner_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "review_responses_review_id_fkey"
-            columns: ["review_id"]
-            isOneToOne: false
-            referencedRelation: "reviews"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       reviews: {
         Row: {
+          booking_id: string | null
+          cleanliness_rating: number | null
           comment: string | null
           created_at: string | null
           id: string
+          location_rating: number | null
+          owner_response: string | null
+          owner_response_date: string | null
           rating: number
-          user_id: string | null
-          venue_id: string | null
+          updated_at: string | null
+          user_id: string
+          value_rating: number | null
+          venue_id: string
         }
         Insert: {
+          booking_id?: string | null
+          cleanliness_rating?: number | null
           comment?: string | null
           created_at?: string | null
           id?: string
+          location_rating?: number | null
+          owner_response?: string | null
+          owner_response_date?: string | null
           rating: number
-          user_id?: string | null
-          venue_id?: string | null
+          updated_at?: string | null
+          user_id: string
+          value_rating?: number | null
+          venue_id: string
         }
         Update: {
+          booking_id?: string | null
+          cleanliness_rating?: number | null
           comment?: string | null
           created_at?: string | null
           id?: string
+          location_rating?: number | null
+          owner_response?: string | null
+          owner_response_date?: string | null
           rating?: number
-          user_id?: string | null
-          venue_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+          value_rating?: number | null
+          venue_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "reviews_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: true
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "reviews_user_id_fkey"
             columns: ["user_id"]
@@ -134,27 +222,27 @@ export type Database = {
       }
       venue_images: {
         Row: {
-          caption: string | null
           created_at: string | null
           display_order: number | null
           id: string
-          url: string
+          image_url: string
+          is_primary: boolean | null
           venue_id: string
         }
         Insert: {
-          caption?: string | null
           created_at?: string | null
           display_order?: number | null
           id?: string
-          url: string
+          image_url: string
+          is_primary?: boolean | null
           venue_id: string
         }
         Update: {
-          caption?: string | null
           created_at?: string | null
           display_order?: number | null
           id?: string
-          url?: string
+          image_url?: string
+          is_primary?: boolean | null
           venue_id?: string
         }
         Relationships: [
@@ -169,109 +257,76 @@ export type Database = {
       }
       venues: {
         Row: {
-          accommodation_type: string
-          address: string | null
+          address: string
           amenities: string[] | null
-          average_rating: number | null
-          booking_link: string | null
-          capacity: number | null
+          bathrooms: number
+          bedrooms: number
+          check_in_time: string
+          check_out_time: string
           city: string
-          clothing_policy: string | null
-          contact_email: string | null
-          contact_phone: string | null
           country: string
           created_at: string | null
-          currency: string | null
-          description: string | null
-          facilities: string[] | null
+          description: string
           featured: boolean | null
-          featured_until: string | null
-          features: string[] | null
           id: string
-          images: string[] | null
-          lat: number | null
-          lng: number | null
-          location: string | null
+          is_active: boolean | null
+          latitude: number
+          longitude: number
+          max_guests: number
           name: string
-          owner_id: string | null
-          price_per_night: number | null
-          region: string | null
-          slug: string
-          status: string | null
-          total_reviews: number | null
+          owner_id: string
+          price_per_night: number
+          rules: string[] | null
           updated_at: string | null
-          website: string | null
-          website_url: string | null
+          venue_type: Database["public"]["Enums"]["venue_type"]
         }
         Insert: {
-          accommodation_type: string
-          address?: string | null
+          address: string
           amenities?: string[] | null
-          average_rating?: number | null
-          booking_link?: string | null
-          capacity?: number | null
+          bathrooms: number
+          bedrooms: number
+          check_in_time?: string
+          check_out_time?: string
           city: string
-          clothing_policy?: string | null
-          contact_email?: string | null
-          contact_phone?: string | null
           country: string
           created_at?: string | null
-          currency?: string | null
-          description?: string | null
-          facilities?: string[] | null
+          description: string
           featured?: boolean | null
-          featured_until?: string | null
-          features?: string[] | null
           id?: string
-          images?: string[] | null
-          lat?: number | null
-          lng?: number | null
-          location?: string | null
+          is_active?: boolean | null
+          latitude: number
+          longitude: number
+          max_guests: number
           name: string
-          owner_id?: string | null
-          price_per_night?: number | null
-          region?: string | null
-          slug: string
-          status?: string | null
-          total_reviews?: number | null
+          owner_id: string
+          price_per_night: number
+          rules?: string[] | null
           updated_at?: string | null
-          website?: string | null
-          website_url?: string | null
+          venue_type: Database["public"]["Enums"]["venue_type"]
         }
         Update: {
-          accommodation_type?: string
-          address?: string | null
+          address?: string
           amenities?: string[] | null
-          average_rating?: number | null
-          booking_link?: string | null
-          capacity?: number | null
+          bathrooms?: number
+          bedrooms?: number
+          check_in_time?: string
+          check_out_time?: string
           city?: string
-          clothing_policy?: string | null
-          contact_email?: string | null
-          contact_phone?: string | null
           country?: string
           created_at?: string | null
-          currency?: string | null
-          description?: string | null
-          facilities?: string[] | null
+          description?: string
           featured?: boolean | null
-          featured_until?: string | null
-          features?: string[] | null
           id?: string
-          images?: string[] | null
-          lat?: number | null
-          lng?: number | null
-          location?: string | null
+          is_active?: boolean | null
+          latitude?: number
+          longitude?: number
+          max_guests?: number
           name?: string
-          owner_id?: string | null
-          price_per_night?: number | null
-          region?: string | null
-          slug?: string
-          status?: string | null
-          total_reviews?: number | null
+          owner_id?: string
+          price_per_night?: number
+          rules?: string[] | null
           updated_at?: string | null
-          website?: string | null
-          website_url?: string | null
+          venue_type?: Database["public"]["Enums"]["venue_type"]
         }
         Relationships: [
           {
@@ -291,7 +346,9 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      booking_status: "pending" | "confirmed" | "cancelled" | "completed"
+      inquiry_status: "pending" | "answered" | "closed"
+      venue_type: "hotel" | "resort" | "campground" | "beach_club" | "spa"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -418,6 +475,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      booking_status: ["pending", "confirmed", "cancelled", "completed"],
+      inquiry_status: ["pending", "answered", "closed"],
+      venue_type: ["hotel", "resort", "campground", "beach_club", "spa"],
+    },
   },
 } as const

@@ -6,7 +6,7 @@ import { PropertyCard } from "@/components/PropertyCard";
 import { InteractiveMap } from "@/components/InteractiveMap";
 import { getVenues } from "@/services/venueService";
 import { getCountryCoordinates } from "@/lib/utils";
-import type { Property } from "@/types";
+import type { Property, VenueWithDetails } from "@/types";
 
 export default function Home() {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -14,14 +14,9 @@ export default function Home() {
   const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
   const [location, setLocation] = useState("");
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
-  const [guests, setGuests] = useState(2);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
-  const [accommodationType, setAccommodationType] = useState<string>("all");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  // Load venues from Supabase on mount
   useEffect(() => {
     loadVenues();
   }, []);
@@ -35,11 +30,16 @@ export default function Home() {
       setProperties([]);
       setFilteredProperties([]);
     } else {
-      // Map venues to Property type
-      const mappedProperties: Property[] = venues.map((v) => {
-        const coords = v.lat && v.lng 
-          ? { lat: v.lat, lng: v.lng }
+      const mappedProperties: Property[] = venues.map((v: VenueWithDetails) => {
+        const coords = v.latitude && v.longitude 
+          ? { lat: v.latitude, lng: v.longitude }
           : getCountryCoordinates(v.country);
+
+        const images = Array.isArray(v.venue_images)
+          ? v.venue_images
+              .sort((a, b) => (a.display_order || 999) - (b.display_order || 999))
+              .map((img) => img.image_url)
+          : [];
 
         return {
           id: v.id,
@@ -50,27 +50,28 @@ export default function Home() {
             city: v.city || "",
             country: v.country,
             region: v.region || "",
-            address: v.address,
+            address: v.address || undefined,
             coordinates: coords,
           },
-          images: v.images || [],
+          images: images,
           price: {
             perNight: v.price_per_night || 0,
             currency: "EUR",
           },
-          rating: v.rating || 0,
-          reviewCount: 0, // Will be calculated from reviews
-          propertyType: (v.accommodation_type as any) || "resort",
-          naturistType: "clothing-optional" as any,
+          rating: v.average_rating || 0,
+          reviewCount: v.review_count || 0,
+          propertyType: v.venue_type || "resort",
+          naturistType: "clothing-optional",
           amenities: v.amenities || [],
           features: [],
           capacity: {
-            guests: v.capacity || 0,
+            guests: v.max_guests || 0,
             rooms: 0,
           },
           availability: v.status === "active",
           featured: false,
           verified: v.status === "active",
+          websiteUrl: v.website_url || undefined,
         };
       });
 
@@ -80,10 +81,8 @@ export default function Home() {
     setLoading(false);
   };
 
-  // Get unique countries from properties
   const availableCountries = Array.from(new Set(properties.map((p) => p.location.country.toLowerCase())));
   
-  // Extract all unique tags/facilities from venue listings
   const availableTags = Array.from(
     new Set(
       properties.flatMap((p) => p.amenities || [])
@@ -92,12 +91,11 @@ export default function Home() {
 
   useEffect(() => {
     filterProperties();
-  }, [selectedCountries, location, checkIn, checkOut, guests, priceRange, properties, selectedTags]);
+  }, [selectedCountries, location, priceRange, properties, selectedTags]);
 
   const filterProperties = () => {
     let results = [...properties];
 
-    // Country filter - only apply if countries are selected
     if (selectedCountries.length > 0) {
       results = results.filter((property) =>
         selectedCountries.some(
@@ -106,7 +104,6 @@ export default function Home() {
       );
     }
 
-    // Location search
     if (location) {
       results = results.filter(
         (property) =>
@@ -116,27 +113,21 @@ export default function Home() {
       );
     }
 
-    // Tags filter
     if (selectedTags.length > 0) {
       results = results.filter((property) =>
         selectedTags.every((tag) => property.amenities.includes(tag))
       );
     }
 
-    // Price filter
     results = results.filter(
       (property) =>
         property.price.perNight >= priceRange[0] &&
         property.price.perNight <= priceRange[1]
     );
 
-    // Sort: Featured first (grouped by country), then by rating
     results.sort((a, b) => {
-      // If one is featured and the other isn't, featured comes first
       if (a.featured && !b.featured) return -1;
       if (!a.featured && b.featured) return 1;
-      
-      // If both featured or both not featured, sort by rating
       return b.rating - a.rating;
     });
 
@@ -198,7 +189,6 @@ export default function Home() {
         <Header />
         
         <main className="pt-16">
-          {/* Hero Section */}
           <section className="py-16 px-4">
             <div className="max-w-4xl mx-auto text-center space-y-6">
               <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
@@ -210,7 +200,6 @@ export default function Home() {
             </div>
           </section>
 
-          {/* Interactive Map Section */}
           <section className="px-4 py-8 bg-gray-50 rounded-lg mb-8">
             <h2 className="text-3xl font-bold mb-6 text-black">Explore locations</h2>
             <div className="mb-8">
@@ -221,7 +210,6 @@ export default function Home() {
               />
             </div>
             
-            {/* Selected Locations Pills */}
             {selectedCountries.length > 0 && (
               <div className="mt-4 flex flex-wrap gap-2 items-center">
                 <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full">
@@ -243,7 +231,6 @@ export default function Home() {
             )}
           </section>
 
-          {/* Search Filters */}
           <section className="px-4 py-8">
             <SearchBar
               selectedCountries={selectedCountries}
@@ -256,7 +243,6 @@ export default function Home() {
             />
           </section>
 
-          {/* Properties Grid */}
           <section className="px-4 pb-16">
             <div className="container mx-auto max-w-6xl">
               <div className="flex justify-between items-center mb-6">
@@ -280,7 +266,7 @@ export default function Home() {
                     id={property.id}
                     name={property.name}
                     location={`${property.location.city}, ${property.location.country}`}
-                    image={property.images[0]}
+                    image={property.images[0] || "/placeholder.jpg"}
                     price={property.price.perNight}
                     rating={property.rating}
                     reviews={property.reviewCount}

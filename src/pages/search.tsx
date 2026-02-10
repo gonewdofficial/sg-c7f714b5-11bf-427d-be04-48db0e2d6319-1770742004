@@ -1,5 +1,4 @@
 import { useState, useMemo, useEffect } from "react";
-import { useRouter } from "next/router";
 import { Header } from "@/components/Header";
 import { SEO } from "@/components/SEO";
 import { PropertyCard } from "@/components/PropertyCard";
@@ -13,17 +12,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, MapPin, SlidersHorizontal } from "lucide-react";
 import { getVenues } from "@/services/venueService";
 import { getCountryCoordinates } from "@/lib/utils";
-import type { Property } from "@/types";
+import type { Property, VenueWithDetails } from "@/types";
 
-const propertyTypes = ["hotel", "resort", "campsite", "villa", "bungalow"];
+const propertyTypes = ["hotel", "resort", "campsite", "villa", "bungalow", "eco_lodge"];
 
 export default function SearchPage() {
-  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(true);
   const [sortBy, setSortBy] = useState("relevance");
   const [venues, setVenues] = useState<Property[]>([]);
-  const [filteredVenues, setFilteredVenues] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   
   const [filters, setFilters] = useState({
@@ -31,10 +28,8 @@ export default function SearchPage() {
     propertyTypes: [] as string[],
     priceRange: [0, 1000] as [number, number],
     rating: 0,
-    amenities: [] as string[],
   });
 
-  // Load venues from Supabase on mount
   useEffect(() => {
     loadVenues();
   }, []);
@@ -46,13 +41,17 @@ export default function SearchPage() {
     if (error) {
       console.error("Error loading venues:", error);
       setVenues([]);
-      setFilteredVenues([]);
     } else {
-      // Map raw venue data to Property type
-      const mappedVenues: Property[] = data.map((v) => {
-        const coords = v.lat && v.lng 
-          ? { lat: v.lat, lng: v.lng }
+      const mappedVenues: Property[] = data.map((v: VenueWithDetails) => {
+        const coords = v.latitude && v.longitude 
+          ? { lat: v.latitude, lng: v.longitude }
           : getCountryCoordinates(v.country);
+
+        const images = Array.isArray(v.venue_images)
+          ? v.venue_images
+              .sort((a, b) => (a.display_order || 999) - (b.display_order || 999))
+              .map((img) => img.image_url)
+          : [];
 
         return {
           id: v.id,
@@ -63,31 +62,31 @@ export default function SearchPage() {
             city: v.city || "",
             country: v.country,
             region: v.region || "",
-            address: v.address,
+            address: v.address || undefined,
             coordinates: coords,
           },
-          images: v.images || [],
+          images: images,
           price: {
             perNight: v.price_per_night || 0,
             currency: "EUR",
           },
-          rating: v.rating || 0,
-          reviewCount: 0,
-          propertyType: (v.accommodation_type as any) || "resort",
-          naturistType: "clothing-optional" as any,
+          rating: v.average_rating || 0,
+          reviewCount: v.review_count || 0,
+          propertyType: v.venue_type || "resort",
+          naturistType: "clothing-optional",
           amenities: v.amenities || [],
           features: [],
           capacity: {
-            guests: v.capacity || 0,
+            guests: v.max_guests || 0,
             rooms: 0,
           },
           availability: v.status === "active",
           verified: v.status === "active",
+          websiteUrl: v.website_url || undefined,
         };
       });
 
       setVenues(mappedVenues);
-      setFilteredVenues(mappedVenues);
     }
     setLoading(false);
   };
@@ -216,7 +215,7 @@ export default function SearchPage() {
                           htmlFor={type}
                           className="text-sm capitalize cursor-pointer"
                         >
-                          {type}
+                          {type.replace("_", " ")}
                         </label>
                       </div>
                     ))}
@@ -265,7 +264,6 @@ export default function SearchPage() {
                       propertyTypes: [],
                       priceRange: [0, 1000],
                       rating: 0,
-                      amenities: [],
                     })
                   }
                 >

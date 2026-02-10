@@ -1,3 +1,20 @@
+import type { Database } from "@/integrations/supabase/types";
+
+// Database types
+export type Venue = Database["public"]["Tables"]["venues"]["Row"];
+export type VenueImage = Database["public"]["Tables"]["venue_images"]["Row"];
+export type Review = Database["public"]["Tables"]["reviews"]["Row"];
+export type Booking = Database["public"]["Tables"]["bookings"]["Row"];
+export type Inquiry = Database["public"]["Tables"]["inquiries"]["Row"];
+
+// Extended types for UI
+export interface VenueWithDetails extends Venue {
+  venue_images?: VenueImage[];
+  reviews?: Review[];
+  average_rating?: number;
+  review_count?: number;
+}
+
 export interface Property {
   id: string;
   name: string;
@@ -21,10 +38,10 @@ export interface Property {
   };
   rating: number;
   reviewCount: number;
-  propertyType: "hotel" | "resort" | "campsite" | "villa" | "bungalow" | "eco-lodge" | "beach-club" | "chalet";
-  naturistType: "clothing-optional" | "fully-naturist" | "naturist-friendly";
+  propertyType: string;
+  naturistType: string;
   amenities: string[];
-  features: string[]; // Admin managed tags
+  features: string[];
   capacity: {
     guests: number;
     rooms: number;
@@ -45,24 +62,11 @@ export interface Property {
   }[];
 }
 
-export interface Review {
-  id: string;
-  propertyId: string;
-  userId: string;
-  userName: string;
-  userAvatar?: string;
-  rating: number;
-  title: string;
-  comment: string;
-  date: string;
-  verified: boolean;
-}
-
-// Admin managed configuration types
-export interface AdminTag {
-  id: string;
-  label: string;
-  category: "amenity" | "feature" | "naturistType";
+export interface ReviewWithProfile extends Review {
+  profiles?: {
+    full_name: string | null;
+    avatar_url: string | null;
+  };
 }
 
 export interface User {

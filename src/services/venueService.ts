@@ -20,29 +20,106 @@ export function generateSlug(name: string): string {
  */
 export async function getVenues(filters?: {
   country?: string;
-  accommodationType?: string;
+  venue_type?: string;
+  min_price?: number;
+  max_price?: number;
 }) {
   try {
     let query = supabase
       .from("venues")
-      .select("*")
-      .order("name", { ascending: true });
+      .select(`
+        *,
+        venue_images (
+          id,
+          image_url,
+          display_order,
+          is_primary
+        ),
+        reviews (
+          id,
+          rating
+        )
+      `)
+      .eq("status", "active")
+      .order("created_at", { ascending: false });
 
     if (filters?.country) {
       query = query.eq("country", filters.country);
     }
 
-    if (filters?.accommodationType) {
-      query = query.eq("accommodation_type", filters.accommodationType);
+    if (filters?.venue_type) {
+      query = query.eq("venue_type", filters.venue_type);
+    }
+
+    if (filters?.min_price) {
+      query = query.gte("price_per_night", filters.min_price);
+    }
+
+    if (filters?.max_price) {
+      query = query.lte("price_per_night", filters.max_price);
     }
 
     const { data, error } = await query;
 
     if (error) throw error;
 
-    return { venues: data || [], error: null };
+    // Calculate average ratings
+    const venuesWithRatings = data?.map((venue) => {
+      const reviews = Array.isArray(venue.reviews) ? venue.reviews : [];
+      const avgRating = reviews.length > 0
+        ? reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length
+        : 0;
+      
+      return {
+        ...venue,
+        average_rating: avgRating,
+        review_count: reviews.length,
+      };
+    }) || [];
+
+    return { venues: venuesWithRatings, error: null };
   } catch (error: any) {
+    console.error("getVenues error:", error);
     return { venues: [], error: error.message };
+  }
+}
+
+/**
+ * Get venue by ID with all related data
+ */
+export async function getVenueById(id: string) {
+  try {
+    const { data, error } = await supabase
+      .from("venues")
+      .select(`
+        *,
+        venue_images (
+          id,
+          image_url,
+          caption,
+          display_order,
+          is_primary
+        ),
+        reviews (
+          id,
+          rating,
+          comment,
+          created_at,
+          profiles (
+            full_name,
+            avatar_url
+          )
+        )
+      `)
+      .eq("id", id)
+      .single();
+
+    if (error) throw error;
+
+    return { venue: data, error: null };
+  } catch (error: any) {
+    console.error("getVenueById error:", error);
+    return { venue: null, error: error.message };
   }
 }
 
@@ -53,7 +130,26 @@ export async function getVenueBySlug(slug: string) {
   try {
     const { data, error } = await supabase
       .from("venues")
-      .select("*")
+      .select(`
+        *,
+        venue_images (
+          id,
+          image_url,
+          caption,
+          display_order,
+          is_primary
+        ),
+        reviews (
+          id,
+          rating,
+          comment,
+          created_at,
+          profiles (
+            full_name,
+            avatar_url
+          )
+        )
+      `)
       .eq("slug", slug)
       .single();
 
@@ -61,40 +157,53 @@ export async function getVenueBySlug(slug: string) {
 
     return { venue: data, error: null };
   } catch (error: any) {
+    console.error("getVenueBySlug error:", error);
     return { venue: null, error: error.message };
   }
 }
 
 /**
- * Get venue reviews
+ * Get venues by owner ID
  */
-export async function getVenueReviews(venueId: string) {
+export async function getVenuesByOwner(ownerId: string) {
   try {
     const { data, error } = await supabase
-      .from("reviews")
+      .from("venues")
       .select(`
         *,
-        profiles (
-          full_name,
-          avatar_url
+        venue_images (
+          id,
+          image_url,
+          is_primary
+        ),
+        reviews (
+          id,
+          rating
         )
       `)
-      .eq("venue_id", venueId)
+      .eq("owner_id", ownerId)
       .order("created_at", { ascending: false });
 
     if (error) throw error;
 
-    return { reviews: data || [], error: null };
+    return { venues: data || [], error: null };
   } catch (error: any) {
-    return { reviews: [], error: error.message };
+    console.error("getVenuesByOwner error:", error);
+    return { venues: [], error: error.message };
   }
 }
 
 /**
- * Create new venue (admin only)
+ * Create new venue (owner only)
  */
-export async function createVenue(venue: Omit<VenueInsert, "slug">) {
+export async function createVenue(venue: Omit<VenueInsert, "slug" | "owner_id">) {
   try {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    
+    if (userError || !user) {
+      throw new Error("Not authenticated");
+    }
+
     const slug = generateSlug(venue.name);
 
     const { data, error } = await supabase
@@ -102,6 +211,7 @@ export async function createVenue(venue: Omit<VenueInsert, "slug">) {
       .insert({
         ...venue,
         slug,
+        owner_id: user.id,
       })
       .select()
       .single();
@@ -110,12 +220,13 @@ export async function createVenue(venue: Omit<VenueInsert, "slug">) {
 
     return { venue: data, error: null };
   } catch (error: any) {
+    console.error("createVenue error:", error);
     return { venue: null, error: error.message };
   }
 }
 
 /**
- * Update venue (admin only)
+ * Update venue
  */
 export async function updateVenue(id: string, updates: VenueUpdate) {
   try {
@@ -137,12 +248,13 @@ export async function updateVenue(id: string, updates: VenueUpdate) {
 
     return { venue: data, error: null };
   } catch (error: any) {
+    console.error("updateVenue error:", error);
     return { venue: null, error: error.message };
   }
 }
 
 /**
- * Delete venue (admin only)
+ * Delete venue
  */
 export async function deleteVenue(id: string) {
   try {
@@ -155,7 +267,32 @@ export async function deleteVenue(id: string) {
 
     return { error: null };
   } catch (error: any) {
+    console.error("deleteVenue error:", error);
     return { error: error.message };
+  }
+}
+
+/**
+ * Add images to venue
+ */
+export async function addVenueImages(venueId: string, images: { image_url: string; caption?: string; display_order?: number; is_primary?: boolean }[]) {
+  try {
+    const { data, error } = await supabase
+      .from("venue_images")
+      .insert(
+        images.map((img) => ({
+          venue_id: venueId,
+          ...img,
+        }))
+      )
+      .select();
+
+    if (error) throw error;
+
+    return { images: data, error: null };
+  } catch (error: any) {
+    console.error("addVenueImages error:", error);
+    return { images: null, error: error.message };
   }
 }
 
@@ -185,6 +322,7 @@ export async function addReview(venueId: string, rating: number, comment?: strin
 
     return { review: data, error: null };
   } catch (error: any) {
+    console.error("addReview error:", error);
     return { review: null, error: error.message };
   }
 }
@@ -197,6 +335,7 @@ export async function getCountries() {
     const { data, error } = await supabase
       .from("venues")
       .select("country")
+      .eq("status", "active")
       .order("country", { ascending: true });
 
     if (error) throw error;
@@ -204,25 +343,61 @@ export async function getCountries() {
     const countries = [...new Set(data?.map(v => v.country) || [])];
     return { countries, error: null };
   } catch (error: any) {
+    console.error("getCountries error:", error);
     return { countries: [], error: error.message };
   }
 }
 
 /**
- * Get unique accommodation types
+ * Get unique venue types
  */
-export async function getAccommodationTypes() {
+export async function getVenueTypes() {
   try {
     const { data, error } = await supabase
       .from("venues")
-      .select("accommodation_type")
-      .order("accommodation_type", { ascending: true });
+      .select("venue_type")
+      .eq("status", "active")
+      .order("venue_type", { ascending: true });
 
     if (error) throw error;
 
-    const types = [...new Set(data?.map(v => v.accommodation_type) || [])];
+    const types = [...new Set(data?.map(v => v.venue_type) || [])];
     return { types, error: null };
   } catch (error: any) {
+    console.error("getVenueTypes error:", error);
     return { types: [], error: error.message };
+  }
+}
+
+/**
+ * Create booking inquiry
+ */
+export async function createInquiry(venueId: string, checkIn: string, checkOut: string, guests: number, message?: string) {
+  try {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    
+    if (userError || !user) {
+      throw new Error("Not authenticated");
+    }
+
+    const { data, error } = await supabase
+      .from("inquiries")
+      .insert({
+        venue_id: venueId,
+        guest_id: user.id,
+        check_in: checkIn,
+        check_out: checkOut,
+        guests,
+        message,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return { inquiry: data, error: null };
+  } catch (error: any) {
+    console.error("createInquiry error:", error);
+    return { inquiry: null, error: error.message };
   }
 }
