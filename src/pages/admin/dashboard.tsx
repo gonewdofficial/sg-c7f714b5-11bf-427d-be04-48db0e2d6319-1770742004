@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { getCurrentUser, signOut } from "@/services/authService";
 import { getVenues, createVenue, updateVenue, deleteVenue } from "@/services/venueService";
+import type { VenueWithStats } from "@/services/venueService";
 import { Loader2, Plus, Edit, Trash2, LogOut, Star } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -21,12 +22,12 @@ type Venue = Database["public"]["Tables"]["venues"]["Row"];
 export default function AdminDashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [venues, setVenues] = useState<Venue[]>([]);
+  const [venues, setVenues] = useState<VenueWithStats[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingVenue, setEditingVenue] = useState<Venue | null>(null);
   const [formData, setFormData] = useState({
     name: "",
-    location: "",
+    city: "",
     country: "",
     accommodation_type: "",
     website_url: "",
@@ -34,7 +35,7 @@ export default function AdminDashboard() {
     lat: "",
     lng: "",
     description: "",
-    facilities: "",
+    amenities: "",
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -71,21 +72,21 @@ export default function AdminDashboard() {
       setEditingVenue(venue);
       setFormData({
         name: venue.name,
-        location: venue.location,
+        city: venue.city || "",
         country: venue.country,
-        accommodation_type: venue.accommodation_type,
+        accommodation_type: venue.accommodation_type || "",
         website_url: venue.website_url || "",
         booking_link: venue.booking_link || "",
         lat: venue.lat?.toString() || "",
         lng: venue.lng?.toString() || "",
         description: venue.description || "",
-        facilities: Array.isArray(venue.facilities) ? venue.facilities.join(", ") : "",
+        amenities: Array.isArray(venue.amenities) ? venue.amenities.join(", ") : "",
       });
     } else {
       setEditingVenue(null);
       setFormData({
         name: "",
-        location: "",
+        city: "",
         country: "",
         accommodation_type: "",
         website_url: "",
@@ -93,7 +94,7 @@ export default function AdminDashboard() {
         lat: "",
         lng: "",
         description: "",
-        facilities: "",
+        amenities: "",
       });
     }
     setIsDialogOpen(true);
@@ -110,13 +111,24 @@ export default function AdminDashboard() {
     try {
       const venueData = {
         ...formData,
-        city: formData.location.split(',')[0].trim() || formData.location,
-        facilities: formData.facilities.split(",").map((f) => f.trim()).filter(Boolean),
-        lat: formData.lat ? parseFloat(formData.lat) : null,
-        lng: formData.lng ? parseFloat(formData.lng) : null,
+        address: `${formData.city}, ${formData.country}`, // Construct address
+        amenities: formData.amenities.split(",").map((f) => f.trim()).filter(Boolean),
+        latitude: formData.lat ? parseFloat(formData.lat) : null,
+        longitude: formData.lng ? parseFloat(formData.lng) : null,
+        venue_type: "resort" as const, // Default to resort for admin creation
+        bathrooms: 1,
+        bedrooms: 1,
+        max_guests: 4, // Default
+        price_per_night: 100, // Default
       };
 
       if (editingVenue) {
+        // Only include fields that exist in VenueUpdate
+        const updates: any = { ...venueData };
+        delete updates.city; // if not in update type
+        delete updates.lat; // Remove local form field
+        delete updates.lng; // Remove local form field
+        
         const { error: updateError } = await updateVenue(editingVenue.id, venueData);
         if (updateError) {
           setError(updateError);
@@ -135,8 +147,8 @@ export default function AdminDashboard() {
           setTimeout(() => setIsDialogOpen(false), 1500);
         }
       }
-    } catch (e) {
-      setError("An error occurred while submitting the form.");
+    } catch (e: any) {
+      setError(e.message || "An error occurred while submitting the form.");
     }
 
     setSubmitting(false);
@@ -241,13 +253,13 @@ export default function AdminDashboard() {
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="location">Full Location Address</Label>
+                          <Label htmlFor="location">City</Label>
                           <Input
                             id="location"
-                            value={formData.location}
-                            onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                            value={formData.city}
+                            onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                             required
-                            placeholder="e.g. Carrer de la Platja, 07660 Cala d'Or, Spain"
+                            placeholder="e.g. Cala d'Or"
                           />
                         </div>
 
@@ -337,11 +349,11 @@ export default function AdminDashboard() {
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="facilities">Facilities (comma-separated)</Label>
+                          <Label htmlFor="amenities">Amenities (comma-separated)</Label>
                           <Textarea
-                            id="facilities"
-                            value={formData.facilities}
-                            onChange={(e) => setFormData({ ...formData, facilities: e.target.value })}
+                            id="amenities"
+                            value={formData.amenities}
+                            onChange={(e) => setFormData({ ...formData, amenities: e.target.value })}
                             disabled={submitting}
                             rows={3}
                             placeholder="Pool, Restaurant, Spa, Beach Access, WiFi"

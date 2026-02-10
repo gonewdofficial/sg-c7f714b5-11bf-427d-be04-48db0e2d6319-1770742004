@@ -74,8 +74,11 @@ export type Database = {
       }
       inquiries: {
         Row: {
+          check_in: string | null
+          check_out: string | null
           created_at: string | null
           guest_id: string
+          guests: number | null
           id: string
           message: string
           owner_response: string | null
@@ -85,8 +88,11 @@ export type Database = {
           venue_id: string
         }
         Insert: {
+          check_in?: string | null
+          check_out?: string | null
           created_at?: string | null
           guest_id: string
+          guests?: number | null
           id?: string
           message: string
           owner_response?: string | null
@@ -96,8 +102,11 @@ export type Database = {
           venue_id: string
         }
         Update: {
+          check_in?: string | null
+          check_out?: string | null
           created_at?: string | null
           guest_id?: string
+          guests?: number | null
           id?: string
           message?: string
           owner_response?: string | null
@@ -301,6 +310,9 @@ export type Database = {
           check_in_time: string
           check_out_time: string
           city: string
+          clothing_policy: string | null
+          contact_email: string | null
+          contact_phone: string | null
           country: string
           created_at: string | null
           description: string
@@ -333,6 +345,9 @@ export type Database = {
           check_in_time?: string
           check_out_time?: string
           city: string
+          clothing_policy?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           country: string
           created_at?: string | null
           description: string
@@ -352,7 +367,7 @@ export type Database = {
           slug?: string | null
           status?: string | null
           updated_at?: string | null
-          venue_type: Database["public"]["Enums"]["venue_type"]
+          venue_type?: Database["public"]["Enums"]["venue_type"]
           website_url?: string | null
         }
         Update: {
@@ -365,6 +380,9 @@ export type Database = {
           check_in_time?: string
           check_out_time?: string
           city?: string
+          clothing_policy?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           country?: string
           created_at?: string | null
           description?: string

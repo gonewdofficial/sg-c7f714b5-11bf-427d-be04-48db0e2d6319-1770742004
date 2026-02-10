@@ -11,8 +11,8 @@ import { SEO } from "@/components/SEO";
 import { Header } from "@/components/Header";
 import { Star, Plus, Edit, LogOut, MessageSquare } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
+import type { VenueWithStats } from "@/services/venueService";
 
-type Venue = Tables<"venues">;
 type Review = Tables<"reviews"> & {
   profiles?: {
     full_name: string;
@@ -24,7 +24,7 @@ export default function OwnerDashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [ownerName, setOwnerName] = useState("");
-  const [venues, setVenues] = useState<Venue[]>([]);
+  const [venues, setVenues] = useState<VenueWithStats[]>([]);
   const [reviews, setReviews] = useState<(Review & { venue_name?: string; response?: ReviewResponse })[]>([]);
   const [error, setError] = useState("");
 
@@ -62,16 +62,47 @@ export default function OwnerDashboard() {
   };
 
   const loadOwnerData = async (ownerId: string) => {
+    // Manually fetch venues with stats since getVenuesByOwner might not return aggregated stats depending on impl
+    // Or better, update getVenuesByOwner to return stats. 
+    // For now, let's fetch raw venues and calculate or use a service that does it.
+    // Actually, let's just use the query logic here to get stats if possible, or simple venues.
+    
+    // Using the service would be cleaner if updated, but let's stick to direct query for dashboard or just fix the type assumption.
     const { data: venuesData, error: venuesError } = await supabase
       .from("venues")
-      .select("*")
+      .select(`
+        *,
+        venue_images (
+          id,
+          image_url,
+          display_order,
+          is_primary
+        ),
+        reviews (
+          id,
+          rating
+        )
+      `)
       .eq("owner_id", ownerId)
       .order("created_at", { ascending: false });
 
     if (venuesError) {
       console.error("Error loading venues:", venuesError);
     } else {
-      setVenues(venuesData || []);
+      // Calculate stats client side for the dashboard
+      const venuesWithStats = venuesData?.map(venue => {
+         const reviews = venue.reviews || [];
+         const avgRating = reviews.length > 0
+          ? reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length
+          : 0;
+          
+         return {
+           ...venue,
+           average_rating: avgRating,
+           review_count: reviews.length,
+         };
+      });
+      setVenues(venuesWithStats as VenueWithStats[] || []);
     }
 
     if (venuesData && venuesData.length > 0) {
@@ -208,7 +239,7 @@ export default function OwnerDashboard() {
                           <div className="flex-1 min-w-0">
                             <CardTitle className="text-lg md:text-xl break-words">{venue.name}</CardTitle>
                             <p className="text-sm text-gray-600 mt-1">
-                              {venue.location}, {venue.country}
+                              {venue.city}, {venue.country}
                             </p>
                           </div>
                           <Link href={`/owner/edit-listing/${venue.id}`} className="shrink-0">

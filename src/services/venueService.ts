@@ -2,6 +2,9 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 
 type Venue = Database["public"]["Tables"]["venues"]["Row"];
+// Define specific enum type for venue_type to avoid string errors
+type VenueType = Database["public"]["Enums"]["venue_type"];
+
 type VenueInsert = Database["public"]["Tables"]["venues"]["Insert"];
 type VenueUpdate = Database["public"]["Tables"]["venues"]["Update"];
 
@@ -88,10 +91,16 @@ export async function getVenues(filters?: {
         ? reviews.reduce((sum: number, r: any) => sum + (r.rating || 0), 0) / reviews.length
         : 0;
       
+      // Ensure venue_type is one of the allowed values or default to resort
+      const validVenueType = ["hotel", "resort", "campground", "beach_club", "spa"].includes(v.venue_type) 
+        ? v.venue_type 
+        : "resort";
+
       return {
         ...v,
         average_rating: avgRating,
         review_count: reviews.length,
+        venue_type: validVenueType,
       };
     }) || [];
 
@@ -416,23 +425,21 @@ export async function getVenueTypes() {
 /**
  * Create booking inquiry
  */
-export async function createInquiry(venueId: string, checkIn: string, checkOut: string, guests: number, message?: string) {
+export async function createInquiry(inquiry: {
+  venue_id: string;
+  guest_id: string;
+  check_in: string;
+  check_out: string;
+  guests: number;
+  message: string;
+}) {
   try {
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    
-    if (userError || !user) {
-      throw new Error("Not authenticated");
-    }
-
     const { data, error } = await supabase
       .from("inquiries")
       .insert({
-        venue_id: venueId,
-        guest_id: user.id,
-        check_in: checkIn,
-        check_out: checkOut,
-        guests,
-        message,
+        ...inquiry,
+        subject: "New Booking Inquiry", // Add default subject
+        status: "pending"
       })
       .select()
       .single();

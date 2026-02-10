@@ -37,7 +37,7 @@ export default function AdminLoginPage() {
       const { user, error: authError } = await signIn(email, password);
 
       if (authError) {
-        setError(authError);
+        setError(authError.message);
         setLoading(false);
         return;
       }

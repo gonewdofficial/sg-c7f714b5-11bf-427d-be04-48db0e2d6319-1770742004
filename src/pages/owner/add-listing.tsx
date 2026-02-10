@@ -102,6 +102,7 @@ export default function AddListing() {
         country,
         address: location,
         accommodation_type: accommodationType,
+        venue_type: (accommodationType === "hotel" || accommodationType === "resort" || accommodationType === "campground" || accommodationType === "spa") ? accommodationType : "resort", // Map to valid enum or default
         clothing_policy: clothingPolicy,
         website_url: website,
         contact_email: contactEmail,
@@ -110,7 +111,10 @@ export default function AddListing() {
         amenities: selectedAmenities, // Use state for amenities
         status: "draft",
         // Default values for required fields
-        location: `${location}, ${country}`,
+        bathrooms: 1,
+        bedrooms: 1,
+        max_guests: 2,
+        price_per_night: 0
       }).select().single();
 
       if (error) throw error;
@@ -138,7 +142,7 @@ export default function AddListing() {
             .from("venue_images")
             .insert({
               venue_id: venue.id,
-              url: publicUrl,
+              image_url: publicUrl,
               display_order: i
             });
         }
