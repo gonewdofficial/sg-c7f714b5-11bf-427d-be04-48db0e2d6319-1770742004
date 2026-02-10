@@ -46,8 +46,11 @@ const InteractiveMapComponent = ({
 
   const handleZoomOut = () => {
     if (zoom > 1) {
-      setZoom(zoom / 1.5);
-      if (zoom / 1.5 <= 1) {
+      const newZoom = zoom / 1.5;
+      setZoom(newZoom);
+      if (newZoom <= 1) {
+        setZoom(1);
+        setCenter([0, 20]);
         setHasZoomedIn(false);
       }
     }
@@ -121,12 +124,13 @@ const InteractiveMapComponent = ({
             if (hasZoomedIn) {
               setCenter(position.coordinates);
               setZoom(position.zoom);
+            } else {
+              setCenter([0, 20]);
             }
           }}
           filterZoomEvent={(evt) => {
             return evt.type !== "wheel";
           }}
-          translateExtent={hasZoomedIn ? undefined : [[0, 0], [0, 0]]}
         >
           <Geographies geography={geoUrl}>
             {({ geographies }) =>
