@@ -7,6 +7,8 @@ import {
   ZoomableGroup,
 } from "react-simple-maps";
 import { Property } from "@/types";
+import { Button } from "@/components/ui/button";
+import { Plus, Minus, RotateCcw } from "lucide-react";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
@@ -22,6 +24,8 @@ const InteractiveMapComponent = ({
   onCountryClick 
 }: InteractiveMapProps) => {
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
+  const [zoom, setZoom] = useState(1);
+  const [center, setCenter] = useState<[number, number]>([0, 20]);
 
   const handleCountryClick = (geo: any) => {
     const countryName = geo.properties.name || geo.properties.NAME || geo.properties.ADMIN;
@@ -32,21 +36,66 @@ const InteractiveMapComponent = ({
     }
   };
 
+  const handleZoomIn = () => {
+    if (zoom < 8) {
+      setZoom(zoom * 1.5);
+    }
+  };
+
+  const handleZoomOut = () => {
+    if (zoom > 1) {
+      setZoom(zoom / 1.5);
+    }
+  };
+
+  const handleReset = () => {
+    setZoom(1);
+    setCenter([0, 20]);
+  };
+
   const getCountryFill = (geo: any, isHovered: boolean) => {
     const countryName = geo.properties.name || geo.properties.NAME || geo.properties.ADMIN;
     const normalizedCountryName = countryName?.toLowerCase();
     const isSelected = selectedCountries.includes(normalizedCountryName);
 
     if (isSelected) {
-      return isHovered ? "#FF4500" : "#FF6347";
+      return "#FF6347";
     }
     return isHovered ? "#D1D5DB" : "#E5E7EB";
   };
 
   return (
-    <div 
-      className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] bg-gray-50 rounded-lg overflow-hidden"
-    >
+    <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] bg-gray-50 rounded-lg overflow-hidden">
+      {/* Zoom Controls */}
+      <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
+        <Button
+          size="icon"
+          variant="secondary"
+          onClick={handleZoomIn}
+          disabled={zoom >= 8}
+          className="bg-white shadow-md hover:bg-gray-100"
+        >
+          <Plus className="h-4 w-4" />
+        </Button>
+        <Button
+          size="icon"
+          variant="secondary"
+          onClick={handleZoomOut}
+          disabled={zoom <= 1}
+          className="bg-white shadow-md hover:bg-gray-100"
+        >
+          <Minus className="h-4 w-4" />
+        </Button>
+        <Button
+          size="icon"
+          variant="secondary"
+          onClick={handleReset}
+          className="bg-white shadow-md hover:bg-gray-100"
+        >
+          <RotateCcw className="h-4 w-4" />
+        </Button>
+      </div>
+
       <ComposableMap
         projection="geoMercator"
         projectionConfig={{
@@ -58,10 +107,14 @@ const InteractiveMapComponent = ({
         }}
       >
         <ZoomableGroup
-          center={[0, 20]}
-          zoom={1}
+          center={center}
+          zoom={zoom}
           minZoom={1}
           maxZoom={8}
+          onMoveEnd={(position) => {
+            setCenter(position.coordinates);
+            setZoom(position.zoom);
+          }}
           filterZoomEvent={(evt) => {
             return evt.type !== "wheel";
           }}
