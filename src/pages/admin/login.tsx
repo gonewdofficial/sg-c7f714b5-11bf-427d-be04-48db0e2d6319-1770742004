@@ -63,7 +63,7 @@ export default function AdminLoginPage() {
         title="Admin Login - GO/NEWD"
         description="Admin access for GO/NEWD venue management"
       />
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 flex items-center justify-center p-6 pt-20 sm:pt-6">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-brand rounded-full mb-4">

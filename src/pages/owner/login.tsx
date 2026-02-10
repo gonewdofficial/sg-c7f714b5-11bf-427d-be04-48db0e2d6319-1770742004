@@ -62,7 +62,7 @@ export default function OwnerLogin() {
       />
       <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white">
         <Header />
-        <main className="container mx-auto px-6 py-8 sm:py-16">
+        <main className="container mx-auto px-4 sm:px-6 pt-20 pb-6 sm:pt-24 sm:pb-12">
           <div className="max-w-md mx-auto">
             <Card className="shadow-lg">
               <CardHeader className="space-y-1 px-6 pt-6">
