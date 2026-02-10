@@ -4,7 +4,7 @@ import { Property } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, Heart, MapPin } from "lucide-react";
+import { Star, MapPin } from "lucide-react";
 
 interface PropertyCardProps {
   id: string;
@@ -47,16 +47,6 @@ export function PropertyCard({
               Featured
             </Badge>
           )}
-          <Button
-            size="icon"
-            variant="secondary"
-            className="absolute top-3 right-3 rounded-full bg-white/90 hover:bg-white z-10"
-            onClick={(e) => {
-              e.preventDefault();
-            }}
-          >
-            <Heart className="h-4 w-4" style={{ color: '#FF6347' }} />
-          </Button>
         </div>
       </Link>
 
