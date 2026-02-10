@@ -8,6 +8,8 @@ import { getVenues } from "@/services/venueService";
 import { getCountryCoordinates } from "@/lib/utils";
 import type { Property } from "@/types";
 import type { VenueWithStats } from "@/services/venueService";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const [properties, setProperties] = useState<Property[]>([]);

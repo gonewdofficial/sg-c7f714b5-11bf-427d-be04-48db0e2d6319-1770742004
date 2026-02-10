@@ -24,7 +24,7 @@ export function Header() {
             className="flex items-center gap-2 border-orange-500 text-orange-500 hover:bg-orange-50"
           >
             <User className="h-4 w-4" />
-            <span className="hidden sm:inline">Owner Login</span>
+            <span className="hidden sm:inline">Login</span>
             <span className="sm:hidden">Login</span>
           </Button>
         </Link>
