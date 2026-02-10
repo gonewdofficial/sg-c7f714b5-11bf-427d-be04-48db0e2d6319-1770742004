@@ -26,6 +26,7 @@ const InteractiveMapComponent = ({
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
   const [center, setCenter] = useState<[number, number]>([0, 20]);
+  const [hasZoomedIn, setHasZoomedIn] = useState(false);
 
   const handleCountryClick = (geo: any) => {
     const countryName = geo.properties.name || geo.properties.NAME || geo.properties.ADMIN;
@@ -39,6 +40,7 @@ const InteractiveMapComponent = ({
   const handleZoomIn = () => {
     if (zoom < 8) {
       setZoom(zoom * 1.5);
+      setHasZoomedIn(true);
     }
   };
 
@@ -51,6 +53,7 @@ const InteractiveMapComponent = ({
   const handleReset = () => {
     setZoom(1);
     setCenter([0, 20]);
+    setHasZoomedIn(false);
   };
 
   const getCountryFill = (geo: any, isHovered: boolean) => {
@@ -112,8 +115,10 @@ const InteractiveMapComponent = ({
           minZoom={1}
           maxZoom={8}
           onMoveEnd={(position) => {
-            setCenter(position.coordinates);
-            setZoom(position.zoom);
+            if (hasZoomedIn) {
+              setCenter(position.coordinates);
+              setZoom(position.zoom);
+            }
           }}
           filterZoomEvent={(evt) => {
             return evt.type !== "wheel";
