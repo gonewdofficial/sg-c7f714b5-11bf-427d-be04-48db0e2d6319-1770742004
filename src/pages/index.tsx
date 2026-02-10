@@ -128,10 +128,13 @@ export default function Home() {
         property.price.perNight <= priceRange[1]
     );
 
-    // Sort: Featured first, then by rating
+    // Sort: Featured first (grouped by country), then by rating
     results.sort((a, b) => {
+      // If one is featured and the other isn't, featured comes first
       if (a.featured && !b.featured) return -1;
       if (!a.featured && b.featured) return 1;
+      
+      // If both featured or both not featured, sort by rating
       return b.rating - a.rating;
     });
 
@@ -279,6 +282,7 @@ export default function Home() {
                     price={property.price.perNight}
                     rating={property.rating}
                     reviews={property.reviewCount}
+                    featured={property.featured}
                   />
                 ))}
               </div>

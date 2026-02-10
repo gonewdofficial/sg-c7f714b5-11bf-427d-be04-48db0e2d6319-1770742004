@@ -14,6 +14,7 @@ interface PropertyCardProps {
   price: number;
   rating: number;
   reviews: number;
+  featured?: boolean;
   onClick?: () => void;
 }
 
@@ -25,6 +26,7 @@ export function PropertyCard({
   price, 
   rating, 
   reviews,
+  featured = false,
   onClick 
 }: PropertyCardProps) {
   return (
@@ -40,6 +42,11 @@ export function PropertyCard({
             fill
             className="object-cover group-hover:scale-110 transition-transform duration-500"
           />
+          {featured && (
+            <Badge className="absolute top-3 left-3 bg-orange-500 text-white border-0 z-10">
+              Featured
+            </Badge>
+          )}
           <Button
             size="icon"
             variant="secondary"
