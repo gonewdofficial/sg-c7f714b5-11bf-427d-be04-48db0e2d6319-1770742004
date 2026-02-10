@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import {
   ComposableMap,
   Geographies,
@@ -21,23 +21,33 @@ const InteractiveMapComponent = ({
   selectedCountries = [],
   onCountryClick 
 }: InteractiveMapProps) => {
+  const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
+
   const handleCountryClick = (geo: any) => {
     const countryName = geo.properties.name || geo.properties.NAME || geo.properties.ADMIN;
     if (countryName) {
       const normalizedCountryName = countryName.toLowerCase();
       onCountryClick(normalizedCountryName);
+      setHoveredCountry(null);
     }
   };
 
-  // Force complete re-render when selections change to clear all internal states
-  const mapKey = `map-${selectedCountries.join('-')}`;
+  const getCountryFill = (geo: any, isHovered: boolean) => {
+    const countryName = geo.properties.name || geo.properties.NAME || geo.properties.ADMIN;
+    const normalizedCountryName = countryName?.toLowerCase();
+    const isSelected = selectedCountries.includes(normalizedCountryName);
+
+    if (isSelected) {
+      return isHovered ? "#FF4500" : "#FF6347";
+    }
+    return isHovered ? "#D1D5DB" : "#E5E7EB";
+  };
 
   return (
     <div 
       className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] bg-gray-50 rounded-lg overflow-hidden"
     >
       <ComposableMap
-        key={mapKey}
         projection="geoMercator"
         projectionConfig={{
           scale: 147,
@@ -61,29 +71,32 @@ const InteractiveMapComponent = ({
               geographies.map((geo) => {
                 const countryName = geo.properties.name || geo.properties.NAME || geo.properties.ADMIN;
                 const normalizedCountryName = countryName?.toLowerCase();
-                const isSelected = selectedCountries.includes(normalizedCountryName);
+                const isHovered = hoveredCountry === normalizedCountryName;
+                const fillColor = getCountryFill(geo, isHovered);
 
                 return (
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
                     onClick={() => handleCountryClick(geo)}
+                    onMouseEnter={() => setHoveredCountry(normalizedCountryName)}
+                    onMouseLeave={() => setHoveredCountry(null)}
                     style={{
                       default: {
-                        fill: isSelected ? "#FF6347" : "#E5E7EB",
+                        fill: fillColor,
                         stroke: "#FFFFFF",
                         strokeWidth: 0.5,
                         outline: "none",
                       },
                       hover: {
-                        fill: isSelected ? "#FF6347" : "#E5E7EB",
+                        fill: fillColor,
                         stroke: "#FFFFFF",
                         strokeWidth: 0.5,
                         outline: "none",
                         cursor: "pointer",
                       },
                       pressed: {
-                        fill: isSelected ? "#FF6347" : "#E5E7EB",
+                        fill: fillColor,
                         stroke: "#FFFFFF",
                         strokeWidth: 0.5,
                         outline: "none",
