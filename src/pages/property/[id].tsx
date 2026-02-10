@@ -37,7 +37,6 @@ export default function PropertyDetail() {
     setLoading(true);
     setError(null);
 
-    // Load venue data
     const { venue: venueData, error: venueError } = await getVenueBySlug(slug);
     
     if (venueError || !venueData) {
@@ -48,7 +47,6 @@ export default function PropertyDetail() {
 
     setVenue(venueData);
 
-    // Load reviews for this venue
     const { reviews: reviewsData } = await getVenueReviews(venueData.id);
     setReviews(reviewsData || []);
     
@@ -96,7 +94,6 @@ export default function PropertyDetail() {
     ? reviews.reduce((acc, r) => acc + (r.rating || 0), 0) / reviews.length
     : 0;
 
-  // Parse amenities and features from JSON if they're strings
   const amenities = Array.isArray(venue.amenities) ? venue.amenities : [];
   const features = Array.isArray(venue.features) ? venue.features : [];
   const images = Array.isArray(venue.images) ? venue.images : [];
@@ -113,7 +110,6 @@ export default function PropertyDetail() {
         
         <main className="pt-16">
           <div className="container mx-auto px-4 py-8 max-w-7xl">
-            {/* Header Section */}
             <div className="mb-6">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
                 <div>
@@ -142,7 +138,6 @@ export default function PropertyDetail() {
                 </div>
               </div>
 
-              {/* Badges */}
               <div className="flex flex-wrap gap-2">
                 {venue.featured && (
                   <Badge className="bg-orange-500 text-white">Featured</Badge>
@@ -150,13 +145,14 @@ export default function PropertyDetail() {
                 <Badge variant="outline" className="border-orange-500 text-orange-600">
                   {venue.accommodation_type}
                 </Badge>
-                <Badge variant="outline" className="border-orange-500 text-orange-600">
-                  {venue.naturist_policy}
-                </Badge>
+                {venue.clothing_policy && (
+                  <Badge variant="outline" className="border-orange-500 text-orange-600">
+                    {venue.clothing_policy}
+                  </Badge>
+                )}
               </div>
             </div>
 
-            {/* Image Gallery */}
             {images.length > 0 && (
               <div className="mb-8">
                 <Carousel className="w-full">
@@ -182,9 +178,7 @@ export default function PropertyDetail() {
             )}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Main Content */}
               <div className="lg:col-span-2 space-y-8">
-                {/* Description */}
                 <Card>
                   <CardContent className="p-6">
                     <h2 className="text-2xl font-bold mb-4 text-gray-900">About This Property</h2>
@@ -194,7 +188,6 @@ export default function PropertyDetail() {
                   </CardContent>
                 </Card>
 
-                {/* Amenities */}
                 {amenities.length > 0 && (
                   <Card>
                     <CardContent className="p-6">
@@ -211,7 +204,6 @@ export default function PropertyDetail() {
                   </Card>
                 )}
 
-                {/* Features */}
                 {features.length > 0 && (
                   <Card>
                     <CardContent className="p-6">
@@ -227,7 +219,6 @@ export default function PropertyDetail() {
                   </Card>
                 )}
 
-                {/* Reviews */}
                 <Card>
                   <CardContent className="p-6">
                     <h2 className="text-2xl font-bold mb-6 text-gray-900">
@@ -262,9 +253,6 @@ export default function PropertyDetail() {
                               </div>
                             </div>
                           </div>
-                          {review.title && (
-                            <h3 className="font-semibold text-gray-900 mb-2">{review.title}</h3>
-                          )}
                           <p className="text-gray-700 leading-relaxed">{review.comment}</p>
                         </div>
                       ))}
