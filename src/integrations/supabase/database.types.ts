@@ -184,6 +184,8 @@ export type Database = {
           currency: string | null
           description: string | null
           facilities: string[] | null
+          featured: boolean | null
+          featured_until: string | null
           features: string[] | null
           id: string
           images: string[] | null
@@ -217,6 +219,8 @@ export type Database = {
           currency?: string | null
           description?: string | null
           facilities?: string[] | null
+          featured?: boolean | null
+          featured_until?: string | null
           features?: string[] | null
           id?: string
           images?: string[] | null
@@ -250,6 +254,8 @@ export type Database = {
           currency?: string | null
           description?: string | null
           facilities?: string[] | null
+          featured?: boolean | null
+          featured_until?: string | null
           features?: string[] | null
           id?: string
           images?: string[] | null

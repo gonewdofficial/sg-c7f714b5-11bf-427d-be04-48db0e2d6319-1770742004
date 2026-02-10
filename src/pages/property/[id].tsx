@@ -7,30 +7,53 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { Star, MapPin, Users, Wifi, Utensils, Waves, Heart, Share2, Calendar } from "lucide-react";
-import { mockProperties, reviews as mockReviews } from "@/lib/mockData";
-import type { Property, Review } from "@/types";
+import { Star, MapPin, Share2, Heart } from "lucide-react";
+import { getVenueBySlug, getVenueReviews } from "@/services/venueService";
+import type { Database } from "@/integrations/supabase/types";
+
+type Venue = Database["public"]["Tables"]["venues"]["Row"];
+type Review = Database["public"]["Tables"]["reviews"]["Row"] & {
+  profiles: {
+    full_name: string | null;
+    avatar_url: string | null;
+  } | null;
+};
 
 export default function PropertyDetail() {
   const router = useRouter();
   const { id } = router.query;
-  const [property, setProperty] = useState<Property | null>(null);
+  const [venue, setVenue] = useState<Venue | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (id) {
-      // Find property by ID
-      const foundProperty = mockProperties.find((p) => p.id === id);
-      if (foundProperty) {
-        setProperty(foundProperty);
-        // Get reviews for this property
-        const propertyReviews = mockReviews.filter((r) => r.propertyId === id);
-        setReviews(propertyReviews);
-      }
-      setLoading(false);
+    if (id && typeof id === "string") {
+      loadVenueData(id);
     }
   }, [id]);
+
+  async function loadVenueData(slug: string) {
+    setLoading(true);
+    setError(null);
+
+    // Load venue data
+    const { venue: venueData, error: venueError } = await getVenueBySlug(slug);
+    
+    if (venueError || !venueData) {
+      setError("Property not found");
+      setLoading(false);
+      return;
+    }
+
+    setVenue(venueData);
+
+    // Load reviews for this venue
+    const { reviews: reviewsData } = await getVenueReviews(venueData.id);
+    setReviews(reviewsData || []);
+    
+    setLoading(false);
+  }
 
   if (loading) {
     return (
@@ -50,7 +73,7 @@ export default function PropertyDetail() {
     );
   }
 
-  if (!property) {
+  if (error || !venue) {
     return (
       <>
         <SEO title="Property Not Found" />
@@ -70,15 +93,20 @@ export default function PropertyDetail() {
   }
 
   const averageRating = reviews.length > 0
-    ? reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length
-    : property.rating;
+    ? reviews.reduce((acc, r) => acc + (r.rating || 0), 0) / reviews.length
+    : 0;
+
+  // Parse amenities and features from JSON if they're strings
+  const amenities = Array.isArray(venue.amenities) ? venue.amenities : [];
+  const features = Array.isArray(venue.features) ? venue.features : [];
+  const images = Array.isArray(venue.images) ? venue.images : [];
 
   return (
     <>
       <SEO
-        title={`${property.name} - Naturist Resort`}
-        description={property.description}
-        image={property.images[0]}
+        title={`${venue.name} - Naturist Resort`}
+        description={venue.description || ""}
+        image={images[0] || ""}
       />
       <div className="min-h-screen bg-white">
         <Header />
@@ -90,17 +118,17 @@ export default function PropertyDetail() {
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
                 <div>
                   <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-                    {property.name}
+                    {venue.name}
                   </h1>
                   <div className="flex items-center gap-4 flex-wrap">
                     <div className="flex items-center gap-2">
                       <Star className="h-5 w-5 fill-current text-orange-500" />
-                      <span className="font-semibold text-gray-900">{averageRating.toFixed(1)}</span>
+                      <span className="font-semibold text-gray-900">{averageRating > 0 ? averageRating.toFixed(1) : "No rating"}</span>
                       <span className="text-gray-600">({reviews.length} reviews)</span>
                     </div>
                     <div className="flex items-center gap-2 text-gray-600">
                       <MapPin className="h-5 w-5 text-orange-500" />
-                      <span>{property.location.city}, {property.location.country}</span>
+                      <span>{venue.city}, {venue.country}</span>
                     </div>
                   </div>
                 </div>
@@ -116,40 +144,42 @@ export default function PropertyDetail() {
 
               {/* Badges */}
               <div className="flex flex-wrap gap-2">
-                {property.featured && (
+                {venue.featured && (
                   <Badge className="bg-orange-500 text-white">Featured</Badge>
                 )}
                 <Badge variant="outline" className="border-orange-500 text-orange-600">
-                  {property.propertyType}
+                  {venue.accommodation_type}
                 </Badge>
                 <Badge variant="outline" className="border-orange-500 text-orange-600">
-                  {property.naturistType}
+                  {venue.naturist_policy}
                 </Badge>
               </div>
             </div>
 
             {/* Image Gallery */}
-            <div className="mb-8">
-              <Carousel className="w-full">
-                <CarouselContent>
-                  {property.images.map((image, index) => (
-                    <CarouselItem key={index}>
-                      <div className="relative h-[400px] md:h-[600px] rounded-lg overflow-hidden">
-                        <Image
-                          src={image}
-                          alt={`${property.name} - Image ${index + 1}`}
-                          fill
-                          className="object-cover"
-                          priority={index === 0}
-                        />
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="left-4" />
-                <CarouselNext className="right-4" />
-              </Carousel>
-            </div>
+            {images.length > 0 && (
+              <div className="mb-8">
+                <Carousel className="w-full">
+                  <CarouselContent>
+                    {images.map((image, index) => (
+                      <CarouselItem key={index}>
+                        <div className="relative h-[400px] md:h-[600px] rounded-lg overflow-hidden">
+                          <Image
+                            src={image}
+                            alt={`${venue.name} - Image ${index + 1}`}
+                            fill
+                            className="object-cover"
+                            priority={index === 0}
+                          />
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="left-4" />
+                  <CarouselNext className="right-4" />
+                </Carousel>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Main Content */}
@@ -159,33 +189,35 @@ export default function PropertyDetail() {
                   <CardContent className="p-6">
                     <h2 className="text-2xl font-bold mb-4 text-gray-900">About This Property</h2>
                     <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                      {property.description}
+                      {venue.description}
                     </p>
                   </CardContent>
                 </Card>
 
                 {/* Amenities */}
-                <Card>
-                  <CardContent className="p-6">
-                    <h2 className="text-2xl font-bold mb-4 text-gray-900">Amenities</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {property.amenities.map((amenity) => (
-                        <div key={amenity} className="flex items-center gap-2">
-                          <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                          <span className="text-gray-700">{amenity}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                {amenities.length > 0 && (
+                  <Card>
+                    <CardContent className="p-6">
+                      <h2 className="text-2xl font-bold mb-4 text-gray-900">Amenities</h2>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {amenities.map((amenity) => (
+                          <div key={amenity} className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                            <span className="text-gray-700">{amenity}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
 
                 {/* Features */}
-                {property.features && property.features.length > 0 && (
+                {features.length > 0 && (
                   <Card>
                     <CardContent className="p-6">
                       <h2 className="text-2xl font-bold mb-4 text-gray-900">Special Features</h2>
                       <div className="flex flex-wrap gap-2">
-                        {property.features.map((feature) => (
+                        {features.map((feature) => (
                           <Badge key={feature} variant="secondary" className="bg-orange-100 text-orange-700">
                             {feature}
                           </Badge>
@@ -207,12 +239,9 @@ export default function PropertyDetail() {
                           <div className="flex items-start justify-between mb-3">
                             <div>
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="font-semibold text-gray-900">{review.userName}</span>
-                                {review.verified && (
-                                  <Badge variant="outline" className="text-xs border-green-500 text-green-600">
-                                    Verified Stay
-                                  </Badge>
-                                )}
+                                <span className="font-semibold text-gray-900">
+                                  {review.profiles?.full_name || "Anonymous"}
+                                </span>
                               </div>
                               <div className="flex items-center gap-2">
                                 <div className="flex">
@@ -220,14 +249,16 @@ export default function PropertyDetail() {
                                     <Star
                                       key={i}
                                       className={`h-4 w-4 ${
-                                        i < review.rating
+                                        i < (review.rating || 0)
                                           ? "fill-orange-500 text-orange-500"
                                           : "text-gray-300"
                                       }`}
                                     />
                                   ))}
                                 </div>
-                                <span className="text-sm text-gray-600">{review.date}</span>
+                                <span className="text-sm text-gray-600">
+                                  {review.created_at ? new Date(review.created_at).toLocaleDateString() : ""}
+                                </span>
                               </div>
                             </div>
                           </div>
