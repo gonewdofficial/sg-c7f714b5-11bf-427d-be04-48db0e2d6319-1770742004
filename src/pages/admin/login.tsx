@@ -63,7 +63,7 @@ export default function AdminLoginPage() {
         title="Admin Login - GO/NEWD"
         description="Admin access for GO/NEWD venue management"
       />
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 flex items-center justify-center p-6">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-brand rounded-full mb-4">
@@ -73,8 +73,8 @@ export default function AdminLoginPage() {
             <p className="text-gray-600 mt-2">Venue Management Portal</p>
           </div>
 
-          <Card className="border-2">
-            <CardHeader className="space-y-1">
+          <Card className="border-2 shadow-lg">
+            <CardHeader className="space-y-1 px-6 pt-6">
               <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
               <CardDescription>
                 Enter your admin credentials to continue
@@ -82,7 +82,7 @@ export default function AdminLoginPage() {
             </CardHeader>
             
             <form onSubmit={handleSubmit}>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 px-6">
                 {error && (
                   <Alert variant="destructive">
                     <AlertDescription>{error}</AlertDescription>
@@ -118,7 +118,7 @@ export default function AdminLoginPage() {
                 </div>
               </CardContent>
 
-              <CardFooter className="flex flex-col space-y-4">
+              <CardFooter className="flex flex-col space-y-4 px-6 pb-6">
                 <Button
                   type="submit"
                   className="w-full h-11 bg-brand hover:bg-brand/90 text-white font-semibold"

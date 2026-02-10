@@ -62,16 +62,16 @@ export default function OwnerLogin() {
       />
       <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white">
         <Header />
-        <main className="container mx-auto px-4 py-16">
+        <main className="container mx-auto px-6 py-8 sm:py-16">
           <div className="max-w-md mx-auto">
-            <Card>
-              <CardHeader className="space-y-1">
+            <Card className="shadow-lg">
+              <CardHeader className="space-y-1 px-6 pt-6">
                 <CardTitle className="text-2xl font-bold text-center">Owner Login</CardTitle>
                 <CardDescription className="text-center">
                   Sign in to manage your property listings
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-6 pb-6">
                 <form onSubmit={handleLogin} className="space-y-4">
                   {error && (
                     <Alert variant="destructive">

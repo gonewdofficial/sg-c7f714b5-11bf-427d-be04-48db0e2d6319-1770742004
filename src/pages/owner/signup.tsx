@@ -62,16 +62,16 @@ export default function OwnerSignup() {
       />
       <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white">
         <Header />
-        <main className="container mx-auto px-4 py-16">
+        <main className="container mx-auto px-6 py-8 sm:py-16">
           <div className="max-w-md mx-auto">
-            <Card>
-              <CardHeader className="space-y-1">
+            <Card className="shadow-lg">
+              <CardHeader className="space-y-1 px-6 pt-6">
                 <CardTitle className="text-2xl font-bold text-center">List Your Property</CardTitle>
                 <CardDescription className="text-center">
                   Create an owner account to start listing your naturist resort or hotel
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-6 pb-6">
                 {success ? (
                   <Alert className="bg-green-50 border-green-200">
                     <AlertDescription className="text-green-800">
