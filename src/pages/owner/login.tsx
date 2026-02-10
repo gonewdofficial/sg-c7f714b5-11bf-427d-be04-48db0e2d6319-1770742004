@@ -110,13 +110,6 @@ export default function OwnerLogin() {
                   >
                     {loading ? "Signing In..." : "Sign In"}
                   </Button>
-
-                  <p className="text-center text-sm text-gray-600">
-                    Don't have an account?{" "}
-                    <Link href="/owner/signup" className="text-orange-600 hover:text-orange-700 font-medium">
-                      Create owner account
-                    </Link>
-                  </p>
                 </form>
               </CardContent>
             </Card>
